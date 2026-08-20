@@ -1,0 +1,41 @@
+@import './app.css';
+
+/* Core light theme variables and body override for tablet */
+body {
+    background-color: #ffffff !important;
+    color: #1c1917 !important;
+}
+
+/* Touch-friendly operations overrides */
+button, input, select {
+    min-height: 48px; /* Large touch target for tablet tap precision */
+}
+
+/* White glassmorphism overrides for tablet cards */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(231, 229, 228, 0.8) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+}
+
+.glass-panel:hover {
+    border-color: rgba(10, 61, 145, 0.2) !important;
+    box-shadow: 0 10px 30px -10px rgba(10, 61, 145, 0.05) !important;
+}
+
+/* Dashed blue scanner guide */
+.camera-preview-container {
+    border: 3px dashed #0a3d91 !important;
+}
+
+/* Custom scrollbars for lists */
+::-webkit-scrollbar-track {
+    background: #ffffff !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #e7e5e4 !important;
+    border-radius: 3px;
+}

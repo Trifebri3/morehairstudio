@@ -1,0 +1,18 @@
+{
+  "name": "MORE Hair Studio Tablet Terminal",
+  "short_name": "MORE Terminal",
+  "description": "Tablet Operational Terminal for MORE Hair Studio",
+  "start_url": "/tablet",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0a3d91",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

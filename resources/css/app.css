@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --color-blue-50: #eff6ff;
+    --color-blue-100: #dbeafe;
+    --color-blue-500: #0A3D91; /* Premium deep blue */
+    --color-blue-600: #0A3D91; /* Primary brand accent */
+    --color-blue-700: #062e70; /* Darker blue for hover states */
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: #fafaf9; /* Visually light off-white background */
+    color: #1c1917; /* Charcoal/Dark neutral text */
+    letter-spacing: -0.01em;
+}
+
+h1, h2, h3, h4, .font-serif {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+}
+
+/* Glassmorphism premium panels (Clean and light) */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(231, 229, 228, 0.8);
+}
+
+.glass-panel:hover {
+    border-color: rgba(10, 61, 145, 0.25);
+    box-shadow: 0 10px 30px -10px rgba(10, 61, 145, 0.05);
+}
+
+/* Redefine old gold-gradient styles to use premium brand blue `#0A3D91` */
+.gold-gradient-text {
+    background: linear-gradient(135deg, #0A3D91 0%, #062e70 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.gold-gradient-bg {
+    background: #0A3D91;
+    color: #ffffff;
+}
+
+.gold-gradient-border {
+    border-color: #0A3D91;
+}
+
+/* Custom scrollbars matching blue accents */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #fafaf9;
+}
+::-webkit-scrollbar-thumb {
+    background: #e7e5e4;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #0A3D91;
+}
