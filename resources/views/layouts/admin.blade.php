@@ -180,7 +180,7 @@
 
         <!-- Content -->
         <main class="flex-grow p-8 overflow-y-auto bg-stone-50">
-            {{ $slot }}
+            @yield('content')
         </main>
     </div>
 

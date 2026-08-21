@@ -69,7 +69,7 @@
     <!-- Main Wizard Wrapper -->
     <main class="flex-grow flex items-start justify-center py-12 px-4">
         <div class="w-full max-w-7xl">
-            {{ $slot }}
+            @yield('content')
         </div>
     </main>
 
