@@ -157,7 +157,7 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
                     ->attach('file', file_get_contents($localFile), basename($localFile))
                     ->post('https://api.fonnte.com/send', [
                         'target' => $cleanTo,
-                        'message' => "Media file"
+                        'message' => "QR Code Passcode - MORE Hair Studio"
                     ]);
             } else {
                 $response = Http::withoutVerifying()
@@ -165,7 +165,7 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
                     ->post('https://api.fonnte.com/send', [
                         'target' => $cleanTo,
                         'url' => $mediaUrl,
-                        'message' => "Media file"
+                        'message' => "QR Code Passcode - MORE Hair Studio"
                     ]);
             }
 
@@ -220,7 +220,7 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
                     ->attach('file', file_get_contents($localFile), $fileName ?: basename($localFile))
                     ->post('https://api.fonnte.com/send', [
                         'target' => $cleanTo,
-                        'message' => "Dokumen lampiran"
+                        'message' => "E-Ticket PDF - MORE Hair Studio"
                     ]);
             } else {
                 $response = Http::withoutVerifying()
@@ -229,7 +229,7 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
                         'target' => $cleanTo,
                         'url' => $documentUrl,
                         'filename' => $fileName,
-                        'message' => "Dokumen lampiran"
+                        'message' => "E-Ticket PDF - MORE Hair Studio"
                     ]);
             }
 
