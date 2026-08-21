@@ -2,17 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Livewire\Admin\Outlets;
-use App\Livewire\Admin\Services;
-use App\Livewire\Admin\Stylists;
-use App\Livewire\Admin\Customers;
-use App\Livewire\Admin\Promotions;
-use App\Livewire\Admin\Crm;
-use App\Livewire\Admin\WhatsAppLogs;
-use App\Livewire\Admin\Cms;
-use App\Livewire\Admin\Seo;
-use App\Livewire\Admin\Analytics;
-use App\Livewire\Admin\Settings;
+
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
