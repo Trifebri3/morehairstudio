@@ -172,7 +172,8 @@ class DatabaseSeeder extends Seeder
             'bio' => 'Signature haircutting maestro with over 8 years of styling experience.',
             'specialization' => 'Classic & Modern Cuts',
             'rating' => 4.9,
-            'status' => 'active'
+            'status' => 'active',
+            'phone' => '6282247431493'
         ]);
 
         $aniUser = User::create([
@@ -191,7 +192,8 @@ class DatabaseSeeder extends Seeder
             'bio' => 'Coloring expert specializing in beautiful pastels, ombre, and keratin therapies.',
             'specialization' => 'Balayage & Coloring',
             'rating' => 4.85,
-            'status' => 'active'
+            'status' => 'active',
+            'phone' => '6282247431493'
         ]);
 
         $johnUser = User::create([
@@ -210,7 +212,8 @@ class DatabaseSeeder extends Seeder
             'bio' => 'Senior stylist trained in Tokyo and London, offering precision haircuts.',
             'specialization' => 'Avant-Garde Haircuts',
             'rating' => 4.95,
-            'status' => 'active'
+            'status' => 'active',
+            'phone' => '6282247431493'
         ]);
 
         $rinaUser = User::create([
@@ -229,7 +232,8 @@ class DatabaseSeeder extends Seeder
             'bio' => 'Scalp health practitioner and treatments specialist.',
             'specialization' => 'Luxury Hair Spa & Treat',
             'rating' => 4.80,
-            'status' => 'active'
+            'status' => 'active',
+            'phone' => '6282247431493'
         ]);
 
         // Create Schedules for each stylist (Day 1 to 6 = Mon to Sat)
