@@ -1,3 +1,6 @@
+@extends('layouts.public')
+
+@section('content')
 <div class="py-24 max-w-5xl mx-auto px-4">
     <h1 class="text-4xl font-serif font-bold gold-gradient-text mb-6">Our Elite Stylists</h1>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12">
@@ -17,3 +20,4 @@
         @endforeach
     </div>
 </div>
+@endsection

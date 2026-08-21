@@ -1,3 +1,6 @@
+@extends('layouts.public')
+
+@section('content')
 <div>
     <x-public.hero />
     <x-public.why-more />
@@ -10,3 +13,4 @@
     <x-public.contact-section />
     <x-public.review-cta />
 </div>
+@endsection
