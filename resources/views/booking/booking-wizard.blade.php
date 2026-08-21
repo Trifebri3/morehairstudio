@@ -679,7 +679,7 @@ function bookingWizard() {
             if (!this.selectedOutletId || !this.selectedServiceId || !this.selectedDate) return;
             this.loadingSlots = true;
             try {
-                const res = await fetch(`/booking/slots?outlet_id=${this.selectedOutletId}&service_id=${this.selectedServiceId}&date=${this.selectedDate}&walk_in=${this.isWalkIn}`);
+                const res = await fetch(`/booking/slots?outlet_id=${this.selectedOutletId}&service_id=${this.selectedServiceId}&date=${this.selectedDate}&walk_in=${this.isWalkIn ? 1 : 0}`);
                 const data = await res.json();
                 this.slots = data.slots || {};
             } catch (e) {
