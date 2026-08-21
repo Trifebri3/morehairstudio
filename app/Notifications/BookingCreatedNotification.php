@@ -38,7 +38,8 @@ class BookingCreatedNotification extends Notification implements ShouldQueue
                    "• *Kode Booking*: {$this->booking->booking_code}\n" .
                    "• *Layanan*: {$serviceName}\n" .
                    "• *Tanggal*: {$formattedDate}\n" .
-                   "• *Jam*: {$startTime} WIB\n\n" .
+                   "• *Jam*: {$startTime} WIB\n" .
+                   "• *Tiket Digital & QR Code*: " . route('booking.ticket', ['code' => $this->booking->booking_code]) . "\n\n" .
                    "Status booking Anda saat ini adalah menunggu konfirmasi. Terima kasih!";
 
         return [

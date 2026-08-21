@@ -35,6 +35,7 @@ class WalkInBookingNotification extends Notification implements ShouldQueue
         $message = "Halo {$this->booking->customer->name},\n\nRegistrasi Walk-In Anda di *MORE Hair Studio* berhasil!\n\n" .
                    "• *Booking ID*: {$this->booking->booking_code}\n" .
                    "• *Layanan*: {$serviceName}\n" .
+                   "• *Tiket Digital & QR Code*: " . route('booking.ticket', ['code' => $this->booking->booking_code]) . "\n\n" .
                    "• *Antrean Anda sedang diproses.* Silakan menunggu panggilan di lounge. Terima kasih!";
 
         return [

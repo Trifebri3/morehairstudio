@@ -1,4 +1,6 @@
-@component('layouts.booking')
+@extends('layouts.booking')
+
+@section('content')
     <div class="max-w-md mx-auto space-y-8 font-sans py-6">
         <!-- Success Status Box -->
         <div class="text-center space-y-3">
@@ -110,4 +112,4 @@
             </a>
         </div>
     </div>
-@endcomponent
+@endsection

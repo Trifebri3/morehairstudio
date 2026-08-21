@@ -44,7 +44,8 @@ class BookingConfirmedNotification extends Notification implements ShouldQueue
                    "• *Jam*: {$startTime} - {$endTime} WIB\n" .
                    "• *Stylist*: {$stylistName}\n" .
                    "• *Layanan*: {$serviceName}\n" .
-                   "• *Booking ID*: {$this->booking->booking_code}";
+                   "• *Booking ID*: {$this->booking->booking_code}\n" .
+                   "• *Tiket Digital & QR Code*: " . route('booking.ticket', ['code' => $this->booking->booking_code]);
 
         return [
             'to' => $to,
