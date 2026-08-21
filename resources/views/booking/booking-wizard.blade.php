@@ -90,7 +90,7 @@
                                         <img :src="'/images/outlet_' + outlet.id + '.jpg'" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=500'" :alt="outlet.name" class="w-full h-full object-cover">
                                     </div>
                                     <div class="p-5 flex-grow">
-                                        <h4 class="font-bold text-stone-855 text-xs uppercase tracking-wider x-text="outlet.name" x-text="outlet.name"></h4>
+                                        <h4 class="font-bold text-stone-800 text-xs uppercase tracking-wider" x-text="outlet.name"></h4>
                                         <span class="text-[10px] text-stone-400 block mt-1 leading-relaxed font-light">Address: <span x-text="outlet.address"></span></span>
                                     </div>
                                     <div x-show="selectedOutletId == outlet.id" class="bg-[#0A3D91] text-white text-[9px] uppercase font-extrabold tracking-widest text-center py-2">
