@@ -9,7 +9,7 @@
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/booking.css', 'resources/js/app.js'])
-    @livewireStyles
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-[#fafaf9] text-stone-900 min-h-screen flex flex-col antialiased pb-20 md:pb-0 font-sans">
     <!-- Header -->
@@ -72,7 +72,5 @@
             @yield('content')
         </div>
     </main>
-
-    @livewireScripts
 </body>
 </html>

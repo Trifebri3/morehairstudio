@@ -12,7 +12,7 @@
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/public.css', 'resources/js/app.js'])
-    @livewireStyles
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-[#fafaf9] text-stone-900 min-h-screen flex flex-col antialiased pb-20 md:pb-0 font-sans">
     <!-- Navbar -->
@@ -149,6 +149,5 @@
         </div>
     </div>
 
-    @livewireScripts
 </body>
 </html>

@@ -9,7 +9,7 @@
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/admin.css', 'resources/js/app.js'])
-    @livewireStyles
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex antialiased" x-data="{ sidebarOpen: window.innerWidth >= 1024 }">
     <!-- Mobile Sidebar Backdrop Overlay -->
@@ -184,6 +184,5 @@
         </main>
     </div>
 
-    @livewireScripts
 </body>
 </html>

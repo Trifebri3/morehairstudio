@@ -23,7 +23,7 @@
             
             <div class="w-full sm:max-w-md z-10 my-auto">
                 <div class="flex justify-center mb-8 transform hover:scale-[1.03] transition-all duration-500 filter drop-shadow-[0_4px_12px_rgba(10,61,145,0.08)]">
-                    <a href="/" wire:navigate class="flex flex-col items-center">
+                    <a href="/" class="flex flex-col items-center">
                         <x-application-logo class="h-16 w-auto object-contain" />
                     </a>
                 </div>

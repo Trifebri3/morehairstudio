@@ -24,7 +24,7 @@
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/tablet.css', 'resources/js/app.js'])
-    @livewireStyles
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 <body class="bg-stone-50 text-stone-900 min-h-screen flex flex-col antialiased select-none">
     @if(session()->has('impersonator_id'))
@@ -116,6 +116,5 @@
         }
     </script>
 
-    @livewireScripts
 </body>
 </html>
