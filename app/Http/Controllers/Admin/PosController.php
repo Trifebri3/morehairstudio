@@ -84,7 +84,7 @@ class PosController extends Controller
     {
         $booking = Booking::with(['items.service', 'customer', 'payments'])->findOrFail($id);
         
-        $totalPaid = $booking->payments->where('status', 'completed')->sum('amount');
+        $totalPaid = $booking->payments->whereIn('status', ['paid', 'completed'])->sum('amount');
         $bookingPaidOnline = $totalPaid >= $booking->net_amount;
 
         $items = [];
