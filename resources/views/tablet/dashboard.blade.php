@@ -1,3 +1,6 @@
+@extends('layouts.tablet')
+
+@section('content')
 <div class="h-full flex flex-col justify-center items-center py-10 relative">
     <div class="text-center mb-14 relative z-10">
         <h2 class="text-4xl font-bold text-stone-900 tracking-wider mb-3">Studio Operation Terminal</h2>
@@ -17,7 +20,7 @@
         <a href="{{ route('tablet.check-in') }}" class="glass-panel p-8 rounded-3xl text-center flex flex-col items-center justify-center hover:border-blue-500/50 hover:bg-stone-50 transition-all duration-300 min-h-[240px] group">
             <h3 class="text-lg font-bold text-stone-900 mb-2 tracking-wide group-hover:text-blue-600 transition duration-300">Scan & Check-In</h3>
             <p class="text-stone-500 text-xs leading-relaxed max-w-xs font-medium">
-                Scan QR Code customer atau input kode booking manual untuk verifikasi kedatangan.
+                Scan QR Code customer or input kode booking manual untuk verifikasi kedatangan.
             </p>
         </a>
 
@@ -46,3 +49,4 @@
         </a>
     </div>
 </div>
+@endsection

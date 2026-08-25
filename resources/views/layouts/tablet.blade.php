@@ -98,7 +98,7 @@
     <!-- Main Viewport -->
     <main class="flex-grow flex flex-col p-8 justify-center items-center">
         <div class="w-full max-w-5xl h-full flex flex-col">
-            {{ $slot }}
+            @yield('content')
         </div>
     </main>
 
