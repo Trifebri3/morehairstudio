@@ -1,0 +1,136 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&family=JetBrains+Mono:wght@400;500;700&family=Outfit:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    /* MORE Hair Studio 2026 Official Brand Palette */
+    --color-burnt-orange: #c9512d;   /* Primary Accent / Focal Point */
+    --color-burnt-orange-hover: #b54422;
+    --color-warm-offwhite: #eae8e5;  /* Primary Narrative / Breathing Space */
+    --color-warm-light: #f7f6f4;
+    --color-deep-cobalt: #394a8e;    /* Secondary */
+    --color-deep-rust: #922018;      /* Secondary */
+    --color-warm-ochre: #f5c544;     /* Secondary */
+    --color-bauhaus-dark: #171615;   /* Charcoal / Text */
+    --color-charcoal-muted: #4a453f;
+
+    /* Legacy mapping for backward compatibility */
+    --color-blue-50: #fcf8f6;
+    --color-blue-100: #f8eee8;
+    --color-blue-500: #c9512d;
+    --color-blue-600: #c9512d;
+    --color-blue-700: #922018;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #f7f6f4;
+    color: #171615;
+    letter-spacing: -0.01em;
+}
+
+/* Typography styles */
+h1, h2, h3, h4, h5, h6 {
+    letter-spacing: -0.02em;
+}
+
+.font-editorial {
+    font-family: 'Newsreader', 'Playfair Display', Georgia, serif;
+}
+
+.font-grotesk {
+    font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+}
+
+/* Bauhaus & Eclectic Modernism Layout Utilities */
+.blok-orange {
+    background-color: #c9512d;
+    color: #ffffff;
+}
+
+.blok-offwhite {
+    background-color: #eae8e5;
+    color: #171615;
+}
+
+.blok-cobalt {
+    background-color: #394a8e;
+    color: #ffffff;
+}
+
+.blok-dark {
+    background-color: #171615;
+    color: #eae8e5;
+}
+
+/* Glassmorphism premium panels */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(214, 211, 206, 0.7);
+}
+
+.glass-panel:hover {
+    border-color: rgba(201, 81, 45, 0.4);
+    box-shadow: 0 12px 30px -10px rgba(201, 81, 45, 0.08);
+}
+
+.brand-card {
+    background: #ffffff;
+    border: 1px solid #e7e5e1;
+    border-radius: 1.25rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brand-card:hover {
+    border-color: #c9512d;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(201, 81, 45, 0.08);
+}
+
+/* Gradients */
+.brand-gradient-text, .gold-gradient-text {
+    background: linear-gradient(135deg, #c9512d 0%, #922018 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+}
+
+.brand-gradient-bg, .gold-gradient-bg {
+    background: linear-gradient(135deg, #c9512d 0%, #b54422 100%);
+    color: #ffffff;
+}
+
+.brand-gradient-border, .gold-gradient-border {
+    border-color: #c9512d;
+}
+
+/* Editorial quote styling */
+.editorial-quote {
+    font-family: 'Newsreader', serif;
+    font-style: italic;
+    letter-spacing: -0.01em;
+}
+
+/* Custom scrollbars matching Burnt Orange */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #eae8e5;
+}
+::-webkit-scrollbar-thumb {
+    background: #d6d3ce;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #c9512d;
+}
+
+::selection {
+    background: #c9512d;
+    color: #ffffff;
+}

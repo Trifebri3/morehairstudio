@@ -1,0 +1,6 @@
+@import './app.css';
+
+/* Booking wizard steps timeline styles */
+.step-dot-active {
+    box-shadow: 0 0 10px #fbbf24;
+}
