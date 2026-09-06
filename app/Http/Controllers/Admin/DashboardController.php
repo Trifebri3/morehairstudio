@@ -29,7 +29,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $users = User::with('outlet')->get();
+        $users = User::with(['outlet', 'stylist'])->get();
 
         return view('admin.dashboard', compact(
             'totalBookings', 'totalRevenue', 'totalCustomers', 'totalOutlets', 'recentBookings', 'users'

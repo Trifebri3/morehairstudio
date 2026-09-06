@@ -15,6 +15,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Hash;
 
 class AdminPanelController extends Controller
 {
@@ -131,17 +132,24 @@ class AdminPanelController extends Controller
     {
         if (auth()->user()->role !== 'super_admin') { return redirect()->route('dashboard'); }
         $search = $request->get('search', '');
-        $stylists = Stylist::with('outlet')
-            ->where('name', 'like', '%' . $search . '%')
+        $stylists = Stylist::with(['outlet', 'user'])
+            ->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%' . $search . '%')
+                  ->orWhere('phone', 'like', '%' . $search . '%')
+                  ->orWhere('specialization', 'like', '%' . $search . '%')
+                  ->orWhereHas('user', function ($uq) use ($search) {
+                      $uq->where('email', 'like', '%' . $search . '%');
+                  });
+            })
+            ->latest()
             ->paginate(10)
             ->withQueryString();
 
         $outlets = Outlet::all();
-        $users = User::where('role', 'stylist')->get();
-        $editingStylist = $request->has('edit') ? Stylist::find($request->edit) : null;
+        $editingStylist = $request->has('edit') ? Stylist::with('user')->find($request->edit) : null;
         $isCreating = $request->has('create');
 
-        return view('admin.stylists', compact('stylists', 'search', 'outlets', 'users', 'editingStylist', 'isCreating'));
+        return view('admin.stylists', compact('stylists', 'search', 'outlets', 'editingStylist', 'isCreating'));
     }
 
     public function storeStylist(Request $request)
@@ -150,29 +158,137 @@ class AdminPanelController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|unique:stylists,slug',
             'outlet_id' => 'required|exists:outlets,id',
-            'user_id' => 'nullable|exists:users,id',
             'phone' => 'nullable|string',
-            'status' => 'required|in:active,inactive,pending_active,pending_inactive'
+            'specialization' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive,pending_active,pending_inactive',
+            'bio' => 'nullable|string|max:1000',
+            'instagram' => 'nullable|string|max:255',
+            'tiktok' => 'nullable|string|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'email' => 'required|string|email|max:255|unique:users,email',
+            'password' => 'nullable|string|min:6'
+        ], [
+            'email.unique' => 'Email akun sudah digunakan oleh pengguna lain.',
+            'photo.image' => 'File foto profil wajib berformat gambar (JPG, PNG, WEBP).',
+            'photo.max' => 'Ukuran foto profil maksimal 3MB.',
         ]);
 
-        Stylist::create($request->all());
-        return redirect()->route('admin.stylists')->with('message', 'Stylist berhasil ditambahkan.');
+        // 1. Create User login account
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password ?: 'password123'),
+            'role' => 'stylist',
+            'outlet_id' => $request->outlet_id,
+        ]);
+
+        // 2. Handle Photo Upload
+        $photoPath = null;
+        $photoUrl = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('stylists', 'public');
+            $photoUrl = '/storage/' . $photoPath;
+        }
+
+        // Clean phone
+        $phone = $request->phone;
+        if ($phone && str_starts_with($phone, '0')) {
+            $phone = '62' . substr($phone, 1);
+        }
+
+        // 3. Create Stylist profile
+        Stylist::create([
+            'user_id' => $user->id,
+            'outlet_id' => $request->outlet_id,
+            'name' => $request->name,
+            'slug' => $request->slug,
+            'specialization' => $request->specialization,
+            'phone' => $phone,
+            'status' => $request->status,
+            'bio' => $request->bio,
+            'instagram' => $request->instagram ? ltrim($request->instagram, '@') : null,
+            'tiktok' => $request->tiktok ? ltrim($request->tiktok, '@') : null,
+            'photo_path' => $photoPath,
+            'photo' => $photoUrl,
+            'rating' => 5.00,
+        ]);
+
+        return redirect()->route('admin.stylists')->with('message', 'Stylist & Akun Login berhasil dibuat.');
     }
 
     public function updateStylist(Request $request, $id)
     {
-        $stylist = Stylist::findOrFail($id);
+        $stylist = Stylist::with('user')->findOrFail($id);
+        $user = $stylist->user;
+        $userId = $user?->id;
+
         $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|unique:stylists,slug,' . $id,
             'outlet_id' => 'required|exists:outlets,id',
-            'user_id' => 'nullable|exists:users,id',
             'phone' => 'nullable|string',
-            'status' => 'required|in:active,inactive,pending_active,pending_inactive'
+            'specialization' => 'nullable|string|max:255',
+            'status' => 'required|in:active,inactive,pending_active,pending_inactive',
+            'bio' => 'nullable|string|max:1000',
+            'instagram' => 'nullable|string|max:255',
+            'tiktok' => 'nullable|string|max:255',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
+            'email' => 'required|string|email|max:255|unique:users,email,' . ($userId ?: 'NULL'),
+            'password' => 'nullable|string|min:6'
+        ], [
+            'email.unique' => 'Email akun sudah digunakan oleh pengguna lain.',
+            'photo.image' => 'File foto profil wajib berformat gambar (JPG, PNG, WEBP).',
+            'photo.max' => 'Ukuran foto profil maksimal 3MB.',
         ]);
 
-        $stylist->update($request->all());
-        return redirect()->route('admin.stylists')->with('message', 'Stylist berhasil diperbarui.');
+        // 1. Handle Photo Upload
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('stylists', 'public');
+            $stylist->photo_path = $photoPath;
+            $stylist->photo = '/storage/' . $photoPath;
+        }
+
+        // 2. Sync User Account
+        if ($user) {
+            $userData = [
+                'name' => $request->name,
+                'email' => $request->email,
+                'outlet_id' => $request->outlet_id,
+            ];
+            if ($request->filled('password')) {
+                $userData['password'] = Hash::make($request->password);
+            }
+            $user->update($userData);
+        } else {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password ?: 'password123'),
+                'role' => 'stylist',
+                'outlet_id' => $request->outlet_id,
+            ]);
+            $stylist->user_id = $user->id;
+        }
+
+        // Clean phone
+        $phone = $request->phone;
+        if ($phone && str_starts_with($phone, '0')) {
+            $phone = '62' . substr($phone, 1);
+        }
+
+        // 3. Update Stylist profile
+        $stylist->name = $request->name;
+        $stylist->slug = $request->slug;
+        $stylist->outlet_id = $request->outlet_id;
+        $stylist->phone = $phone;
+        $stylist->specialization = $request->specialization;
+        $stylist->status = $request->status;
+        $stylist->bio = $request->bio;
+        $stylist->instagram = $request->instagram ? ltrim($request->instagram, '@') : null;
+        $stylist->tiktok = $request->tiktok ? ltrim($request->tiktok, '@') : null;
+        $stylist->save();
+
+        return redirect()->route('admin.stylists')->with('message', 'Stylist & Akun Login berhasil diperbarui.');
     }
 
     public function customers(Request $request)

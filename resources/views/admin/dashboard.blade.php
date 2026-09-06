@@ -111,10 +111,28 @@
                 <tbody class="divide-y divide-stone-100 bg-white">
                     @foreach($users as $usr)
                         <tr class="hover:bg-stone-50/70 transition duration-150 text-stone-700">
-                            <td class="py-4 px-5 font-bold text-stone-800">{{ $usr->name }}</td>
+                            <td class="py-4 px-5">
+                                <div class="flex items-center space-x-3">
+                                    @if($usr->isStylist() && $usr->stylist)
+                                        <img src="{{ $usr->stylist->display_photo }}" alt="{{ $usr->name }}" class="w-8 h-8 rounded-lg object-cover border border-stone-200 shadow-sm flex-shrink-0">
+                                    @else
+                                        <div class="w-8 h-8 rounded-lg bg-stone-100 border border-stone-200 flex items-center justify-center font-extrabold text-stone-600 text-xs flex-shrink-0">
+                                            {{ substr($usr->name, 0, 1) }}
+                                        </div>
+                                    @endif
+                                    <div>
+                                        <span class="font-bold text-stone-900 block">{{ $usr->name }}</span>
+                                        @if($usr->isStylist() && $usr->stylist)
+                                            <a href="{{ route('admin.stylists', ['edit' => $usr->stylist->id]) }}" class="text-[10px] text-blue-600 hover:underline font-medium">
+                                                Profil Stylist: {{ $usr->stylist->specialization ?? 'Stylist' }} &rarr;
+                                            </a>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
                             <td class="py-4 px-5 font-mono text-stone-500">{{ $usr->email }}</td>
                             <td class="py-4 px-5">
-                                <x-ui.badge variant="{{ $usr->role === 'super_admin' ? 'success' : 'neutral' }}">
+                                <x-ui.badge variant="{{ $usr->role === 'super_admin' ? 'success' : ($usr->role === 'stylist' ? 'info' : 'neutral') }}">
                                     {{ str_replace('_', ' ', $usr->role) }}
                                 </x-ui.badge>
                             </td>

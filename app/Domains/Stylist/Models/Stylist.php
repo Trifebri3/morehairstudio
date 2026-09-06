@@ -27,11 +27,20 @@ class Stylist extends Model
 
     public function getDisplayPhotoAttribute(): string
     {
-        if ($this->photo && (str_starts_with($this->photo, 'http') || str_starts_with($this->photo, '/storage') || str_starts_with($this->photo, 'storage/'))) {
-            return str_starts_with($this->photo, 'storage/') ? '/' . $this->photo : $this->photo;
-        }
         if ($this->photo_path) {
             return '/storage/' . ltrim($this->photo_path, '/');
+        }
+        if ($this->photo) {
+            if (str_starts_with($this->photo, 'http')) {
+                return $this->photo;
+            }
+            if (str_starts_with($this->photo, 'storage/')) {
+                return '/' . $this->photo;
+            }
+            if (str_starts_with($this->photo, '/storage/')) {
+                return $this->photo;
+            }
+            return str_starts_with($this->photo, '/') ? $this->photo : '/' . $this->photo;
         }
         return 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($this->slug ?: $this->name);
     }

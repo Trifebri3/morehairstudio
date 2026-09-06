@@ -34,6 +34,11 @@ class User extends Authenticatable
         return $this->belongsTo(\App\Domains\Outlet\Models\Outlet::class);
     }
 
+    public function stylist()
+    {
+        return $this->hasOne(\App\Domains\Stylist\Models\Stylist::class);
+    }
+
     /**
      * Send the password reset notification.
      *

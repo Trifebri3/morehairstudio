@@ -21,9 +21,7 @@
             @forelse($stylists as $stylist)
                 <div class="border border-stone-200 rounded-2xl p-5 bg-white shadow-sm flex flex-col justify-between space-y-4 hover:border-[#0A3D91] transition duration-200">
                     <div class="flex items-start space-x-4">
-                        <div class="h-12 w-12 rounded-xl bg-stone-100 text-stone-500 font-extrabold text-sm flex items-center justify-center border border-stone-200 font-mono">
-                            {{ collect(explode(' ', $stylist->name))->map(fn($n) => substr($n, 0, 1))->join('') }}
-                        </div>
+                        <img src="{{ $stylist->display_photo }}" alt="{{ $stylist->name }}" class="h-12 w-12 rounded-xl object-cover border border-stone-200 shadow-sm flex-shrink-0">
                         <div>
                             <h4 class="font-bold text-stone-900 text-sm uppercase tracking-tight">{{ $stylist->name }}</h4>
                             <span class="text-[9px] text-[#0A3D91] uppercase font-extrabold tracking-wider block mt-0.5">{{ $stylist->specialization ?? 'General Stylist' }}</span>

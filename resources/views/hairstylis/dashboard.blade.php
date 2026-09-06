@@ -41,39 +41,51 @@
                 <!-- Left Sidebar: Member Profile Card & Attendance QR -->
                 <div class="lg:col-span-1 space-y-8">
                     <!-- Premium Stylist ID Card -->
-                    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0d1b3e] to-[#0A3D91] text-white p-6 shadow-xl border border-blue-900/30 flex flex-col justify-between h-[230px] group hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300">
+                    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0d1b3e] to-[#0A3D91] text-white p-6 shadow-xl border border-blue-900/30 flex flex-col justify-between min-h-[260px] group hover:shadow-2xl hover:shadow-brand-500/10 transition-all duration-300">
                         <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-2xl group-hover:bg-white/10 transition duration-500"></div>
-                        <div class="absolute right-4 bottom-4 opacity-10">
-                            <div class="w-16 h-16 bg-white grid grid-cols-4 gap-0.5 p-1 rounded">
-                                <div class="bg-black"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div>
-                                <div class="bg-white"></div><div class="bg-black"></div><div class="bg-black"></div><div class="bg-white"></div>
-                                <div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div><div class="bg-black"></div>
-                                <div class="bg-black"></div><div class="bg-black"></div><div class="bg-white"></div><div class="bg-black"></div>
+
+                        <!-- Top row: Avatar & Identity -->
+                        <div>
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-center space-x-3.5">
+                                    <img src="{{ $stylist->display_photo }}" alt="{{ $stylist->name }}" class="w-14 h-14 rounded-2xl object-cover border-2 border-white/30 shadow-md flex-shrink-0">
+                                    <div>
+                                        <span class="text-[9px] uppercase tracking-widest font-extrabold text-blue-200">Official Stylist ID</span>
+                                        <h3 class="text-base font-extrabold tracking-tight uppercase leading-tight mt-0.5">{{ $stylist->name }}</h3>
+                                        <p class="text-[10px] text-blue-200 uppercase font-semibold tracking-wider mt-0.5">{{ $stylist->specialization ?: 'Stylist' }}</p>
+                                    </div>
+                                </div>
+                                <div class="px-2.5 py-1 bg-white/10 rounded-lg backdrop-blur-md border border-white/10 text-xs font-bold text-amber-300 flex items-center space-x-1 shadow-sm">
+                                    <span>★</span>
+                                    <span>{{ number_format($stylist->rating, 1) }}</span>
+                                </div>
                             </div>
+
+                            @if($stylist->instagram || $stylist->tiktok)
+                                <div class="flex items-center gap-3 mt-3 pt-2.5 border-t border-white/10 text-[10px] text-blue-100 font-mono">
+                                    @if($stylist->instagram)
+                                        <span>IG: <strong>{{ '@' . ltrim($stylist->instagram, '@') }}</strong></span>
+                                    @endif
+                                    @if($stylist->tiktok)
+                                        <span>TT: <strong>{{ '@' . ltrim($stylist->tiktok, '@') }}</strong></span>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
 
-                        <!-- Top row -->
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <span class="text-[9px] uppercase tracking-widest font-extrabold text-blue-200">Official Stylist ID</span>
-                                <h3 class="text-lg font-extrabold tracking-tight mt-0.5 uppercase">{{ $stylist->name }}</h3>
-                                <p class="text-[10px] text-blue-200 uppercase font-semibold tracking-wider mt-0.5">{{ $stylist->specialization ?: 'Stylist' }}</p>
-                            </div>
-                            <div class="px-2.5 py-1 bg-white/10 rounded-lg backdrop-blur-md border border-white/10 text-xs font-bold text-amber-300 flex items-center space-x-1 shadow-sm">
-                                <span>★</span>
-                                <span>{{ number_format($stylist->rating, 1) }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Bottom row -->
-                        <div class="flex justify-between items-end">
+                        <!-- Bottom row: Outlet & Public Link -->
+                        <div class="pt-4 border-t border-white/10 flex justify-between items-end">
                             <div>
                                 <p class="text-[9px] uppercase tracking-wider text-blue-300 font-medium">Outlet</p>
                                 <p class="text-xs font-bold">{{ $stylist->outlet->name }}</p>
                             </div>
-                            <div class="text-right">
+                            <div class="text-right flex flex-col items-end">
                                 <p class="text-[9px] uppercase tracking-wider text-blue-300 font-medium font-mono">Profile ID</p>
                                 <p class="text-xs font-mono font-bold text-blue-100">MH-ST-{{ str_pad($stylist->id, 3, '0', STR_PAD_LEFT) }}</p>
+                                <a href="{{ url('/' . $stylist->slug) }}" target="_blank" class="mt-1 text-[10px] text-blue-200 hover:text-white underline font-semibold flex items-center gap-1">
+                                    <span>Lihat Profil Publik</span>
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -302,19 +314,43 @@
                         </div>
 
                         <!-- Profile Form -->
-                        <div class="glass-panel p-6 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-4">
-                            <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider border-b border-stone-100 pb-3">Perbarui Profil Anda</h4>
+                        <div class="glass-panel p-6 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-5">
+                            <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+                                <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider">Pengaturan Profil & Akun Anda</h4>
+                                <span class="text-[10px] text-stone-400 font-mono">Foto, Bio, Sosmed, Kredensial</span>
+                            </div>
                             
-                            <form method="POST" action="{{ route('stylist.profile.update') }}" class="space-y-4">
+                            <form method="POST" action="{{ route('stylist.profile.update') }}" enctype="multipart/form-data" class="space-y-4">
                                 @csrf
+
+                                <!-- Foto Profil Upload & Preview -->
+                                <div class="p-4 rounded-xl bg-stone-50 border border-stone-200/80 space-y-3">
+                                    <label class="block text-[10px] uppercase tracking-widest text-stone-500 font-extrabold">Foto Profil Stylist</label>
+                                    <div class="flex items-center space-x-4">
+                                        <div class="relative w-20 h-20 rounded-2xl overflow-hidden border-2 border-brand-500/30 bg-white shadow-sm flex-shrink-0">
+                                            <img id="my-photo-preview" src="{{ $stylist->display_photo }}" alt="Preview Foto Saya" class="w-full h-full object-cover">
+                                        </div>
+                                        <div class="flex-grow space-y-1.5">
+                                            <input type="file" 
+                                                   name="photo" 
+                                                   id="stylist-my-photo-input" 
+                                                   accept="image/png, image/jpeg, image/jpg, image/webp" 
+                                                   onchange="previewMyPhoto(event)"
+                                                   class="block w-full text-[11px] text-stone-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-[11px] file:font-extrabold file:bg-[#0A3D91] file:text-white hover:file:bg-blue-800 file:cursor-pointer border border-stone-200 rounded-lg bg-white p-1">
+                                            <span class="block text-[9px] text-stone-400">Format: JPG, PNG, WEBP (Maks 3MB). Foto akan muncul di profil website & booking.</span>
+                                            <x-input-error :messages="$errors->get('photo')" class="mt-0.5" />
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <x-input-label for="name" value="Nama Lengkap" class="text-stone-700 font-semibold mb-1 text-[11px]" />
+                                    <x-input-label for="name" value="Nama Lengkap Stylist" class="text-stone-700 font-semibold mb-1 text-[11px]" />
                                     <x-text-input name="name" id="name" value="{{ old('name', $stylist->name) }}" class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-brand-500 focus:ring-brand-500 shadow-sm bg-white" required />
                                     <x-input-error :messages="$errors->get('name')" class="mt-1" />
                                 </div>
 
                                 <div>
-                                    <x-input-label for="email" value="Alamat Email (Asli)" class="text-stone-700 font-semibold mb-1 text-[11px]" />
+                                    <x-input-label for="email" value="Alamat Email Akun Login" class="text-stone-700 font-semibold mb-1 text-[11px]" />
                                     <x-text-input name="email" id="email" value="{{ old('email', auth()->user()->email) }}" class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-brand-500 focus:ring-brand-500 shadow-sm bg-white" required type="email" />
                                     <x-input-error :messages="$errors->get('email')" class="mt-1" />
                                 </div>
@@ -326,24 +362,67 @@
                                 </div>
 
                                 <div>
-                                    <x-input-label for="specialization" value="Spesialisasi" class="text-stone-700 font-semibold mb-1 text-[11px]" />
-                                    <x-text-input name="specialization" id="specialization" value="{{ old('specialization', $stylist->specialization) }}" class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-brand-500 focus:ring-brand-500 shadow-sm bg-white" required placeholder="Contoh: Hair Coloring, Fade Expert" />
+                                    <x-input-label for="specialization" value="Spesialisasi / Keahlian" class="text-stone-700 font-semibold mb-1 text-[11px]" />
+                                    <x-text-input name="specialization" id="specialization" value="{{ old('specialization', $stylist->specialization) }}" class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-brand-500 focus:ring-brand-500 shadow-sm bg-white" required placeholder="Contoh: Balayage & Coloring, Fade Specialist" />
                                     <x-input-error :messages="$errors->get('specialization')" class="mt-1" />
                                 </div>
 
+                                <!-- Social Media Inputs -->
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <x-input-label for="instagram" value="Instagram (@username)" class="text-stone-700 font-semibold mb-1 text-[11px]" />
+                                        <x-text-input name="instagram" id="instagram" value="{{ old('instagram', $stylist->instagram) }}" class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-brand-500 focus:ring-brand-500 shadow-sm bg-white" placeholder="@username" />
+                                        <x-input-error :messages="$errors->get('instagram')" class="mt-1" />
+                                    </div>
+                                    <div>
+                                        <x-input-label for="tiktok" value="TikTok (@username)" class="text-stone-700 font-semibold mb-1 text-[11px]" />
+                                        <x-text-input name="tiktok" id="tiktok" value="{{ old('tiktok', $stylist->tiktok) }}" class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-brand-500 focus:ring-brand-500 shadow-sm bg-white" placeholder="@username" />
+                                        <x-input-error :messages="$errors->get('tiktok')" class="mt-1" />
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <x-input-label for="bio" value="Biografi Singkat" class="text-stone-700 font-semibold mb-1 text-[11px]" />
-                                    <textarea name="bio" id="bio" rows="3" class="block w-full text-xs border-stone-300 focus:border-brand-500 focus:ring-brand-500 rounded-xl shadow-sm px-3 py-2 bg-white">{{ old('bio', $stylist->bio) }}</textarea>
+                                    <x-input-label for="bio" value="Biografi Singkat (Bio)" class="text-stone-700 font-semibold mb-1 text-[11px]" />
+                                    <textarea name="bio" id="bio" rows="3" class="block w-full text-xs border-stone-300 focus:border-brand-500 focus:ring-brand-500 rounded-xl shadow-sm px-3 py-2 bg-white" placeholder="Ceritakan pengalaman, gaya potong favorit, atau pendekatan layanan Anda...">{{ old('bio', $stylist->bio) }}</textarea>
                                     <x-input-error :messages="$errors->get('bio')" class="mt-1" />
+                                </div>
+
+                                <!-- Password Change Section (Optional) -->
+                                <div class="p-3.5 rounded-xl bg-blue-50/50 border border-blue-100 space-y-3">
+                                    <span class="block text-[10px] uppercase tracking-wider text-blue-900 font-extrabold">Ganti Password Akun (Opsional)</span>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div>
+                                            <x-input-label for="password" value="Password Baru" class="text-stone-600 font-semibold mb-1 text-[10px]" />
+                                            <input type="password" name="password" id="password" class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-brand-500 focus:ring-brand-500 shadow-sm bg-white" placeholder="Kosongkan jika tetap">
+                                            <x-input-error :messages="$errors->get('password')" class="mt-1" />
+                                        </div>
+                                        <div>
+                                            <x-input-label for="password_confirmation" value="Ulangi Password" class="text-stone-600 font-semibold mb-1 text-[10px]" />
+                                            <input type="password" name="password_confirmation" id="password_confirmation" class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-brand-500 focus:ring-brand-500 shadow-sm bg-white" placeholder="Ulangi password baru">
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="pt-2">
                                     <x-primary-button class="w-full justify-center py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow transition duration-150 text-xs">
-                                        Simpan Perubahan
+                                        Simpan Perubahan Profil & Akun
                                     </x-primary-button>
                                 </div>
                             </form>
                         </div>
+
+                        <script>
+                            function previewMyPhoto(event) {
+                                const file = event.target.files[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = function(e) {
+                                        document.getElementById('my-photo-preview').src = e.target.result;
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            }
+                        </script>
 
                     </div>
 

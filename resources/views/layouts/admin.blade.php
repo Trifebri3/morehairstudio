@@ -119,9 +119,13 @@
         <!-- Footer profile and logout -->
         <div class="p-4 border-t border-stone-200 flex items-center justify-between">
             <div class="flex items-center space-x-3" x-show="sidebarOpen">
-                <div class="h-9 w-9 rounded bg-[#0A3D91] text-white font-extrabold flex items-center justify-center text-sm uppercase">
-                    {{ substr(auth()->user()->name, 0, 1) }}
-                </div>
+                @if(auth()->user()->isStylist() && auth()->user()->stylist)
+                    <img src="{{ auth()->user()->stylist->display_photo }}" alt="{{ auth()->user()->name }}" class="h-9 w-9 rounded-lg object-cover border border-stone-200 flex-shrink-0">
+                @else
+                    <div class="h-9 w-9 rounded bg-[#0A3D91] text-white font-extrabold flex items-center justify-center text-sm uppercase flex-shrink-0">
+                        {{ substr(auth()->user()->name, 0, 1) }}
+                    </div>
+                @endif
                 <div class="overflow-hidden">
                     <p class="text-xs font-semibold text-stone-800 truncate">{{ auth()->user()->name }}</p>
                     <p class="text-xxs text-stone-500 truncate font-mono">{{ auth()->user()->email }}</p>

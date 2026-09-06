@@ -10,6 +10,8 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DashboardController extends Controller
 {
@@ -22,8 +24,21 @@ class DashboardController extends Controller
         $stylist = Stylist::where('user_id', $user->id)->first();
 
         if (!$stylist) {
-            return view('hairstylis.dashboard', [
-                'error_unlinked' => true
+            // Auto-heal: Ensure a stylist record exists for any stylist user
+            $slug = Str::slug($user->name);
+            if (Stylist::where('slug', $slug)->exists()) {
+                $slug .= '-' . $user->id;
+            }
+            $stylist = Stylist::create([
+                'user_id' => $user->id,
+                'name' => $user->name,
+                'slug' => $slug,
+                'outlet_id' => $user->outlet_id ?? (\App\Domains\Outlet\Models\Outlet::first()->id ?? 1),
+                'specialization' => 'Haircut & Styling',
+                'status' => 'active',
+                'rating' => 5.00,
+                'phone' => '62812345678' . str_pad($user->id, 2, '0', STR_PAD_LEFT),
+                'bio' => 'Professional Hair Stylist at MORE Hair Studio.'
             ]);
         }
 
@@ -122,9 +137,17 @@ class DashboardController extends Controller
             'phone' => ['required', 'string', 'regex:/^(62|0)[0-9]{8,15}$/'],
             'specialization' => ['required', 'string', 'max:255'],
             'bio' => ['nullable', 'string', 'max:1000'],
+            'instagram' => ['nullable', 'string', 'max:255'],
+            'tiktok' => ['nullable', 'string', 'max:255'],
+            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:3072'],
+            'password' => ['nullable', 'string', 'min:6', 'confirmed'],
         ], [
             'phone.regex' => 'Nomor WhatsApp wajib menggunakan format yang valid.',
             'email.email' => 'Format email wajib valid dan menggunakan email asli.',
+            'photo.image' => 'File foto profil wajib berformat gambar (JPG, PNG, WEBP).',
+            'photo.max' => 'Ukuran foto profil maksimal 3MB.',
+            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+            'password.min' => 'Password baru minimal 6 karakter.',
         ]);
 
         $cleanedPhone = $request->phone;
@@ -132,9 +155,19 @@ class DashboardController extends Controller
             $cleanedPhone = '62' . substr($cleanedPhone, 1);
         }
 
+        // Handle Photo Upload
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('stylists', 'public');
+            $stylist->photo_path = $photoPath;
+            $stylist->photo = '/storage/' . $photoPath;
+        }
+
         // Save to User
         $user->name = $request->name;
         $user->email = $request->email;
+        if ($request->filled('password')) {
+            $user->password = Hash::make($request->password);
+        }
         if (\Schema::hasColumn('users', 'phone')) {
             $user->phone = $cleanedPhone;
         }
@@ -145,9 +178,11 @@ class DashboardController extends Controller
         $stylist->phone = $cleanedPhone;
         $stylist->specialization = $request->specialization;
         $stylist->bio = $request->bio;
+        $stylist->instagram = $request->instagram ? ltrim($request->instagram, '@') : null;
+        $stylist->tiktok = $request->tiktok ? ltrim($request->tiktok, '@') : null;
         $stylist->save();
 
-        return back()->with('message', 'Profil Anda berhasil diperbarui.');
+        return back()->with('message', 'Profil dan foto Anda berhasil diperbarui.');
     }
 
     /**
