@@ -748,7 +748,7 @@
         <!-- Selected Outlet Details Card -->
         <div class="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm text-center">
             <div class="mb-4">
-                <img src="/logo/logo.png" alt="MORE" class="h-10 mx-auto object-contain">
+                <img src="/logo/logo.png?v=3" alt="MORE" class="h-10 mx-auto object-contain">
             </div>
             
             <h3 class="text-base font-bold font-sans text-stone-900 mt-2 uppercase tracking-wider" x-text="selectedOutlet ? selectedOutlet.name : 'More Hair Studio'"></h3>

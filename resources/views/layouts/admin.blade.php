@@ -22,7 +22,7 @@
         <div class="h-20 flex items-center justify-between px-6 border-b border-stone-200">
             <div class="flex items-center space-x-2.5" x-show="sidebarOpen">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center">
-                    <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-7 w-auto object-contain">
+                    <img src="/logo/logo.png?v=3" alt="MORE Hair Studio" class="h-7 w-auto object-contain">
                 </a>
                 <span class="text-[9px] uppercase tracking-wider bg-stone-200 text-stone-700 px-2 py-0.5 rounded font-extrabold border border-stone-300">
                     {{ auth()->user()->role === 'super_admin' ? 'Super' : (auth()->user()->role === 'outlet_admin' ? 'Outlet' : 'Stylist') }}
@@ -30,7 +30,7 @@
             </div>
             <div x-show="!sidebarOpen" class="hidden lg:block">
                 <a href="{{ route('admin.dashboard') }}">
-                    <img src="/logokotak.png" alt="MORE" class="h-7 w-auto object-contain mx-auto">
+                    <img src="/logokotak.png?v=3" alt="MORE" class="h-7 w-auto object-contain mx-auto">
                 </a>
             </div>
             <button @click="sidebarOpen = !sidebarOpen" class="text-stone-500 hover:text-stone-900 transition">

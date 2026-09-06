@@ -25,7 +25,7 @@
                         <!-- Logo -->
                         <div class="flex-shrink-0 flex items-center">
                             <a href="{{ route('dashboard') }}" class="flex items-center">
-                                <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-8 w-auto object-contain">
+                                <img src="/logo/logo.png?v=3" alt="MORE Hair Studio" class="h-8 w-auto object-contain">
                             </a>
                         </div>
                     </div>

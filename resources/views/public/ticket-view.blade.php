@@ -25,7 +25,7 @@
         
         <!-- Logo Header -->
         <div class="text-center pb-5 border-b border-stone-200 space-y-2">
-            <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-8 sm:h-9 mx-auto object-contain">
+            <img src="/logo/logo.png?v=3" alt="MORE Hair Studio" class="h-8 sm:h-9 mx-auto object-contain">
             <p class="text-[10px] font-mono text-stone-400 uppercase tracking-wider">Official E-Ticket &bull; Check-In Verification</p>
         </div>
 

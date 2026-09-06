@@ -25,10 +25,10 @@
     <meta name="apple-mobile-web-app-title" content="MORE Terminal">
 
     <!-- PWA Icons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96.png">
-    <link rel="shortcut icon" href="/icons/icon-192.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png?v=3">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png?v=3">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96.png?v=3">
+    <link rel="shortcut icon" href="/icons/icon-192.png?v=3">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -62,7 +62,7 @@
         <!-- Left: Logo & Device Status -->
         <div class="flex items-center space-x-3 sm:space-x-4">
             <a href="{{ route('tablet.dashboard') }}" class="flex items-center space-x-3 group">
-                <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-8 sm:h-9 w-auto object-contain">
+                <img src="/logo/logo.png?v=3" alt="MORE Hair Studio" class="h-8 sm:h-9 w-auto object-contain">
                 <div class="flex flex-col border-l border-stone-200 pl-3">
                     <div class="flex items-center space-x-1.5">
                         <span class="text-[9px] uppercase tracking-wider bg-[#faede7] text-[#c9512d] font-extrabold px-2 py-0.5 rounded">Terminal</span>

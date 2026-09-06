@@ -20,7 +20,7 @@
                 <!-- Logo -->
                 <div class="flex-shrink-0 flex items-center space-x-3">
                     <a href="{{ route('home') }}" class="flex items-center gap-2 group">
-                        <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-10 object-contain">
+                        <img src="/logo/logo.png?v=3" alt="MORE Hair Studio" class="h-10 object-contain">
                     </a>
                 </div>
 
@@ -98,7 +98,7 @@
                 <!-- Brand Profile -->
                 <div class="space-y-4 max-w-sm">
                     <div class="h-8 flex items-center">
-                        <img src="/logo/logo-desc-white.png" alt="MORE Hair Studio" class="h-8 w-auto object-contain">
+                        <img src="/logo/logo-desc-white.png?v=3" alt="MORE Hair Studio" class="h-8 w-auto object-contain">
                     </div>
                     <p class="text-xs text-stone-400 leading-relaxed font-normal">
                         A modern grooming experience built around your style, your story, and your moment.
