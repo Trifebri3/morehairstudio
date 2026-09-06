@@ -448,17 +448,32 @@ class AdminPanelController extends Controller
             $query->whereDate('created_at', '<=', $dateTo);
         }
 
-        $allRawCustomers = $query->get();
+        $allRawCustomers = $query->with([
+            'bookings' => fn($q) => $q->where('status', 'completed')->select('id', 'customer_id', 'booking_date', 'net_amount', 'status'),
+            'posTransactions' => fn($q) => $q->where('status', 'completed')->select('id', 'customer_id', 'completed_at', 'grand_total', 'status')
+        ])->get();
 
-        // Hydrate RFM segments in collection
+        // Hydrate RFM segments in collection with zero N+1 database queries
         $customerList = $allRawCustomers->map(function ($c) {
             $rfm = \App\Domains\CRM\Services\RFMService::analyze($c);
-            $behavior = \App\Domains\CRM\Services\CRMAnalyticsService::getBehavior($c);
+            
+            // Fast retention status directly from recency without extra queries
+            $recency = $rfm['recency_days'];
+            if ($recency > 180) {
+                $retentionStatus = 'Lost';
+            } elseif ($recency > 90) {
+                $retentionStatus = 'At Risk';
+            } elseif ($recency > 45) {
+                $retentionStatus = 'Inactive';
+            } else {
+                $retentionStatus = 'Active';
+            }
+
             $c->rfm_segment = $rfm['segment'];
             $c->rfm_score = $rfm['rfm_code'];
             $c->total_spending = $rfm['total_spending'];
             $c->total_visits = $rfm['total_visits'];
-            $c->retention_status = $behavior['retention_status'];
+            $c->retention_status = $retentionStatus;
             return $c;
         });
 
@@ -629,27 +644,33 @@ class AdminPanelController extends Controller
         $totalCustomers = Customer::count();
         $averageRating = \App\Domains\Review\Models\Review::avg('rating') ?: 5.0;
 
-        // 2. Outlet breakdown (Revenue & Bookings count)
+        // 2. Outlet breakdown (Revenue & Bookings count with grouped SQL)
+        $outletRevenues = \App\Domains\Booking\Models\Booking::whereIn('status', ['completed', 'checked_in', 'in_progress'])
+            ->select('outlet_id', DB::raw('sum(net_amount) as total_rev'))
+            ->groupBy('outlet_id')
+            ->pluck('total_rev', 'outlet_id');
+
         $outletStats = Outlet::withCount('bookings')
             ->get()
-            ->map(function ($outlet) {
-                $revenue = \App\Domains\Booking\Models\Booking::where('outlet_id', $outlet->id)
-                    ->whereIn('status', ['completed', 'checked_in', 'in_progress'])
-                    ->sum('net_amount');
+            ->map(function ($outlet) use ($outletRevenues) {
                 return [
                     'name' => $outlet->name,
                     'bookings_count' => $outlet->bookings_count,
-                    'revenue' => $revenue
+                    'revenue' => (float)($outletRevenues[$outlet->id] ?? 0)
                 ];
             });
 
-        // 3. Stylist rating & bookings breakdown
+        // 3. Stylist rating & bookings breakdown with grouped SQL
+        $stylistRatings = \App\Domains\Review\Models\Review::join('bookings', 'reviews.booking_id', '=', 'bookings.id')
+            ->select('bookings.stylist_id', DB::raw('avg(reviews.rating) as avg_rating'))
+            ->whereNotNull('bookings.stylist_id')
+            ->groupBy('bookings.stylist_id')
+            ->pluck('avg_rating', 'bookings.stylist_id');
+
         $stylistStats = Stylist::withCount('bookings')
             ->get()
-            ->map(function ($stylist) {
-                $rating = \App\Domains\Review\Models\Review::whereHas('booking', function ($q) use ($stylist) {
-                    $q->where('stylist_id', $stylist->id);
-                })->avg('rating') ?: $stylist->rating;
+            ->map(function ($stylist) use ($stylistRatings) {
+                $rating = isset($stylistRatings[$stylist->id]) ? round((float)$stylistRatings[$stylist->id], 1) : $stylist->rating;
                 return [
                     'name' => $stylist->name,
                     'bookings_count' => $stylist->bookings_count,

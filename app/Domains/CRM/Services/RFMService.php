@@ -12,9 +12,17 @@ class RFMService
      */
     public static function analyze(Customer $customer): array
     {
-        // 1. Recency: days since last visit (completed booking or pos transaction)
-        $lastBooking = $customer->bookings()->where('status', 'completed')->latest('booking_date')->first();
-        $lastTx = $customer->posTransactions()->where('status', 'completed')->latest('completed_at')->first();
+        // 1. Recency & Frequency: check if relations are pre-loaded to eliminate N+1 queries
+        $completedBookings = $customer->relationLoaded('bookings')
+            ? $customer->bookings->filter(fn($b) => $b->status === 'completed')
+            : $customer->bookings()->where('status', 'completed')->get();
+
+        $completedTxs = $customer->relationLoaded('posTransactions')
+            ? $customer->posTransactions->filter(fn($tx) => $tx->status === 'completed')
+            : $customer->posTransactions()->where('status', 'completed')->get();
+
+        $lastBooking = $completedBookings->sortByDesc('booking_date')->first();
+        $lastTx = $completedTxs->sortByDesc('completed_at')->first();
 
         $lastVisitDate = null;
         if ($lastBooking && $lastTx) {
@@ -35,8 +43,8 @@ class RFMService
         else $rScore = 1;
 
         // 2. Frequency: total visits (completed bookings + POS transactions)
-        $bookingCount = $customer->bookings()->where('status', 'completed')->count();
-        $txCount = $customer->posTransactions()->where('status', 'completed')->count();
+        $bookingCount = $completedBookings->count();
+        $txCount = $completedTxs->count();
         $totalVisits = $bookingCount + $txCount;
 
         // Frequency Score (1-5, higher visits = higher score)
@@ -47,8 +55,8 @@ class RFMService
         else $fScore = 1;
 
         // 3. Monetary: total spending
-        $bookingSpend = $customer->bookings()->where('status', 'completed')->sum('net_amount');
-        $txSpend = $customer->posTransactions()->where('status', 'completed')->sum('grand_total');
+        $bookingSpend = (float)$completedBookings->sum('net_amount');
+        $txSpend = (float)$completedTxs->sum('grand_total');
         $totalSpending = $bookingSpend + $txSpend;
 
         // Monetary Score (1-5, higher spend = higher score)

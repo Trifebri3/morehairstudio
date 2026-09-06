@@ -55,17 +55,16 @@ class BookingController extends Controller
             $q->where('is_active', true);
         })->get();
 
+        // Fetch all outlet overrides in a single bulk query to eliminate loop DB calls
+        $allOverrides = DB::table('outlet_services')
+            ->get()
+            ->groupBy('service_id');
+
         $services = Service::where('is_active', true)
             ->with(['category', 'outlets'])
             ->get()
-            ->map(function ($s) {
-                // Map outlet overrides
-                $overrides = DB::table('outlet_services')
-                    ->where('service_id', $s->id)
-                    ->get()
-                    ->keyBy('outlet_id');
-                
-                $s->outlet_overrides = $overrides;
+            ->map(function ($s) use ($allOverrides) {
+                $s->outlet_overrides = $allOverrides->get($s->id, collect())->keyBy('outlet_id');
                 return $s;
             });
 

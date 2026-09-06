@@ -13,9 +13,12 @@ class CRMAnalyticsService
      */
     public static function getBehavior(Customer $customer): array
     {
-        // 1. Visit logs
-        $bookings = $customer->bookings()->where('status', 'completed')->orderBy('booking_date', 'asc')->get();
-        $posTxs = $customer->posTransactions()->where('status', 'completed')->orderBy('completed_at', 'asc')->get();
+        // 1. Visit logs (check if relations are loaded to eliminate N+1 queries)
+        $allBookings = $customer->relationLoaded('bookings') ? $customer->bookings : $customer->bookings()->get();
+        $allPosTxs = $customer->relationLoaded('posTransactions') ? $customer->posTransactions : $customer->posTransactions()->get();
+
+        $bookings = $allBookings->filter(fn($b) => $b->status === 'completed')->sortBy('booking_date')->values();
+        $posTxs = $allPosTxs->filter(fn($tx) => $tx->status === 'completed')->sortBy('completed_at')->values();
 
         $allVisits = collect();
         foreach ($bookings as $b) {
@@ -43,22 +46,22 @@ class CRMAnalyticsService
         $daysSinceLast = $lastVisit ? Carbon::now()->diffInDays($lastVisit) : 999;
 
         // 2. Spending
-        $bookingSpend = $customer->bookings()->where('status', 'completed')->sum('net_amount');
-        $txSpend = $customer->posTransactions()->where('status', 'completed')->sum('grand_total');
+        $bookingSpend = (float)$bookings->sum('net_amount');
+        $txSpend = (float)$posTxs->sum('grand_total');
         $totalSpending = $bookingSpend + $txSpend;
 
         $averageSpending = $totalVisits > 0 ? round($totalSpending / $totalVisits, 2) : 0;
 
         // Highest transaction
-        $highestBooking = $customer->bookings()->where('status', 'completed')->max('net_amount') ?: 0;
-        $highestTx = $customer->posTransactions()->where('status', 'completed')->max('grand_total') ?: 0;
+        $highestBooking = (float)$bookings->max('net_amount') ?: 0;
+        $highestTx = (float)$posTxs->max('grand_total') ?: 0;
         $highestSpending = max($highestBooking, $highestTx);
 
         // 3. Booking Stats
-        $totalBookings = $customer->bookings()->count();
-        $completedBookings = $customer->bookings()->where('status', 'completed')->count();
-        $cancelledBookings = $customer->bookings()->where('status', 'cancelled')->count();
-        $noShowBookings = $customer->bookings()->where('status', 'no_show')->count();
+        $totalBookings = $allBookings->count();
+        $completedBookings = $bookings->count();
+        $cancelledBookings = $allBookings->filter(fn($b) => $b->status === 'cancelled')->count();
+        $noShowBookings = $allBookings->filter(fn($b) => $b->status === 'no_show')->count();
 
         $completionRate = $totalBookings > 0 ? round(($completedBookings / $totalBookings) * 100) : 0;
         $cancellationRate = $totalBookings > 0 ? round(($cancelledBookings / $totalBookings) * 100) : 0;

@@ -66,60 +66,75 @@ class AvailabilityService
         $startTimeStr = ($schedule && $schedule->start_time) ? $schedule->start_time : $defaultOpen;
         $endTimeStr = ($schedule && $schedule->end_time) ? $schedule->end_time : $defaultClose;
 
-        $startTime = Carbon::createFromFormat('H:i:s', $startTimeStr);
-        $endTime = Carbon::createFromFormat('H:i:s', $endTimeStr);
-
-        $slots = [];
-        $current = $startTime->copy();
         $leadTimeHours = $outlet ? $outlet->booking_lead_time_hours : 1;
 
-        // Increment slots by service duration
-        while ($current->copy()->addMinutes($duration)->lte($endTime)) {
-            $slotStart = $current->copy();
-            $slotEnd = $current->copy()->addMinutes($duration);
+        // Pre-parse booked intervals as minute integers from midnight for lightning-fast collision check
+        $bookedIntervals = [];
+        foreach ($existingBookings as $booking) {
+            foreach ($booking->items as $item) {
+                $startParts = explode(':', $item->start_time);
+                $endParts = explode(':', $item->end_time);
+                $bStartMin = ((int)$startParts[0] * 60) + (int)($startParts[1] ?? 0);
+                $bEndMin = ((int)$endParts[0] * 60) + (int)($endParts[1] ?? 0);
+                $bookedIntervals[] = [$bStartMin, $bEndMin];
+            }
+        }
+
+        $startParts = explode(':', $startTimeStr);
+        $endParts = explode(':', $endTimeStr);
+        $startMin = ((int)$startParts[0] * 60) + (int)($startParts[1] ?? 0);
+        $endMin = ((int)$endParts[0] * 60) + (int)($endParts[1] ?? 0);
+
+        $now = Carbon::now();
+        $isToday = ($dateString === $now->toDateString());
+        $nowMin = ($now->hour * 60) + $now->minute;
+        $walkInMinLimit = $nowMin - 15;
+        $leadTimeMinLimit = $nowMin + ($leadTimeHours * 60);
+
+        $slots = [];
+
+        // Increment slots by service duration using integer minutes (nanosecond comparison)
+        for ($currMin = $startMin; $currMin + $duration <= $endMin; $currMin += $duration) {
+            $slotStartMin = $currMin;
+            $slotEndMin = $currMin + $duration;
             $isAvailable = true;
 
-            // Check if slot overlaps with existing bookings
-            if ($isAvailable) {
-                foreach ($existingBookings as $booking) {
-                    foreach ($booking->items as $item) {
-                        $bookedStart = Carbon::createFromFormat('H:i:s', $item->start_time);
-                        $bookedEnd = Carbon::createFromFormat('H:i:s', $item->end_time);
-
-                        if ($slotStart->lt($bookedEnd) && $slotEnd->gt($bookedStart)) {
-                            $isAvailable = false;
-                            break 2;
-                        }
-                    }
+            // 1. Check if slot overlaps with existing bookings
+            foreach ($bookedIntervals as [$bStart, $bEnd]) {
+                if ($slotStartMin < $bEnd && $slotEndMin > $bStart) {
+                    $isAvailable = false;
+                    break;
                 }
             }
 
-            // Check past slots and booking lead time
-            if ($isAvailable) {
-                $slotStartDateTime = Carbon::parse($dateString . ' ' . $slotStart->format('H:i:s'));
-                
+            // 2. Check past slots and booking lead time
+            if ($isAvailable && $isToday) {
                 if ($isWalkIn) {
-                    // Walk-in is immediately available at this time with 15 minutes grace
-                    if ($slotStartDateTime->lt(Carbon::now()->subMinutes(15))) {
+                    if ($slotStartMin < $walkInMinLimit) {
                         $isAvailable = false;
                     }
                 } else {
-                    // Online booking requires lead time (H-X Hours)
-                    if ($slotStartDateTime->lt(Carbon::now()->addHours($leadTimeHours))) {
+                    if ($slotStartMin < $leadTimeMinLimit) {
                         $isAvailable = false;
                     }
                 }
             }
 
             if ($isAvailable) {
+                $hStart = str_pad((string)floor($slotStartMin / 60), 2, '0', STR_PAD_LEFT);
+                $mStart = str_pad((string)($slotStartMin % 60), 2, '0', STR_PAD_LEFT);
+                $hEnd = str_pad((string)floor($slotEndMin / 60), 2, '0', STR_PAD_LEFT);
+                $mEnd = str_pad((string)($slotEndMin % 60), 2, '0', STR_PAD_LEFT);
+
+                $timeStr = "{$hStart}:{$mStart}";
+                $endTimeStrFormatted = "{$hEnd}:{$mEnd}";
+
                 $slots[] = [
-                    'time' => $slotStart->format('H:i'),
-                    'label' => $slotStart->format('H:i') . ' - ' . $slotEnd->format('H:i'),
-                    'end_time' => $slotEnd->format('H:i')
+                    'time' => $timeStr,
+                    'label' => "{$timeStr} - {$endTimeStrFormatted}",
+                    'end_time' => $endTimeStrFormatted
                 ];
             }
-
-            $current->addMinutes($duration);
         }
 
         return $slots;

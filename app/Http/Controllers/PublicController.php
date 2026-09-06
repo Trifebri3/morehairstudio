@@ -8,6 +8,8 @@ use App\Domains\Stylist\Models\Stylist;
 use App\Domains\Service\Models\Service;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Cache;
+
 class PublicController extends Controller
 {
     public function home(Request $request)
@@ -19,7 +21,7 @@ class PublicController extends Controller
             ->get();
 
         $outlets = Outlet::where('status', 'active')->get();
-        $stylists = Stylist::where('status', 'active')->get();
+        $stylists = Stylist::where('status', 'active')->with('outlet')->get();
         $services = Service::where('is_active', true)->with('category')->get();
         $categories = \App\Domains\Service\Models\ServiceCategory::whereHas('services', function ($q) {
             $q->where('is_active', true);
