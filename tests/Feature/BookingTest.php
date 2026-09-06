@@ -387,4 +387,86 @@ class BookingTest extends TestCase
 
         Carbon::setTestNow();
     }
+
+    public function test_duplicate_booking_submission_is_prevented_gracefully()
+    {
+        $outlet = Outlet::create([
+            'name' => 'MORE Bandung Anti-Dup',
+            'slug' => 'more-bandung-anti-dup',
+            'address' => 'Jl. Test No. 99',
+            'status' => 'active'
+        ]);
+
+        $category = ServiceCategory::create([
+            'name' => 'Haircut',
+            'slug' => 'haircut-dup'
+        ]);
+
+        $service = Service::create([
+            'service_category_id' => $category->id,
+            'name' => 'Signature Haircut',
+            'slug' => 'signature-haircut-dup',
+            'default_price' => 150000.00,
+            'default_duration' => 30,
+            'is_active' => true
+        ]);
+
+        OutletService::create([
+            'outlet_id' => $outlet->id,
+            'service_id' => $service->id,
+            'price' => 150000.00,
+            'duration' => 30,
+            'is_active' => true
+        ]);
+
+        $stylist = Stylist::create([
+            'outlet_id' => $outlet->id,
+            'name' => 'Stylist Safe',
+            'slug' => 'stylist-safe',
+            'status' => 'active'
+        ]);
+
+        $targetDate = Carbon::now()->addDays(2)->toDateString();
+        $targetDayOfWeek = Carbon::parse($targetDate)->dayOfWeek;
+
+        StylistSchedule::create([
+            'stylist_id' => $stylist->id,
+            'day_of_week' => $targetDayOfWeek,
+            'start_time' => '10:00:00',
+            'end_time' => '20:00:00',
+            'is_working' => true
+        ]);
+
+        $payload = [
+            'phone' => '081299998888',
+            'customer_name' => 'Customer Anti Double Click',
+            'outlet_id' => $outlet->id,
+            'service_id' => $service->id,
+            'stylist_id' => $stylist->id,
+            'booking_date' => $targetDate,
+            'booking_time' => '14:00',
+            'payment_method' => 'manual',
+            'is_walk_in' => false
+        ];
+
+        // 1. First submission
+        $response1 = $this->postJson(route('booking.confirm'), $payload);
+        $response1->assertStatus(200);
+        $response1->assertJson(['success' => true]);
+
+        $this->assertEquals(1, Booking::count());
+        $firstBooking = Booking::first();
+
+        // 2. Immediate second submission (e.g. double click)
+        $response2 = $this->postJson(route('booking.confirm'), $payload);
+        $response2->assertStatus(200);
+        $response2->assertJson([
+            'success' => true,
+            'duplicate_prevented' => true
+        ]);
+
+        // Still only 1 booking exists in the database!
+        $this->assertEquals(1, Booking::count());
+        $this->assertEquals($firstBooking->booking_token, Booking::first()->booking_token);
+    }
 }

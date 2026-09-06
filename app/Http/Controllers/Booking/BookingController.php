@@ -399,11 +399,54 @@ class BookingController extends Controller
             $isWalkIn = filter_var($request->is_walk_in, FILTER_VALIDATE_BOOLEAN);
             $bookingDate = $isWalkIn ? Carbon::today()->toDateString() : $request->booking_date;
             $bookingTime = $isWalkIn ? ($request->booking_time ?: Carbon::now()->format('H:i')) : $request->booking_time;
+            $normalizedPhone = PhoneNormalizer::normalize($request->phone);
+
+            // Idempotency / Duplicate Submission Protection:
+            // Check if identical booking was already created in the last 30 seconds for the same customer, outlet, stylist, date & time
+            $existingBooking = Booking::whereHas('customer', function ($q) use ($normalizedPhone) {
+                    $q->where('phone', $normalizedPhone);
+                })
+                ->where('outlet_id', $request->outlet_id)
+                ->where('stylist_id', $request->stylist_id)
+                ->whereDate('booking_date', $bookingDate)
+                ->where('source', $isWalkIn ? 'walk_in' : 'website')
+                ->whereNotIn('status', ['cancelled', 'expired'])
+                ->where('created_at', '>=', Carbon::now()->subSeconds(30))
+                ->latest()
+                ->first();
+
+            if ($existingBooking) {
+                $isGatewayActive = \App\Domains\CMS\Services\CmsService::get('payment_gateway_active') === 'true';
+                if ($isGatewayActive && $request->payment_method === 'midtrans') {
+                    $payment = $existingBooking->payments()->latest()->first();
+                    if ($payment && $payment->transaction_reference) {
+                        return response()->json([
+                            'success' => true,
+                            'redirect_url' => $payment->transaction_reference,
+                            'duplicate_prevented' => true
+                        ]);
+                    }
+                }
+
+                if ($isWalkIn) {
+                    return response()->json([
+                        'success' => true,
+                        'redirect_url' => route('tablet.check-in', ['status' => "Walk-In booking berhasil dibuat: {$existingBooking->booking_code}"]),
+                        'duplicate_prevented' => true
+                    ]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'redirect_url' => route('booking.success', ['token' => $existingBooking->booking_token]),
+                    'duplicate_prevented' => true
+                ]);
+            }
 
             $createBooking = new CreateBooking();
             
             $booking = $createBooking->execute([
-                'phone' => $request->phone,
+                'phone' => $normalizedPhone,
                 'customer_name' => $request->customer_name,
                 'email' => $request->email,
                 'birth_date' => $request->birth_date,

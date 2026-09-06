@@ -18,9 +18,50 @@
 @endphp
 
 <div id="booking-wizard-container" 
-     class="grid grid-cols-1 lg:grid-cols-3 gap-8 font-sans"
+     class="grid grid-cols-1 lg:grid-cols-3 gap-8 font-sans relative"
      x-data="bookingWizard()"
      x-init="init()">
+
+    <!-- Fullscreen Anti-Double-Click Processing Overlay -->
+    <div x-show="isSubmitting" 
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 backdrop-blur-none"
+         x-transition:enter-end="opacity-100 backdrop-blur-sm"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 backdrop-blur-sm"
+         x-transition:leave-end="opacity-0 backdrop-blur-none"
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm"
+         style="display: none;">
+        <div class="relative w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl border border-stone-100 text-center transform transition-all">
+            <!-- Pulsing luxury glowing ring -->
+            <div class="relative mx-auto mb-6 w-20 h-20 flex items-center justify-center">
+                <div class="absolute inset-0 rounded-full bg-[#faede7] animate-ping opacity-60"></div>
+                <div class="relative w-16 h-16 rounded-full bg-gradient-to-tr from-[#c9512d] to-[#e6754e] flex items-center justify-center shadow-lg text-white">
+                    <svg class="animate-spin w-8 h-8 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <h3 class="text-base font-bold text-stone-900 uppercase tracking-wider mb-2" 
+                x-text="submittingTitle || (isWalkIn ? 'Mendaftarkan Sesi Walk-In' : 'Mengamankan Jadwal Anda')">
+            </h3>
+            
+            <p class="text-xs text-stone-500 leading-relaxed mb-6 font-light"
+               x-text="submittingSubtitle || 'Mohon tunggu sebentar, sistem sedang memverifikasi slot dan mengonfirmasi reservasi Anda.'">
+            </p>
+
+            <!-- Progress bar animation -->
+            <div class="w-full bg-stone-100 rounded-full h-1.5 overflow-hidden">
+                <div class="bg-gradient-to-r from-[#c9512d] to-[#e6754e] h-full rounded-full animate-pulse w-full"></div>
+            </div>
+            
+            <p class="text-[10px] text-stone-400 mt-4 tracking-wide">
+                Mohon jangan menutup atau me-refresh halaman ini
+            </p>
+        </div>
+    </div>
      
     <!-- Stepper & Main Column (Left/Center) -->
     <div class="lg:col-span-2 space-y-6">
@@ -700,7 +741,17 @@
                             <div class="flex-grow">
                                 <x-ui.input placeholder="e.g. WELCOME50" x-model="promoCode" />
                             </div>
-                            <x-ui.button variant="outline" type="button" @click="applyPromo" class="h-[46px] rounded-lg">Gunakan</x-ui.button>
+                            <button type="button" 
+                                    @click="applyPromo" 
+                                    :disabled="isApplyingPromo || !promoCode"
+                                    :class="(isApplyingPromo || !promoCode) ? 'opacity-60 cursor-not-allowed' : 'hover:bg-[#faede7] cursor-pointer'"
+                                    class="h-[46px] px-5 rounded-lg border border-[#c9512d] text-[#c9512d] transition font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 flex-shrink-0">
+                                <svg x-show="isApplyingPromo" class="animate-spin h-3.5 w-3.5 text-[#c9512d]" fill="none" viewBox="0 0 24 24" style="display: none;">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span x-text="isApplyingPromo ? 'Mengecek...' : 'Gunakan'"></span>
+                            </button>
                         </div>
                         <div x-show="promoError" class="mt-2"><x-ui.alert variant="danger"><span x-text="promoError"></span></x-ui.alert></div>
                         <div x-show="promoSuccess" class="mt-2"><x-ui.alert variant="success"><span x-text="promoSuccess"></span></x-ui.alert></div>
@@ -730,12 +781,34 @@
                     @endif
 
                     <div class="pt-4 flex justify-between items-center">
-                        <button type="button" @click="prevStep" class="px-4 py-2 border border-stone-200 rounded-xl text-stone-600 hover:bg-stone-50 font-bold text-xs">Kembali</button>
+                        <button type="button" 
+                                @click="prevStep" 
+                                :disabled="isSubmitting"
+                                :class="isSubmitting ? 'opacity-40 cursor-not-allowed pointer-events-none' : 'hover:bg-stone-50 text-stone-600 cursor-pointer'"
+                                class="px-4 py-2 border border-stone-200 rounded-xl font-bold text-xs transition">
+                            Kembali
+                        </button>
                         <button type="button" 
                                 @click="confirmBooking"
-                                class="px-8 py-3.5 rounded-xl bg-[#c9512d] hover:bg-[#b74423] text-white font-bold text-xs uppercase tracking-wider shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
-                            <span x-text="isWalkIn ? 'Mulai Treatment Walk-In Sekarang' : 'Book your experience'"></span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                :disabled="isSubmitting"
+                                :class="isSubmitting ? 'opacity-85 cursor-wait pointer-events-none shadow-inner' : 'hover:bg-[#b74423] cursor-pointer hover:shadow-md hover:scale-[1.01] active:scale-[0.99]'"
+                                class="relative overflow-hidden px-8 py-3.5 rounded-xl bg-[#c9512d] text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all duration-200 flex items-center justify-center gap-2 min-w-[220px]">
+                            <!-- Subtle shimmer bar during submission -->
+                            <div x-show="isSubmitting" class="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+                            <!-- Animated spinner -->
+                            <svg x-show="isSubmitting" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" style="display: none;">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+
+                            <!-- Button text -->
+                            <span x-text="isSubmitting ? (submittingText || (isWalkIn ? 'Mendaftarkan Sesi Walk-In...' : 'Sedang Memproses Reservasi...')) : (isWalkIn ? 'Mulai Treatment Walk-In Sekarang' : 'Book your experience')"></span>
+
+                            <!-- Default arrow icon -->
+                            <svg x-show="!isSubmitting" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -962,6 +1035,13 @@ function bookingWizard() {
 
         // Payment
         paymentMethod: 'manual',
+
+        // Submission & Anti-duplicate State
+        isSubmitting: false,
+        isApplyingPromo: false,
+        submittingText: '',
+        submittingTitle: '',
+        submittingSubtitle: '',
 
         // Loaded data
         outlets: @json($outlets),
@@ -1557,7 +1637,10 @@ function bookingWizard() {
         },
 
         async applyPromo() {
-            if (!this.promoCode) return;
+            if (!this.promoCode || this.isApplyingPromo) return;
+            this.isApplyingPromo = true;
+            this.promoError = null;
+            this.promoSuccess = null;
             try {
                 const res = await fetch(`/booking/apply-promo?promo_code=${encodeURIComponent(this.promoCode)}&service_price=${this.servicePrice}`);
                 const data = await res.json();
@@ -1572,10 +1655,16 @@ function bookingWizard() {
                 }
             } catch (e) {
                 console.error(e);
+                this.promoError = 'Gagal memverifikasi kode promo. Silakan coba lagi.';
+            } finally {
+                this.isApplyingPromo = false;
             }
         },
 
         async confirmBooking() {
+            // Guard against multiple clicks / double orders
+            if (this.isSubmitting) return;
+
             if (!this.phone || this.phone.length < 9) {
                 alert('Silakan masukkan nomor telepon WhatsApp yang valid.');
                 return;
@@ -1584,6 +1673,11 @@ function bookingWizard() {
                 alert('Silakan masukkan nama lengkap.');
                 return;
             }
+
+            this.isSubmitting = true;
+            this.submittingTitle = this.isWalkIn ? 'Mendaftarkan Sesi Walk-In' : 'Mengamankan Jadwal Anda';
+            this.submittingSubtitle = 'Mohon tunggu sebentar, sistem sedang memverifikasi slot dan mengonfirmasi reservasi Anda.';
+            this.submittingText = this.isWalkIn ? 'Mendaftarkan Sesi Walk-In...' : 'Sedang Memproses Reservasi...';
 
             try {
                 const res = await fetch('/booking/confirm', {
@@ -1612,14 +1706,19 @@ function bookingWizard() {
 
                 const data = await res.json();
                 if (data.success) {
+                    this.submittingTitle = 'Reservasi Berhasil!';
+                    this.submittingSubtitle = 'Jadwal Anda telah diamankan. Mengalihkan ke rincian pesanan...';
+                    this.submittingText = 'Reservasi Berhasil! Mengalihkan...';
                     localStorage.removeItem('morehair_booking_draft');
                     window.location.href = data.redirect_url;
                 } else {
+                    this.isSubmitting = false;
                     alert(data.message || 'Gagal memproses booking. Silakan coba lagi.');
                 }
             } catch (e) {
                 console.error(e);
-                alert('Gagal menghubungi server.');
+                this.isSubmitting = false;
+                alert('Gagal menghubungi server. Silakan periksa koneksi internet Anda dan coba lagi.');
             }
         }
     };
