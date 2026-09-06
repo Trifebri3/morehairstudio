@@ -100,7 +100,6 @@ class CommunicationListener
                     <div style='text-align: center; margin: 25px 0; padding: 20px; background-color: #fafaf9; border-radius: 12px; border: 1px solid #ebebeb;'>
                         <img src='{$qrUrl}' alt='QR Code {$booking->booking_code}' style='width: 180px; height: 180px; display: inline-block; margin-bottom: 12px;' />
                         <div style='font-family: monospace; font-size: 18px; font-weight: bold; color: #111; letter-spacing: 1px;'>{$booking->booking_code}</div>
-                        <div style='font-size: 12px; color: #c9512d; font-weight: bold; margin-top: 4px;'>Passcode Check-In: {$ticket->passcode}</div>
                     </div>
 
                     <table style='width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px;'>

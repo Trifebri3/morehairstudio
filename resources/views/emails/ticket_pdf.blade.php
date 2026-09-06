@@ -173,11 +173,6 @@
         <div class="qr-section">
             <p style="font-size: 11px; font-weight: bold; margin-bottom: 15px; color: #666666; text-transform: uppercase; letter-spacing: 0.5px;">Scan QR Code untuk Verifikasi Kehadiran</p>
             <img src="{{ $qrCodeUrl }}" class="qr-code" alt="QR Verification" />
-            <br>
-            <div class="passcode-box">
-                PASSCODE: {{ $ticket->passcode }}
-            </div>
-            <p style="font-size: 9px; color: #999999; margin-top: 10px;">Gunakan Passcode di atas jika pemindai QR Code mengalami kendala.</p>
         </div>
 
         <div class="footer">

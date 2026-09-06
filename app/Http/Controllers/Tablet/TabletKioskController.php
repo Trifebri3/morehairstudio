@@ -176,11 +176,40 @@ class TabletKioskController extends Controller
                 ->first();
 
                 if (!$booking) {
-                    $errorMessage = "Booking dengan kode '{$search}' tidak ditemukan. Pastikan kode unik sudah benar.";
-                } else if ($booking->outlet_id !== $tabletOutletId) {
+                    $errorMessage = "Booking dengan kode '{$search}' tidak ditemukan. Pastikan kode reservasi sudah benar.";
+                } else {
                     // Auto-sync kiosk session to this booking's outlet so check-in can proceed seamlessly
-                    session(['tablet_outlet_id' => $booking->outlet_id]);
-                    $tabletOutletId = $booking->outlet_id;
+                    if ($booking->outlet_id !== $tabletOutletId) {
+                        session(['tablet_outlet_id' => $booking->outlet_id]);
+                        $tabletOutletId = $booking->outlet_id;
+                    }
+
+                    // Auto check-in immediately without needing to click any buttons
+                    if (in_array($booking->status, ['confirmed', 'pending'])) {
+                        try {
+                            $checkIn = new CheckInBooking();
+                            $checkIn->execute($booking, $tabletOutletId);
+
+                            $duration = $booking->service_duration_minutes ?? $booking->calculateServiceDuration();
+                            $estEnd = $booking->service_end_at ? $booking->service_end_at->format('H:i') : '-';
+
+                            return redirect()->route('tablet.check-in')
+                                ->with('success_overlay', [
+                                    'type' => 'checkin',
+                                    'message' => "Check-in berhasil! Layanan dimulai (durasi {$duration} menit, auto-selesai est. {$estEnd} WIB). Selamat datang, {$booking->customer->name}!"
+                                ]);
+                        } catch (\Exception $e) {
+                            $errorMessage = "Gagal Check-In: " . $e->getMessage();
+                        }
+                    } elseif ($booking->status === 'checked_in') {
+                        $errorMessage = "Booking {$booking->booking_code} ({$booking->customer->name}) sudah berhasil check-in sebelumnya.";
+                    } elseif ($booking->status === 'completed') {
+                        $errorMessage = "Booking {$booking->booking_code} ({$booking->customer->name}) sudah berstatus selesai (completed).";
+                    } elseif ($booking->status === 'cancelled') {
+                        $errorMessage = "Booking {$booking->booking_code} telah dibatalkan.";
+                    } elseif ($booking->status === 'expired') {
+                        $errorMessage = "Booking {$booking->booking_code} sudah kedaluwarsa/hangus.";
+                    }
                 }
             }
         }

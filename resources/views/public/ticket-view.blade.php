@@ -26,7 +26,7 @@
         <!-- Logo Header -->
         <div class="text-center pb-5 border-b border-stone-200 space-y-2">
             <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-8 sm:h-9 mx-auto object-contain">
-            <p class="text-[10px] font-mono text-stone-400 uppercase tracking-wider">Official E-Ticket &bull; Passcode Verification</p>
+            <p class="text-[10px] font-mono text-stone-400 uppercase tracking-wider">Official E-Ticket &bull; Check-In Verification</p>
         </div>
 
         <!-- Ticket Core Info -->
@@ -86,11 +86,8 @@
             </div>
 
             <div class="space-y-1">
-                <div class="font-mono text-base font-black text-stone-900 tracking-wider">
+                <div class="font-mono text-lg font-black text-stone-900 tracking-wider">
                     {{ $booking->booking_code }}
-                </div>
-                <div class="text-[11px] font-mono text-stone-500 font-bold">
-                    Passcode Tablet: <span class="text-[#c9512d] font-black">{{ $ticket->passcode }}</span>
                 </div>
             </div>
 
