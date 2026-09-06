@@ -2,6 +2,7 @@
 
 @section('title', $stylist->name . ' - ' . ($stylist->specialization ?? 'Hair Artist') . ' | MORE Hair Studio')
 @section('meta_description', 'Profil resmi Hair Artist ' . $stylist->name . ' di MORE Hair Studio Bandung. Lihat portofolio, jadwal kerja, daftar tarif, dan pesan jadwal langsung tanpa antre.')
+@section('og_image', $stylist->photo_url ? url($stylist->photo_url) : asset('images/og-more-studio.jpg'))
 
 @section('content')
 <div class="bg-[#fafaf9] min-h-screen py-10 md:py-16 font-sans text-stone-900" x-data="stylistProfilePage()">

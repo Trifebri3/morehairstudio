@@ -2,10 +2,11 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Book Experience | MORE Hair Studio</title>
+    <!-- Comprehensive SEO, Open Graph, Twitter Card & Local Schema -->
+    @include('partials.seo')
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/booking.css', 'resources/js/app.js'])

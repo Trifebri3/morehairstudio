@@ -2,13 +2,11 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'MORE Hair Studio | Premium Grooming & Lifestyle Experience')</title>
-
-    <!-- Meta SEO -->
-    <meta name="description" content="@yield('meta_description', 'Book premium haircuts, coloring, and treatments at MORE Hair Studio. Experience custom luxury rituals.')">
+    <!-- Comprehensive SEO, Open Graph, Twitter Card & Local Schema -->
+    @include('partials.seo')
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/public.css', 'resources/js/app.js'])

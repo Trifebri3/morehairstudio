@@ -2,6 +2,7 @@
 
 @section('title', $outlet->name . ' • Studio Lounge Profile | MORE Hair Studio')
 @section('meta_description', 'Profil lengkap studio lounge ' . $outlet->name . ' di Bandung. Alamat, fasilitas, master hair artist yang bertugas, dan daftar layanan reservasi.')
+@section('og_image', !empty($outlet->photo_url) ? url($outlet->photo_url) : asset('images/more_studio_interior.jpg'))
 
 @section('content')
 <div class="bg-white min-h-screen font-sans">

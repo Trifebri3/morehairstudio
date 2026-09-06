@@ -86,9 +86,12 @@ Route::get('/impersonate/stop', function () {
     return redirect()->route('dashboard');
 })->middleware(['auth'])->name('impersonate.stop');
 
+// Dynamic XML Sitemap for Search Engines (Google, Bing, etc.)
+Route::get('/sitemap.xml', [\App\Http\Controllers\PublicController::class, 'sitemap'])->name('sitemap');
+
 // Hair Artist / Stylist Direct Public Profile & Instant Booking
 Route::get('/artist/{stylistSlug}', [\App\Http\Controllers\PublicController::class, 'stylistProfile'])->name('stylist.public.profile.alias');
 Route::get('/{stylistSlug}', [\App\Http\Controllers\PublicController::class, 'stylistProfile'])
-    ->where('stylistSlug', '^(?!(admin|outlet|tablet|booking|api|dashboard|profile|password|stylist|locale|impersonate|storage|favicon\.ico|robots\.txt)).*$')
+    ->where('stylistSlug', '^(?!(admin|outlet|tablet|booking|api|dashboard|profile|password|stylist|locale|impersonate|storage|favicon\.ico|robots\.txt|sitemap\.xml)).*$')
     ->name('stylist.public.profile');
 

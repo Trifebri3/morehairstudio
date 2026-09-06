@@ -217,4 +217,105 @@ class PublicController extends Controller
             'daysMap'
         ));
     }
+
+    /**
+     * Generate dynamic XML sitemap conforming to Sitemaps.org standard
+     */
+    public function sitemap(Request $request)
+    {
+        $baseUrl = url('/');
+        $today = now()->toDateString();
+
+        $urls = [
+            [
+                'loc' => $baseUrl . '/',
+                'lastmod' => $today,
+                'changefreq' => 'daily',
+                'priority' => '1.0',
+            ],
+            [
+                'loc' => $baseUrl . '/services',
+                'lastmod' => $today,
+                'changefreq' => 'weekly',
+                'priority' => '0.9',
+            ],
+            [
+                'loc' => $baseUrl . '/stylists',
+                'lastmod' => $today,
+                'changefreq' => 'daily',
+                'priority' => '0.8',
+            ],
+            [
+                'loc' => $baseUrl . '/outlets',
+                'lastmod' => $today,
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ],
+            [
+                'loc' => $baseUrl . '/jadwal',
+                'lastmod' => $today,
+                'changefreq' => 'daily',
+                'priority' => '0.8',
+            ],
+            [
+                'loc' => $baseUrl . '/booking',
+                'lastmod' => $today,
+                'changefreq' => 'daily',
+                'priority' => '0.9',
+            ],
+            [
+                'loc' => $baseUrl . '/about',
+                'lastmod' => $today,
+                'changefreq' => 'monthly',
+                'priority' => '0.7',
+            ],
+            [
+                'loc' => $baseUrl . '/terms',
+                'lastmod' => $today,
+                'changefreq' => 'monthly',
+                'priority' => '0.5',
+            ],
+            [
+                'loc' => $baseUrl . '/privacy',
+                'lastmod' => $today,
+                'changefreq' => 'monthly',
+                'priority' => '0.5',
+            ],
+        ];
+
+        // Active Outlets
+        $outlets = Outlet::where('status', 'active')->get();
+        foreach ($outlets as $outlet) {
+            $urls[] = [
+                'loc' => route('outlets.show', $outlet->slug),
+                'lastmod' => ($outlet->updated_at ?? now())->toDateString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ];
+        }
+
+        // Active Stylists
+        $stylists = Stylist::where('status', 'active')->get();
+        foreach ($stylists as $stylist) {
+            $slug = $stylist->slug ?: \Illuminate\Support\Str::slug($stylist->name);
+            $urls[] = [
+                'loc' => url('/artist/' . $slug),
+                'lastmod' => ($stylist->updated_at ?? now())->toDateString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ];
+            $urls[] = [
+                'loc' => url('/' . $slug),
+                'lastmod' => ($stylist->updated_at ?? now())->toDateString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ];
+        }
+
+        $xml = view('public.sitemap', compact('urls'))->render();
+
+        return response($xml, 200, [
+            'Content-Type' => 'text/xml; charset=utf-8',
+        ]);
+    }
 }

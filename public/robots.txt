@@ -1,2 +1,16 @@
+# MORE Hair Studio - Search Engine Crawling Directives
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin
+Disallow: /outlet
+Disallow: /stylist
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /password
+Disallow: /impersonate
+Disallow: /api/
+
+# XML Sitemaps
+Sitemap: https://defineyoumore.com/sitemap.xml
+Sitemap: https://morehairstudio.com/sitemap.xml
+Sitemap: http://localhost:8000/sitemap.xml
