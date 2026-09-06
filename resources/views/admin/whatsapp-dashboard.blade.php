@@ -633,8 +633,8 @@
         var body = opt.getAttribute('data-body') || '';
         
         // Dynamically replace variables for current recipient
-        body = body.replace('{{customer_name}}', activeRecipientName);
-        body = body.replace('{{booking_code}}', 'DIRECT');
+        body = body.split('@{{customer_name}}').join(activeRecipientName);
+        body = body.split('@{{booking_code}}').join('DIRECT');
         document.getElementById('singleMessageTextarea').value = body;
     }
 
