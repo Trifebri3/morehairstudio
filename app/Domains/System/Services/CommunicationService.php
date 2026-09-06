@@ -60,9 +60,9 @@ class CommunicationService
     }
 
     /**
-     * Send an image file via WhatsApp.
+     * Send an image file via WhatsApp with optional caption.
      */
-    public static function sendWhatsAppImage(string $to, string $imageUrl, ?int $bookingId = null): array
+    public static function sendWhatsAppImage(string $to, string $imageUrl, ?int $bookingId = null, ?string $caption = null): array
     {
         if (!self::isWhatsAppEnabled()) {
             Log::info("WhatsApp notifications globally disabled. Target: {$to}");
@@ -70,11 +70,11 @@ class CommunicationService
         }
 
         $provider = WhatsAppManager::getActiveProvider();
-        return $provider->sendImage($to, $imageUrl, $bookingId);
+        return $provider->sendImage($to, $imageUrl, $bookingId, $caption);
     }
 
     /**
-     * Send SMTP email transaksional.
+     * Send SMTP email transaksional with database config or .env fallback.
      */
     public static function sendEmail(
         string $to,
@@ -92,12 +92,20 @@ class CommunicationService
 
         try {
             $emailConfig = EmailConfiguration::where('is_active', true)->first();
+            $providerConfig = [];
 
             if ($emailConfig) {
                 // Decrypt password
-                $password = !empty($emailConfig->password) ? Crypt::decryptString($emailConfig->password) : null;
+                $password = null;
+                if (!empty($emailConfig->password)) {
+                    try {
+                        $password = Crypt::decryptString($emailConfig->password);
+                    } catch (\Exception $e) {
+                        $password = $emailConfig->password;
+                    }
+                }
 
-                $provider = new SmtpEmailProvider([
+                $providerConfig = [
                     'host' => $emailConfig->host,
                     'port' => $emailConfig->port,
                     'username' => $emailConfig->username,
@@ -105,21 +113,33 @@ class CommunicationService
                     'encryption' => $emailConfig->encryption,
                     'from_address' => $emailConfig->from_address,
                     'from_name' => $emailConfig->from_name,
-                ]);
-
-                $success = $provider->sendEmail($to, $subject, $body, $attachmentPath, $attachmentName);
-
-                EmailLog::create([
-                    'booking_id' => $bookingId,
-                    'customer_id' => $customerId,
-                    'recipient' => $to,
-                    'subject' => $subject,
-                    'status' => $success ? 'SENT' : 'FAILED',
-                    'error_message' => $success ? null : 'Failed to send via SMTP transport'
-                ]);
-
-                return $success;
+                ];
+            } else {
+                // Fallback to .env configuration if no database SMTP configured
+                $providerConfig = [
+                    'host' => config('mail.mailers.smtp.host'),
+                    'port' => config('mail.mailers.smtp.port'),
+                    'username' => config('mail.mailers.smtp.username'),
+                    'password' => config('mail.mailers.smtp.password'),
+                    'encryption' => config('mail.mailers.smtp.encryption'),
+                    'from_address' => config('mail.from.address'),
+                    'from_name' => config('mail.from.name'),
+                ];
             }
+
+            $provider = new SmtpEmailProvider($providerConfig);
+            $success = $provider->sendEmail($to, $subject, $body, $attachmentPath, $attachmentName);
+
+            EmailLog::create([
+                'booking_id' => $bookingId,
+                'customer_id' => $customerId,
+                'recipient' => $to,
+                'subject' => $subject,
+                'status' => $success ? 'SENT' : 'FAILED',
+                'error_message' => $success ? null : 'Failed to send via SMTP transport'
+            ]);
+
+            return $success;
         } catch (\Exception $e) {
             Log::error("SMTP Service error: " . $e->getMessage());
             EmailLog::create([

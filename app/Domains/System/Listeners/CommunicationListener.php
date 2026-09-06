@@ -29,23 +29,21 @@ class CommunicationListener
         $this->processAutomations('BOOKING_CREATED', $booking, $ticket);
         $this->notifyStylist($booking);
 
-        // Deliver QR Code image & PDF ticket immediately on booking creation
+        // Deliver QR Code image & PDF ticket immediately on booking creation if not handled by automation
         if (CommunicationService::isWhatsAppEnabled() && $booking->customer) {
-            if (!empty($ticket->qr_code_path)) {
-                $qrUrl = asset($ticket->qr_code_path);
+            $hasQrAutomation = DB::table('whatsapp_automations')
+                ->where('event_type', 'BOOKING_CREATED')
+                ->where('is_active', true)
+                ->where('include_qr', true)
+                ->exists();
+
+            if (!$hasQrAutomation) {
+                $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($booking->booking_code);
                 CommunicationService::sendWhatsAppImage(
                     $booking->customer->phone,
                     $qrUrl,
-                    $booking->id
-                );
-            }
-            if (!empty($ticket->pdf_path)) {
-                $pdfUrl = asset($ticket->pdf_path);
-                CommunicationService::sendWhatsAppDocument(
-                    $booking->customer->phone,
-                    $pdfUrl,
-                    "Ticket-{$booking->booking_code}.pdf",
-                    $booking->id
+                    $booking->id,
+                    "QR Code Check-In Reservasi {$booking->booking_code} - MORE Hair Studio"
                 );
             }
         }
@@ -64,52 +62,79 @@ class CommunicationListener
         // Notify stylist
         $this->notifyStylist($booking);
 
-        // 3. Deliver PDF ticket and QR Code if enabled
+        // 3. Deliver QR Code if not already dispatched by automations
         if (CommunicationService::isWhatsAppEnabled() && $booking->customer) {
-            if (!empty($ticket->qr_code_path)) {
-                $qrUrl = asset($ticket->qr_code_path);
+            $hasQrAutomation = DB::table('whatsapp_automations')
+                ->where('event_type', 'BOOKING_CONFIRMED')
+                ->where('is_active', true)
+                ->where('include_qr', true)
+                ->exists();
+
+            if (!$hasQrAutomation) {
+                $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($booking->booking_code);
                 CommunicationService::sendWhatsAppImage(
                     $booking->customer->phone,
                     $qrUrl,
-                    $booking->id
-                );
-            }
-            if (!empty($ticket->pdf_path)) {
-                $pdfUrl = asset($ticket->pdf_path);
-                CommunicationService::sendWhatsAppDocument(
-                    $booking->customer->phone,
-                    $pdfUrl,
-                    "Ticket-{$booking->booking_code}.pdf",
-                    $booking->id
+                    $booking->id,
+                    "QR Code Check-In Reservasi {$booking->booking_code} - MORE Hair Studio"
                 );
             }
         }
 
-        if (CommunicationService::isEmailEnabled() && !empty($booking->customer->email) && !empty($ticket->pdf_path)) {
+        if (CommunicationService::isEmailEnabled() && !empty($booking->customer->email)) {
             $bookingDate = $booking->booking_date->format('d M Y');
-            $subject = "Konfirmasi Tiket Reservasi - More Hair Studio";
+            $subject = "Konfirmasi Tiket & QR Reservasi {$booking->booking_code} - MORE Hair Studio";
+            $qrUrl = !empty($ticket->qr_code_path) ? asset($ticket->qr_code_path) : "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($booking->booking_code);
+            $ticketUrl = url("/booking/ticket/{$booking->booking_code}");
+
             $emailBody = "
-                <div style='font-family: Arial, sans-serif; padding: 20px; color: #333;'>
-                    <h2 style='color: #0A3D91;'>MORE HAIR STUDIO</h2>
+                <div style='font-family: Arial, sans-serif; padding: 25px; color: #222; max-width: 580px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 16px; background: #ffffff;'>
+                    <div style='text-align: center; margin-bottom: 20px;'>
+                        <h2 style='color: #c9512d; margin: 0; letter-spacing: 1px;'>MORE HAIR STUDIO</h2>
+                        <p style='color: #888; font-size: 11px; text-transform: uppercase; margin-top: 4px;'>Urban Barbershop & Creative Ecosystem</p>
+                    </div>
+
                     <p>Halo <strong>{$booking->customer->name}</strong>,</p>
-                    <p>Pemesanan Anda telah berhasil dikonfirmasi. Berikut rincian reservasi Anda:</p>
-                    <table style='width: 100%; border-collapse: collapse; margin: 15px 0;'>
-                        <tr><td style='padding: 5px 0; font-weight: bold;'>Kode Booking:</td><td>{$booking->booking_code}</td></tr>
-                        <tr><td style='padding: 5px 0; font-weight: bold;'>Outlet:</td><td>{$booking->outlet->name}</td></tr>
-                        <tr><td style='padding: 5px 0; font-weight: bold;'>Tanggal:</td><td>{$bookingDate}</td></tr>
-                        <tr><td style='padding: 5px 0; font-weight: bold;'>Passcode Tiket:</td><td style='font-family: monospace; font-weight: bold;'>{$ticket->passcode}</td></tr>
+                    <p>Pemesanan reservasi Anda telah berhasil dikonfirmasi. Berikut adalah Tiket & QR Code resmi Anda:</p>
+
+                    <div style='text-align: center; margin: 25px 0; padding: 20px; background-color: #fafaf9; border-radius: 12px; border: 1px solid #ebebeb;'>
+                        <img src='{$qrUrl}' alt='QR Code {$booking->booking_code}' style='width: 180px; height: 180px; display: inline-block; margin-bottom: 12px;' />
+                        <div style='font-family: monospace; font-size: 18px; font-weight: bold; color: #111; letter-spacing: 1px;'>{$booking->booking_code}</div>
+                        <div style='font-size: 12px; color: #c9512d; font-weight: bold; margin-top: 4px;'>Passcode Check-In: {$ticket->passcode}</div>
+                    </div>
+
+                    <table style='width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px;'>
+                        <tr style='border-bottom: 1px solid #f0f0f0;'><td style='padding: 8px 0; color: #666;'>Studio Lounge:</td><td style='padding: 8px 0; font-weight: bold; text-align: right;'>{$booking->outlet->name}</td></tr>
+                        <tr style='border-bottom: 1px solid #f0f0f0;'><td style='padding: 8px 0; color: #666;'>Tanggal & Waktu:</td><td style='padding: 8px 0; font-weight: bold; text-align: right;'>{$bookingDate}</td></tr>
+                        <tr style='border-bottom: 1px solid #f0f0f0;'><td style='padding: 8px 0; color: #666;'>Hair Artist:</td><td style='padding: 8px 0; font-weight: bold; text-align: right;'>" . ($booking->stylist->name ?? '-') . "</td></tr>
                     </table>
-                    <p>Detail tiket digital resmi Anda telah kami lampirkan dalam berkas PDF di email ini.</p>
-                    <br>
-                    <p style='font-size: 11px; color: #999;'>Ini adalah email otomatis. Mohon tidak membalas email ini.</p>
+
+                    <div style='text-align: center; margin: 25px 0;'>
+                        <a href='{$ticketUrl}' style='display: inline-block; padding: 12px 24px; background-color: #c9512d; color: #ffffff; text-decoration: none; font-weight: bold; font-size: 12px; text-transform: uppercase; border-radius: 8px;'>Lihat E-Ticket Digital</a>
+                    </div>
+
+                    <p style='font-size: 11px; color: #999; text-align: center; margin-top: 20px; border-top: 1px solid #f0f0f0; padding-top: 15px;'>Tunjukkan QR Code ini di scanner tablet studio MORE atau sebutkan Kode Booking saat kedatangan.</p>
                 </div>
             ";
+
+            $attachPath = null;
+            if (!empty($ticket->pdf_path)) {
+                $checkPath = public_path($ticket->pdf_path);
+                if (file_exists($checkPath)) {
+                    $attachPath = $checkPath;
+                } else {
+                    $altPath = storage_path('app/public/' . str_replace('/storage/', '', $ticket->pdf_path));
+                    if (file_exists($altPath)) {
+                        $attachPath = $altPath;
+                    }
+                }
+            }
 
             CommunicationService::sendEmail(
                 $booking->customer->email,
                 $subject,
                 $emailBody,
-                public_path($ticket->pdf_path),
+                $attachPath,
                 "Ticket-{$booking->booking_code}.pdf",
                 $booking->id,
                 $booking->customer_id
@@ -189,6 +214,18 @@ class CommunicationListener
                     continue;
                 }
 
+                // Determine recipient phone
+                $phone = null;
+                if ($auto->recipient === 'stylist') {
+                    $phone = $booking->stylist->phone ?? null;
+                } else {
+                    $phone = $booking->customer->phone ?? null;
+                }
+
+                if (!$phone) {
+                    continue;
+                }
+
                 // Load template
                 $template = DB::table('whatsapp_templates')
                     ->where('template_name', $auto->template_name)
@@ -198,14 +235,25 @@ class CommunicationListener
                 if ($template) {
                     $bodyText = $this->resolveMessageVariables($template->body, $booking, $ticket);
                     
-                    // Dispatch text message
-                    CommunicationService::sendWhatsApp($booking->customer->phone, $bodyText, $booking->id);
+                    // If automation has include_qr enabled, send QR code image with caption
+                    if (!empty($auto->include_qr)) {
+                        $qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($booking->booking_code);
+                        $imgRes = CommunicationService::sendWhatsAppImage($phone, $qrUrl, $booking->id, $bodyText);
+
+                        // If image sending failed, fallback to plain text message
+                        if (!($imgRes['success'] ?? false)) {
+                            CommunicationService::sendWhatsApp($phone, $bodyText, $booking->id);
+                        }
+                    } else {
+                        // Dispatch text message
+                        CommunicationService::sendWhatsApp($phone, $bodyText, $booking->id);
+                    }
 
                     // Dispatch attachment file if configured in template
                     if (!empty($template->file_path)) {
                         $fileUrl = asset($template->file_path);
                         CommunicationService::sendWhatsAppDocument(
-                            $booking->customer->phone,
+                            $phone,
                             $fileUrl,
                             basename($template->file_path),
                             $booking->id
@@ -232,7 +280,7 @@ class CommunicationListener
         $outletName = $booking->outlet->name ?? 'More Hair Studio';
         $barberName = $booking->stylist->name ?? 'Barber';
         $bookingCode = $booking->booking_code;
-        $ticketUrl = $ticket ? url("/booking/ticket/{$ticket->ticket_code}") : '';
+        $ticketUrl = url("/booking/ticket/{$bookingCode}");
         $passcode = $ticket->passcode ?? '';
 
         $replacements = [

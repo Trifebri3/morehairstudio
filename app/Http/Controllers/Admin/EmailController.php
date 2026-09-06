@@ -139,4 +139,39 @@ class EmailController extends Controller
         EmailTemplate::destroy($id);
         return redirect()->route('admin.email', ['tab' => 'templates'])->with('message', 'Template Email berhasil dihapus.');
     }
+
+    public function sendTestEmail(Request $request)
+    {
+        $request->validate([
+            'test_email' => 'required|email'
+        ]);
+
+        $to = $request->test_email;
+        $subject = "Tes Koneksi Email SMTP - MORE Hair Studio";
+        $body = "
+            <div style='font-family: Arial, sans-serif; padding: 25px; color: #222; max-width: 540px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 12px; background: #fff;'>
+                <h2 style='color: #c9512d; margin-top: 0;'>MORE HAIR STUDIO</h2>
+                <p>Halo,</p>
+                <p>Ini adalah email uji coba (test email) dari sistem reservasi <strong>MORE Hair Studio</strong>.</p>
+                <div style='padding: 15px; background-color: #f7f7f7; border-radius: 8px; margin: 15px 0; font-family: monospace; font-size: 12px;'>
+                    Status: SMTP Berhasil Terhubung & Terkirim<br>
+                    Waktu Server: " . now()->format('d M Y H:i:s') . "<br>
+                    Penerima: {$to}
+                </div>
+                <p style='font-size: 11px; color: #888;'>Email ini dikirim secara otomatis untuk memvalidasi konfigurasi server email.</p>
+            </div>
+        ";
+
+        $success = \App\Domains\System\Services\CommunicationService::sendEmail(
+            $to,
+            $subject,
+            $body
+        );
+
+        if ($success) {
+            return redirect()->route('admin.email', ['tab' => 'settings'])->with('message', "Test email berhasil dikirim ke {$to}!");
+        } else {
+            return redirect()->route('admin.email', ['tab' => 'settings'])->with('error', "Gagal mengirim test email ke {$to}. Periksa log atau kredensial SMTP.");
+        }
+    }
 }

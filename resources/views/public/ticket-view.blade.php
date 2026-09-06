@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Ticket Digital - More Hair Studio 2026</title>
+    @php
+        $qrUrl = !empty($ticket->qr_code_path) ? asset($ticket->qr_code_path) : 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($booking->booking_code);
+    @endphp
+    <!-- OpenGraph for WhatsApp Link Sharing -->
+    <meta property="og:title" content="Tiket & QR Code {{ $booking->booking_code }} - MORE Hair Studio">
+    <meta property="og:description" content="E-Ticket resmi reservasi {{ $booking->customer?->name }} di MORE Hair Studio. Tunjukkan QR Code ini pada saat check-in.">
+    <meta property="og:image" content="{{ $qrUrl }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:type" content="website">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -66,14 +75,28 @@
             </div>
         </div>
 
-        <!-- Verification Passcode -->
-        <div class="border border-stone-200 p-5 rounded-2xl text-center space-y-3 bg-[#faede7]/30">
-            <span class="block text-[10px] font-mono font-bold uppercase text-[#c9512d] tracking-wider">Passcode Check-In Tablet</span>
-            <div class="inline-block px-6 py-2.5 bg-white border border-[#c9512d]/40 font-mono text-xl font-black tracking-widest text-[#c9512d] rounded-xl shadow-2xs">
-                {{ $ticket->passcode }}
+        <!-- QR Code Ticket Section -->
+        @php
+            $qrUrl = !empty($ticket->qr_code_path) ? asset($ticket->qr_code_path) : 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=' . urlencode($booking->booking_code);
+        @endphp
+        <div class="border border-stone-200 p-6 rounded-2xl text-center space-y-4 bg-stone-50/70">
+            <span class="block text-[10px] font-mono font-bold uppercase text-[#c9512d] tracking-widest">QR Code Check-In Studio</span>
+            
+            <div class="inline-block p-3 bg-white border border-stone-200 rounded-2xl shadow-sm">
+                <img src="{{ $qrUrl }}" alt="QR Code {{ $booking->booking_code }}" class="w-48 h-48 mx-auto object-contain">
             </div>
-            <p class="text-[10px] text-stone-500 leading-relaxed max-w-xs mx-auto font-light">
-                Tunjukkan halaman ini atau masukkan 5 digit passcode di atas pada tablet kiosk studio saat tiba di lokasi.
+
+            <div class="space-y-1">
+                <div class="font-mono text-base font-black text-stone-900 tracking-wider">
+                    {{ $booking->booking_code }}
+                </div>
+                <div class="text-[11px] font-mono text-stone-500 font-bold">
+                    Passcode Tablet: <span class="text-[#c9512d] font-black">{{ $ticket->passcode }}</span>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-stone-500 leading-relaxed max-w-xs mx-auto font-normal">
+                Arahkan QR Code ini ke kamera tablet kiosk studio MORE saat Anda tiba di lokasi, atau sebutkan / ketik Kode Booking di atas.
             </p>
         </div>
 

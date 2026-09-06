@@ -75,4 +75,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/email/config', [\App\Http\Controllers\Admin\EmailController::class, 'saveConfig'])->name('email.config');
     Route::post('/email/template', [\App\Http\Controllers\Admin\EmailController::class, 'createTemplate'])->name('email.template');
     Route::delete('/email/template/{id}', [\App\Http\Controllers\Admin\EmailController::class, 'deleteTemplate'])->name('email.delete-template');
+    Route::post('/email/test', [\App\Http\Controllers\Admin\EmailController::class, 'sendTestEmail'])->name('email.test');
 });

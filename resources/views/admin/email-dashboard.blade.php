@@ -130,6 +130,19 @@
             </div>
         </form>
 
+        <!-- Test Email Box -->
+        <form method="POST" action="{{ route('admin.email.test') }}" class="bg-white p-5 rounded-2xl border border-stone-150 space-y-3 max-w-xl">
+            @csrf
+            <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Uji Coba Kirim Email (Test Email)</h3>
+            <p class="text-[11px] text-stone-500">Kirim email percobaan untuk memverifikasi apakah server SMTP aktif dan berhasil mengirimkan pesan.</p>
+            <div class="flex gap-2">
+                <input type="email" name="test_email" value="{{ auth()->user()->email ?? '' }}" placeholder="email.anda@domain.com" required class="flex-1 text-xs rounded-xl border-stone-200 bg-stone-50/50 h-8 px-3 text-stone-750 focus:border-[#0A3D91] transition" />
+                <button type="submit" class="px-4 h-8 bg-[#c9512d] hover:bg-[#a03b1e] text-white rounded-xl text-xxs font-bold uppercase tracking-wider transition flex-shrink-0 cursor-pointer">
+                    Kirim Tes
+                </button>
+            </div>
+        </form>
+
     @elseif($activeTab === 'templates')
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Create Template -->
@@ -150,7 +163,10 @@
                     </div>
                     <div>
                         <label class="block text-[9px] uppercase font-bold text-stone-400 mb-1">Body HTML</label>
-                        <textarea name="body" rows="5" placeholder="<p>Halo @{{customer_name}}, reservasi anda terkonfirmasi.</p>" required class="w-full text-xs p-3 rounded-xl border-stone-200 bg-stone-50/50 text-stone-750 focus:border-[#0A3D91] transition">{{ old('body', '<p>Halo {{customer_name}}, reservasi anda terkonfirmasi.</p>') }}</textarea>
+                        @php
+                            $sampleEmailBody = '<p>Halo {{customer_name}}, reservasi anda terkonfirmasi.</p>';
+                        @endphp
+                        <textarea name="body" rows="5" placeholder="<p>Halo @{{customer_name}}, reservasi anda terkonfirmasi.</p>" required class="w-full text-xs p-3 rounded-xl border-stone-200 bg-stone-50/50 text-stone-750 focus:border-[#0A3D91] transition">{{ old('body', $sampleEmailBody) }}</textarea>
                         <x-input-error :messages="$errors->get('body')" class="mt-1" />
                     </div>
                 </div>

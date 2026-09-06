@@ -25,9 +25,9 @@ interface WhatsAppProviderInterface
     public function sendDocument(string $to, string $documentUrl, string $fileName, ?int $bookingId = null): array;
 
     /**
-     * Send a simple image.
+     * Send a simple image or image with caption.
      */
-    public function sendImage(string $to, string $imageUrl, ?int $bookingId = null): array;
+    public function sendImage(string $to, string $imageUrl, ?int $bookingId = null, ?string $caption = null): array;
 
     /**
      * Send a generic file.

@@ -137,8 +137,13 @@ class TabletKioskController extends Controller
                     }
                 }
             } else {
-                // Lookup by booking code or token
-                // Support multiple formats: pure 5-digit code, MOR- prefix, or MORE- prefix
+                // If the QR scanner read a URL (e.g. https://domain.com/booking/ticket/MORE-260908-VBA0B or .../TKT-...)
+                if (str_contains($search, '/')) {
+                    $urlParts = explode('/', rtrim($search, '/'));
+                    $search = strtoupper(trim(end($urlParts)));
+                }
+
+                // Lookup by booking code, token, ticket code, or passcode
                 $candidates = [$search];
                 
                 // If pure unique code (no hyphens)
@@ -156,21 +161,26 @@ class TabletKioskController extends Controller
 
                 $booking = Booking::where(function ($q) use ($candidates, $search) {
                     $q->whereIn('booking_code', $candidates)
-                      ->orWhere('booking_token', $search);
+                      ->orWhere('booking_token', $search)
+                      ->orWhereHas('ticket', function ($tq) use ($search) {
+                          $tq->where('ticket_code', $search)
+                             ->orWhere('passcode', $search);
+                      });
                     
                     // Suffix fallback: if user typed just the 5 letters
                     if (strlen($search) <= 7 && !str_contains($search, '-')) {
                         $q->orWhere('booking_code', 'like', "%-{$search}");
                     }
                 })
-                ->with(['customer', 'outlet', 'stylist', 'items.service'])
+                ->with(['customer', 'outlet', 'stylist', 'items.service', 'ticket'])
                 ->first();
 
                 if (!$booking) {
                     $errorMessage = "Booking dengan kode '{$search}' tidak ditemukan. Pastikan kode unik sudah benar.";
                 } else if ($booking->outlet_id !== $tabletOutletId) {
-                    $errorMessage = "Booking ini terdaftar untuk outlet: {$booking->outlet->name}. Silakan check-in di outlet tersebut.";
-                    $booking = null;
+                    // Auto-sync kiosk session to this booking's outlet so check-in can proceed seamlessly
+                    session(['tablet_outlet_id' => $booking->outlet_id]);
+                    $tabletOutletId = $booking->outlet_id;
                 }
             }
         }

@@ -19,25 +19,32 @@ class TicketGeneratorService
         $ticket = BookingTicket::firstOrCreate([
             'booking_id' => $booking->id
         ], [
-            'ticket_code' => 'TKT-' . strtoupper(Str::random(10)),
+            'ticket_code' => $booking->booking_code,
             'passcode' => str_pad(rand(100000, 999999), 6, '0', STR_PAD_LEFT),
         ]);
+
+        // Ensure ticket_code matches booking_code
+        if ($ticket->ticket_code !== $booking->booking_code) {
+            $ticket->update(['ticket_code' => $booking->booking_code]);
+        }
 
         // Ensure folders exist
         if (!Storage::disk('public')->exists('tickets')) {
             Storage::disk('public')->makeDirectory('tickets');
         }
 
-        // 2. Generate local QR Code if missing
-        if (empty($ticket->qr_code_path)) {
-            $verificationUrl = url("/booking/ticket/{$ticket->ticket_code}");
-            $qrApiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=" . urlencode($verificationUrl);
+        // 2. Generate local QR Code encoding the Booking Code
+        $cleanBookingCode = trim($booking->booking_code);
+        $qrFilename = "tickets/qr_{$cleanBookingCode}.png";
+        $localExists = Storage::disk('public')->exists($qrFilename);
+
+        if (!$localExists || empty($ticket->qr_code_path)) {
+            $qrApiUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($cleanBookingCode);
 
             try {
                 // Fetch and save QR Code locally
                 $qrContent = @file_get_contents($qrApiUrl);
                 if ($qrContent) {
-                    $qrFilename = "tickets/qr_{$ticket->id}.png";
                     Storage::disk('public')->put($qrFilename, $qrContent);
                     $ticket->update(['qr_code_path' => '/storage/' . $qrFilename]);
                 } else {

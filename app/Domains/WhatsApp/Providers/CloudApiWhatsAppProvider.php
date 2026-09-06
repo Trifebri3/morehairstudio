@@ -248,7 +248,7 @@ class CloudApiWhatsAppProvider implements WhatsAppProviderInterface
         }
     }
 
-    public function sendImage(string $to, string $imageUrl, ?int $bookingId = null): array
+    public function sendImage(string $to, string $imageUrl, ?int $bookingId = null, ?string $caption = null): array
     {
         return $this->sendMedia($to, $imageUrl, 'image', $bookingId);
     }

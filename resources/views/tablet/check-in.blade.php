@@ -11,38 +11,27 @@
             </p>
         </div>
 
-        <!-- enlarged pulsing scanner frame with active HTML5 webcam -->
-        <div class="my-6 relative w-80 h-80 border-2 border-stone-250 bg-stone-50 flex flex-col items-center justify-center rounded-2xl overflow-hidden"
-             x-data="{ hasWebcam: false, initWebcam() {
-                 navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-                     .then(stream => {
-                         this.$refs.webcam.srcObject = stream;
-                         this.hasWebcam = true;
-                     })
-                     .catch(err => {
-                         console.warn('Webcam access not allowed or camera is unavailable:', err);
-                     });
-             } }"
-             x-init="initWebcam()">
+        <!-- Active HTML5 QR Scanner frame -->
+        <div class="my-4 relative w-80 h-80 border-2 border-stone-250 bg-stone-900 flex flex-col items-center justify-center rounded-2xl overflow-hidden shadow-inner" id="scanner-container">
             <!-- scanner corner guides -->
-            <div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-[#c9512d] z-10"></div>
-            <div class="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-[#c9512d] z-10"></div>
-            <div class="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-[#c9512d] z-10"></div>
-            <div class="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-[#c9512d] z-10"></div>
+            <div class="absolute top-3 left-3 w-5 h-5 border-t-2 border-l-2 border-[#c9512d] z-20 pointer-events-none"></div>
+            <div class="absolute top-3 right-3 w-5 h-5 border-t-2 border-r-2 border-[#c9512d] z-20 pointer-events-none"></div>
+            <div class="absolute bottom-3 left-3 w-5 h-5 border-b-2 border-l-2 border-[#c9512d] z-20 pointer-events-none"></div>
+            <div class="absolute bottom-3 right-3 w-5 h-5 border-b-2 border-r-2 border-[#c9512d] z-20 pointer-events-none"></div>
 
             <!-- Glowing laser scanning line -->
-            <div class="absolute w-72 h-0.5 bg-[#c9512d]/70 shadow-md shadow-[#c9512d]/80 top-0 left-4 animate-[bounce_3s_infinite] pointer-events-none z-10"></div>
+            <div class="absolute w-72 h-0.5 bg-[#c9512d] shadow-lg shadow-[#c9512d] top-0 left-4 animate-[scannerBeam_2.5s_ease-in-out_infinite] pointer-events-none z-20"></div>
 
-            <!-- Live Video Element -->
-            <video x-ref="webcam" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover" x-show="hasWebcam"></video>
+            <!-- Scanner Video Container -->
+            <div id="qr-reader" class="w-full h-full object-cover"></div>
 
-            <!-- Fallback text if webcam is disabled/unavailable -->
-            <div x-show="!hasWebcam" class="flex flex-col items-center justify-center z-10 px-4">
-                <span class="text-stone-400 text-xxs font-bold uppercase tracking-wider text-center">Camera feed loading / denied</span>
+            <!-- Overlay Status / Scan Result Badge -->
+            <div id="scanner-status" class="absolute bottom-3 z-30 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-mono font-bold text-white border border-white/20">
+                Memulai Kamera...
             </div>
         </div>
 
-        <div class="w-full mt-6">
+        <div class="w-full mt-2">
             <a href="{{ route('tablet.walk-in') }}" 
                class="w-full py-3.5 px-6 rounded-2xl bg-[#c9512d] hover:bg-[#a03b1e] text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all duration-300 flex items-center justify-center space-x-2">
                 <span>Mulai Walk-In Booking Baru</span>
@@ -290,7 +279,144 @@
     @endif
 </div>
 
+<!-- Include HTML5-QRCode Library -->
+<script src="{{ asset('js/html5-qrcode.min.js') }}"></script>
+
 <script>
+// Audio feedback using Web Audio API
+function playSuccessBeep() {
+    try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContext) return;
+        const ctx = new AudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(784, ctx.currentTime); // G5
+        osc.frequency.setValueAtTime(1046.5, ctx.currentTime + 0.1); // C6
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.35);
+    } catch(e) {}
+}
+
+// Extract clean booking code from raw scanned string or URL
+function cleanScannedCode(raw) {
+    if (!raw) return '';
+    let text = raw.trim();
+    if (text.includes('/')) {
+        const parts = text.replace(/\/+$/, '').split('/');
+        text = parts[parts.length - 1];
+    }
+    return text.toUpperCase().replace(/[^A-Z0-9\-\:]/g, '');
+}
+
+let isProcessingScan = false;
+function handleScannedCode(rawCode) {
+    if (isProcessingScan) return;
+    const clean = cleanScannedCode(rawCode);
+    if (!clean) return;
+
+    isProcessingScan = true;
+    playSuccessBeep();
+
+    const statusEl = document.getElementById('scanner-status');
+    if (statusEl) {
+        statusEl.innerText = `Kode Ditemukan: ${clean}`;
+        statusEl.className = 'absolute bottom-3 z-30 bg-emerald-600 px-3 py-1 rounded-full text-[10px] font-mono font-bold text-white shadow-lg animate-pulse';
+    }
+
+    setTimeout(() => {
+        window.location.href = "{{ route('tablet.check-in') }}?searchQuery=" + encodeURIComponent(clean);
+    }, 400);
+}
+
+// Initialize Camera QR Scanner via HTML5-QRCode
+document.addEventListener('DOMContentLoaded', () => {
+    const statusEl = document.getElementById('scanner-status');
+    const qrRegion = document.getElementById('qr-reader');
+
+    if (typeof Html5Qrcode !== 'undefined' && qrRegion) {
+        const html5QrCode = new Html5Qrcode("qr-reader");
+
+        Html5Qrcode.getCameras().then(devices => {
+            if (devices && devices.length) {
+                // Prefer back camera or first available
+                const backCamera = devices.find(d => d.label.toLowerCase().includes('back') || d.label.toLowerCase().includes('environment'));
+                const cameraId = backCamera ? backCamera.id : devices[0].id;
+
+                html5QrCode.start(
+                    cameraId,
+                    {
+                        fps: 15,
+                        qrbox: { width: 220, height: 220 },
+                        aspectRatio: 1.0
+                    },
+                    (decodedText, decodedResult) => {
+                        handleScannedCode(decodedText);
+                        try {
+                            html5QrCode.stop().catch(() => {});
+                        } catch(e) {}
+                    },
+                    (errorMessage) => {
+                        // Keep scanning
+                    }
+                ).then(() => {
+                    if (statusEl) {
+                        statusEl.innerText = 'Kamera Aktif &bull; Siap Scan';
+                        statusEl.className = 'absolute bottom-3 z-30 bg-black/75 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-mono font-bold text-emerald-400 border border-emerald-500/30';
+                    }
+                }).catch(err => {
+                    console.warn("Unable to start html5QrCode with specific camera:", err);
+                    // Fallback to facingMode
+                    html5QrCode.start(
+                        { facingMode: "environment" },
+                        { fps: 15, qrbox: { width: 220, height: 220 } },
+                        (text) => handleScannedCode(text)
+                    ).catch(e => {
+                        if (statusEl) statusEl.innerText = 'Kamera tidak dapat diakses';
+                    });
+                });
+            } else {
+                if (statusEl) statusEl.innerText = 'Kamera tidak terdeteksi';
+            }
+        }).catch(err => {
+            console.warn("Error getting cameras:", err);
+            if (statusEl) statusEl.innerText = 'Akses kamera ditolak / tidak tersedia';
+        });
+    }
+
+    // Support Hardware USB / Bluetooth Barcode Scanners
+    let barcodeBuffer = '';
+    let lastKeyTime = Date.now();
+
+    window.addEventListener('keydown', (e) => {
+        // Ignore if user is manually typing in input fields
+        if (document.activeElement && ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) {
+            return;
+        }
+
+        const now = Date.now();
+        if (now - lastKeyTime > 120) {
+            barcodeBuffer = '';
+        }
+        lastKeyTime = now;
+
+        if (e.key === 'Enter') {
+            if (barcodeBuffer.length >= 4) {
+                e.preventDefault();
+                handleScannedCode(barcodeBuffer);
+                barcodeBuffer = '';
+            }
+        } else if (e.key.length === 1) {
+            barcodeBuffer += e.key;
+        }
+    });
+});
+
 function checkInCodeInput(config) {
     const initDate = config.initialDate || config.todayYmd;
     let initDateInput = new Date().toISOString().split('T')[0];
@@ -310,17 +436,37 @@ function checkInCodeInput(config) {
         },
 
         get computedFullCode() {
-            const clean = (this.uniqueCode || '').trim().toUpperCase();
+            let clean = (this.uniqueCode || '').trim().toUpperCase();
             if (!clean) return '';
+            
+            // If user pasted a URL
+            if (clean.includes('/')) {
+                const parts = clean.replace(/\/+$/, '').split('/');
+                clean = parts[parts.length - 1];
+            }
+
             // If user pasted or typed full code with prefix
             if (clean.startsWith('MORE-') || clean.startsWith('MOR-')) {
                 return clean;
             }
+
+            // If 6 digit numeric passcode, send as is
+            if (/^\d{6}$/.test(clean)) {
+                return clean;
+            }
+
             return `MORE-${this.dateYmd}-${clean}`;
         },
 
         handleInput(e) {
             let val = e.target.value.toUpperCase();
+
+            // Check if user pasted a URL
+            if (val.includes('/')) {
+                const parts = val.replace(/\/+$/, '').split('/');
+                val = parts[parts.length - 1];
+            }
+
             // If user typed/pasted full code starting with MORE- or MOR-
             const match = val.match(/^(?:MORE|MOR)-(\d{6})-([A-Z0-9]+)$/);
             if (match) {
@@ -334,10 +480,16 @@ function checkInCodeInput(config) {
         handlePaste(e) {
             setTimeout(() => {
                 let val = (this.uniqueCode || '').toUpperCase();
+                if (val.includes('/')) {
+                    const parts = val.replace(/\/+$/, '').split('/');
+                    val = parts[parts.length - 1];
+                }
                 const match = val.match(/(?:MORE|MOR)-(\d{6})-([A-Z0-9]+)/);
                 if (match) {
                     this.dateYmd = match[1];
                     this.uniqueCode = match[2];
+                } else {
+                    this.uniqueCode = val.replace(/[^A-Z0-9]/g, '');
                 }
             }, 10);
         },
@@ -357,7 +509,7 @@ function checkInCodeInput(config) {
         },
 
         onSubmit(e) {
-            // allow default GET submission with computedFullCode
+            // Allow default GET submission with computedFullCode
         }
     };
 }

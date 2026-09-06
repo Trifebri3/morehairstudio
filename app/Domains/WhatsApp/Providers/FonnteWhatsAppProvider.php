@@ -128,9 +128,10 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
         }
     }
 
-    public function sendMedia(string $to, string $mediaUrl, string $type, ?int $bookingId = null): array
+    public function sendMedia(string $to, string $mediaUrl, string $type, ?int $bookingId = null, ?string $caption = null): array
     {
         $cleanTo = preg_replace('/[^0-9]/', '', $to);
+        $captionText = $caption ?: "QR Code Reservasi - MORE Hair Studio";
 
         $msgRecord = WhatsAppMessage::create([
             'booking_id' => $bookingId,
@@ -138,7 +139,7 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
             'direction' => 'OUTBOUND',
             'message_type' => 'media',
             'recipient' => $cleanTo,
-            'body' => "Media: {$mediaUrl} (Type: {$type})",
+            'body' => ($caption ? $caption : "Media: {$mediaUrl} (Type: {$type})"),
             'status' => 'SENT',
             'sent_at' => Carbon::now()
         ]);
@@ -149,15 +150,21 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
         }
 
         try {
+            $isLocalHost = str_contains($mediaUrl, '127.0.0.1') || str_contains($mediaUrl, 'localhost');
+
+            if ($isLocalHost && preg_match('/qr_([A-Z0-9-]+)\.png/i', $mediaUrl, $m)) {
+                $mediaUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" . urlencode($m[1]);
+            }
+
             $localFile = $this->getLocalPath($mediaUrl);
 
-            if ($localFile) {
+            if ($localFile && !$isLocalHost) {
                 $response = Http::withoutVerifying()
                     ->withHeaders(['Authorization' => $this->token])
                     ->attach('file', file_get_contents($localFile), basename($localFile))
                     ->post('https://api.fonnte.com/send', [
                         'target' => $cleanTo,
-                        'message' => "QR Code Passcode - MORE Hair Studio"
+                        'message' => $captionText
                     ]);
             } else {
                 $response = Http::withoutVerifying()
@@ -165,7 +172,7 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
                     ->post('https://api.fonnte.com/send', [
                         'target' => $cleanTo,
                         'url' => $mediaUrl,
-                        'message' => "QR Code Passcode - MORE Hair Studio"
+                        'message' => $captionText
                     ]);
             }
 
@@ -255,9 +262,9 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
         }
     }
 
-    public function sendImage(string $to, string $imageUrl, ?int $bookingId = null): array
+    public function sendImage(string $to, string $imageUrl, ?int $bookingId = null, ?string $caption = null): array
     {
-        return $this->sendMedia($to, $imageUrl, 'image', $bookingId);
+        return $this->sendMedia($to, $imageUrl, 'image', $bookingId, $caption);
     }
 
     public function sendFile(string $to, string $fileUrl, ?int $bookingId = null): array
@@ -296,12 +303,18 @@ class FonnteWhatsAppProvider implements WhatsAppProviderInterface
             return false;
         }
     }
+
     protected function getLocalPath(string $url): ?string
     {
         $parsed = parse_url($url);
         $path = $parsed['path'] ?? '';
 
         if (str_starts_with($path, '/storage/')) {
+            $rel = substr($path, 9);
+            $storagePath = storage_path('app/public/' . $rel);
+            if (file_exists($storagePath)) {
+                return $storagePath;
+            }
             $localPath = public_path($path);
             if (file_exists($localPath)) {
                 return $localPath;

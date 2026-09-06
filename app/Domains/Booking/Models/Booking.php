@@ -64,6 +64,11 @@ class Booking extends Model
         return $this->hasOne(Review::class);
     }
 
+    public function ticket()
+    {
+        return $this->hasOne(BookingTicket::class);
+    }
+
     /**
      * Calculate total service duration in minutes from booked items or services.
      */
