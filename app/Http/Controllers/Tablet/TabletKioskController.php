@@ -227,9 +227,13 @@ class TabletKioskController extends Controller
             return back()->with('error', 'Stylist ini sudah Clock-In hari ini.');
         }
 
-        // Attendance rules: Late if check-in is past 10:15
+        $stylist = Stylist::findOrFail($id);
+        $outlet = $stylist->outlet ?? Outlet::find(session('tablet_outlet_id', 1));
+
+        // Attendance rules: Late if check-in is past outlet attendance_end_time (or default 09:00:00)
+        $lateThreshold = ($outlet && $outlet->attendance_end_time) ? $outlet->attendance_end_time : '09:00:00';
         $status = 'present';
-        if ($now->format('H:i:s') > '10:15:00') {
+        if ($now->format('H:i:s') > $lateThreshold) {
             $status = 'late';
         }
 
@@ -238,11 +242,10 @@ class TabletKioskController extends Controller
             'date' => $today,
             'clock_in' => $now,
             'status' => $status,
-            'device_info' => 'TABLET-OUTLET-01'
+            'device_info' => 'TABLET-OUTLET-' . str_pad((string)($outlet->id ?? 1), 2, '0', STR_PAD_LEFT)
         ]);
 
-        $stylist = Stylist::findOrFail($id);
-        return back()->with('message', "Clock-In berhasil! Selamat bekerja, {$stylist->name} ({$now->format('H:i')}).");
+        return back()->with('message', "Clock-In berhasil! Selamat bekerja, {$stylist->name} ({$now->format('H:i')}). Status: " . ($status === 'late' ? 'Terlambat' : 'Tepat Waktu'));
     }
 
     public function clockOut(Request $request, $id)

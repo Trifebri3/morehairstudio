@@ -61,6 +61,7 @@
 
     <form method="POST" action="{{ route('outlet.settings.save') }}" enctype="multipart/form-data" class="space-y-8 mb-10">
         @csrf
+        <input type="hidden" name="outlet_id" value="{{ $outlet->id }}">
         <input type="hidden" name="removed_gallery_indices" id="removed-gallery-indices" value="[]">
 
         <!-- Configuration Panel 1: Attendance Configuration -->
@@ -157,7 +158,7 @@
                                 <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 border p-3.5 rounded-xl bg-stone-50/50 max-h-40 overflow-y-auto">
                                     @foreach($gallery as $idx => $photoUrl)
                                         <div id="gallery-photo-{{ $idx }}" class="relative group aspect-square rounded-lg overflow-hidden border bg-white">
-                                            <img src="{{ $photoUrl }}" class="w-full h-full object-cover" />
+                                            <img src="{{ $photoUrl }}" onerror="this.onerror=null; this.src='/images/outlet_{{ $outlet->id }}.jpg';" class="w-full h-full object-cover" />
                                             <button type="button" onclick="removePhoto({{ $idx }})" class="absolute inset-0 bg-black/45 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition text-[10px] font-bold uppercase tracking-wider">
                                                 Hapus
                                             </button>
@@ -215,31 +216,31 @@
                                         value="1"
                                         id="selected-services-{{ $s->id }}"
                                         onchange="toggleOverrideInputs({{ $s->id }}, this.checked)"
-                                        {{ old('selectedServices.'.$s->id, $selectedServices[$s->id]) ? 'checked' : '' }}
+                                        {{ old('selectedServices.'.$s->id, $selectedServices[$s->id] ?? false) ? 'checked' : '' }}
                                         class="w-4 h-4 text-[#0A3D91] border-stone-300 rounded focus:ring-[#0A3D91]"
                                     />
                                 </td>
                                 <td class="p-4 font-bold text-stone-900 uppercase tracking-tight text-[11px] font-sans">{{ $s->name }}</td>
-                                <td class="p-4 text-xxs uppercase tracking-wider text-stone-400 font-extrabold font-mono">{{ $s->category->name }}</td>
-                                <td class="p-4 font-mono text-stone-550">Rp {{ number_format($s->price, 0, ',', '.') }}</td>
+                                <td class="p-4 text-xxs uppercase tracking-wider text-stone-400 font-extrabold font-mono">{{ $s->category?->name ?? 'General' }}</td>
+                                <td class="p-4 font-mono text-stone-550 font-bold">Rp {{ number_format($s->default_price ?? $s->price, 0, ',', '.') }}</td>
                                 <td class="p-4">
                                     <input 
                                         type="number" 
                                         name="customPrices[{{ $s->id }}]" 
                                         id="custom-price-{{ $s->id }}"
-                                        value="{{ old('customPrices.'.$s->id, $customPrices[$s->id]) }}"
-                                        placeholder="{{ (int)$s->price }}"
+                                        value="{{ old('customPrices.'.$s->id, $customPrices[$s->id] ?? '') }}"
+                                        placeholder="{{ (int)($s->default_price ?? $s->price) }}"
                                         class="w-32 px-3 py-1.5 border border-stone-200 rounded-lg text-xs font-mono focus:ring-[#0A3D91] focus:border-[#0A3D91] outline-none disabled:bg-stone-50 disabled:text-stone-400"
                                     />
                                 </td>
-                                <td class="p-4 text-stone-550 font-sans">{{ $s->duration }} Menit</td>
+                                <td class="p-4 text-stone-550 font-sans font-bold">{{ $s->default_duration ?? $s->duration }} Menit</td>
                                 <td class="p-4 font-sans">
                                     <input 
                                         type="number" 
                                         name="customDurations[{{ $s->id }}]" 
                                         id="custom-duration-{{ $s->id }}"
-                                        value="{{ old('customDurations.'.$s->id, $customDurations[$s->id]) }}"
-                                        placeholder="{{ $s->duration }}"
+                                        value="{{ old('customDurations.'.$s->id, $customDurations[$s->id] ?? '') }}"
+                                        placeholder="{{ $s->default_duration ?? $s->duration }}"
                                         class="w-24 px-3 py-1.5 border border-stone-200 rounded-lg text-xs focus:ring-[#0A3D91] focus:border-[#0A3D91] outline-none disabled:bg-stone-50 disabled:text-stone-400"
                                     />
                                 </td>
@@ -310,20 +311,38 @@
     }
 
     function toggleGraceInput(val) {
-        document.getElementById('grace-minutes-input').disabled = (val == 0);
+        const input = document.getElementById('grace-minutes-input');
+        if (input) {
+            input.disabled = (val == 0);
+        }
     }
 
     function toggleOverrideInputs(id, enabled) {
-        document.getElementById('custom-price-' + id).disabled = !enabled;
-        document.getElementById('custom-duration-' + id).disabled = !enabled;
+        const pInput = document.getElementById('custom-price-' + id);
+        const dInput = document.getElementById('custom-duration-' + id);
+        if (pInput) pInput.disabled = !enabled;
+        if (dInput) dInput.disabled = !enabled;
     }
 
     // Init state checks
     window.addEventListener('DOMContentLoaded', () => {
-        toggleGraceInput(document.getElementById('grace-period-select').value);
+        const graceSelect = document.getElementById('grace-period-select');
+        if (graceSelect) {
+            toggleGraceInput(graceSelect.value);
+        }
         @foreach($services as $s)
-            toggleOverrideInputs({{ $s->id }}, document.getElementById('selected-services-{{ $s->id }}').checked);
+            toggleOverrideInputs({{ $s->id }}, document.getElementById('selected-services-{{ $s->id }}')?.checked ?? false);
         @endforeach
+
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', () => {
+                const graceInput = document.getElementById('grace-minutes-input');
+                if (graceInput && graceInput.disabled) {
+                    graceInput.disabled = false;
+                }
+            });
+        }
     });
 </script>
 @endsection

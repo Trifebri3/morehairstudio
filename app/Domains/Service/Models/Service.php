@@ -20,7 +20,19 @@ class Service extends Model
 
     protected $appends = [
         'formatted_description_html',
+        'price',
+        'duration',
     ];
+
+    public function getPriceAttribute()
+    {
+        return $this->default_price;
+    }
+
+    public function getDurationAttribute()
+    {
+        return $this->default_duration;
+    }
 
     public function category()
     {

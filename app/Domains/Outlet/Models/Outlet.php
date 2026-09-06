@@ -13,6 +13,7 @@ class Outlet extends Model
     protected $fillable = [
         'name', 'slug', 'description', 'address', 'phone', 'whatsapp',
         'latitude', 'longitude', 'opening_hours', 'status', 'gallery',
+        'attendance_start_time', 'attendance_end_time',
         'booking_lead_time_hours', 'checkin_grace_period_active', 'checkin_grace_period_minutes',
         'clock_out_start_time', 'clock_out_end_time', 'map_iframe'
     ];

@@ -80,6 +80,21 @@ class PublicController extends Controller
             ];
         }
 
+        // Fallback to all active services if outlet has no specific attachments yet
+        if ($outletServices->isEmpty()) {
+            $allServices = Service::where('is_active', true)->with('category')->get();
+            foreach ($allServices as $s) {
+                $catName = $s->category ? $s->category->name : 'General';
+                $servicesByCategory[$catName][] = [
+                    'id' => $s->id,
+                    'name' => $s->name,
+                    'description' => $s->description,
+                    'price' => $s->default_price,
+                    'duration' => $s->default_duration,
+                ];
+            }
+        }
+
         // Keep it aligned with resources/views/livewire/public/outlet-show.blade.php layout (let's check where the view is rendered)
         // Note: Livewire component rendered public/outlet-show, we can move or duplicate this view cleanly to public/outlet-show.blade.php!
         return view('public.outlet-show', compact('outlet', 'stylists', 'servicesByCategory'));

@@ -1234,7 +1234,14 @@ function bookingWizard() {
         },
 
         getServicesByCategory(catId) {
-            return this.services.filter(s => s.service_category_id == catId);
+            return this.services.filter(s => {
+                if (s.service_category_id != catId) return false;
+                if (!this.selectedOutletId) return true;
+                if (s.outlet_overrides && s.outlet_overrides[this.selectedOutletId]) {
+                    return Boolean(Number(s.outlet_overrides[this.selectedOutletId].is_active));
+                }
+                return true;
+            });
         },
 
         getServicePrice(service) {

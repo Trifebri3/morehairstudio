@@ -39,7 +39,8 @@ class AvailabilityService
             return []; // Service is disabled at this outlet
         }
 
-        $duration = $outletService ? ($outletService->duration ?? 45) : 45;
+        $service = Service::find($serviceId);
+        $duration = ($outletService && $outletService->duration) ? (int)$outletService->duration : ($service ? (int)$service->default_duration : 45);
 
         // Auto-expire no-show bookings that missed the check-in grace period
         Booking::autoExpireNoShows($outletId);

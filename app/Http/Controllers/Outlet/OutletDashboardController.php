@@ -23,8 +23,8 @@ class OutletDashboardController extends Controller
             return redirect()->route('dashboard');
         }
 
-        $outletId = $user->outlet_id;
-        $outlet = Outlet::findOrFail($outletId);
+        $outletId = $user->outlet_id ?? (int)$request->query('outlet_id') ?? session('outlet_id', 1);
+        $outlet = Outlet::find($outletId) ?? Outlet::firstOrFail();
 
         $attendanceStart = $outlet->attendance_start_time ? substr($outlet->attendance_start_time, 0, 5) : '07:00';
         $attendanceEnd = $outlet->attendance_end_time ? substr($outlet->attendance_end_time, 0, 5) : '09:00';
@@ -45,21 +45,27 @@ class OutletDashboardController extends Controller
             ->get()
             ->keyBy('service_id');
 
+        $hasExistingPivots = $currentServices->isNotEmpty();
+
         $selectedServices = [];
         $customPrices = [];
         $customDurations = [];
 
         foreach ($services as $s) {
             $pivot = $currentServices->get($s->id);
-            $selectedServices[$s->id] = $pivot ? (bool)$pivot->is_active : false;
-            $customPrices[$s->id] = $pivot ? $pivot->price : '';
-            $customDurations[$s->id] = $pivot ? $pivot->duration : '';
+            if ($hasExistingPivots) {
+                $selectedServices[$s->id] = $pivot ? (bool)$pivot->is_active : false;
+            } else {
+                $selectedServices[$s->id] = (bool)$s->is_active;
+            }
+            $customPrices[$s->id] = ($pivot && $pivot->price !== null) ? $pivot->price : '';
+            $customDurations[$s->id] = ($pivot && $pivot->duration !== null) ? $pivot->duration : '';
         }
 
-        $totalBookings = Booking::where('outlet_id', $outletId)->count();
-        $totalRevenue = Booking::where('outlet_id', $outletId)->where('status', 'completed')->sum('net_amount');
+        $totalBookings = Booking::where('outlet_id', $outlet->id)->count();
+        $totalRevenue = Booking::where('outlet_id', $outlet->id)->where('status', 'completed')->sum('net_amount');
 
-        $recentBookings = Booking::where('outlet_id', $outletId)
+        $recentBookings = Booking::where('outlet_id', $outlet->id)
             ->with(['customer', 'stylist'])
             ->latest()
             ->take(5)
@@ -76,7 +82,13 @@ class OutletDashboardController extends Controller
     public function saveSettings(Request $request)
     {
         $user = auth()->user();
-        if (!$user || !$user->outlet_id) {
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $outletId = $user->outlet_id ?? (int)$request->input('outlet_id') ?? session('outlet_id', 1);
+        $outlet = Outlet::find($outletId);
+        if (!$outlet) {
             return back()->with('error', 'Outlet tidak ditemukan.');
         }
 
@@ -87,86 +99,67 @@ class OutletDashboardController extends Controller
             'clockOutEnd' => ['required', 'string', 'regex:/^[0-2][0-9]:[0-5][0-9]$/'],
             'bookingLeadTime' => ['required', 'integer', 'min:0', 'max:72'],
             'checkinGraceActive' => ['required', 'boolean'],
-            'checkinGraceMinutes' => ['required', 'integer', 'min:1', 'max:180'],
+            'checkinGraceMinutes' => ['nullable', 'integer', 'min:1', 'max:180'],
             'description' => ['nullable', 'string', 'max:5000'],
             'mapIframe' => ['nullable', 'string'],
             'newPhotos.*' => ['nullable', 'image', 'max:5120'], // Max 5MB
         ]);
 
-        $outlet = Outlet::find($user->outlet_id);
-        if ($outlet) {
-            $outlet->attendance_start_time = $request->attendanceStart;
-            $outlet->attendance_end_time = $request->attendanceEnd;
-            $outlet->clock_out_start_time = $request->clockOutStart;
-            $outlet->clock_out_end_time = $request->clockOutEnd;
-            $outlet->booking_lead_time_hours = $request->bookingLeadTime;
-            $outlet->checkin_grace_period_active = $request->checkinGraceActive;
-            $outlet->checkin_grace_period_minutes = $request->checkinGraceMinutes;
+        $outlet->attendance_start_time = $request->attendanceStart;
+        $outlet->attendance_end_time = $request->attendanceEnd;
+        $outlet->clock_out_start_time = $request->clockOutStart;
+        $outlet->clock_out_end_time = $request->clockOutEnd;
+        $outlet->booking_lead_time_hours = $request->bookingLeadTime;
+        $outlet->checkin_grace_period_active = (bool)$request->checkinGraceActive;
+        $outlet->checkin_grace_period_minutes = $request->checkinGraceMinutes ? (int)$request->checkinGraceMinutes : ($outlet->checkin_grace_period_minutes ?? 15);
 
-            // Handle Photo Gallery update
-            $gallery = is_array($outlet->gallery) ? $outlet->gallery : [];
-            if ($request->has('removed_gallery_indices')) {
-                $removed = json_decode($request->removed_gallery_indices, true);
-                if (is_array($removed)) {
-                    foreach ($removed as $idx) {
-                        unset($gallery[$idx]);
-                    }
-                    $gallery = array_values($gallery);
+        // Handle Photo Gallery update
+        $gallery = is_array($outlet->gallery) ? $outlet->gallery : [];
+        if ($request->has('removed_gallery_indices')) {
+            $removed = json_decode($request->removed_gallery_indices, true);
+            if (is_array($removed)) {
+                foreach ($removed as $idx) {
+                    unset($gallery[$idx]);
                 }
+                $gallery = array_values($gallery);
             }
-
-            // Handle new uploads
-            if ($request->hasFile('newPhotos')) {
-                foreach ($request->file('newPhotos') as $photo) {
-                    $path = $photo->store('outlets/gallery', 'public');
-                    $gallery[] = '/storage/' . $path;
-                }
-            }
-
-            $outlet->gallery = $gallery;
-            $outlet->description = $request->description;
-            $outlet->map_iframe = $request->mapIframe;
-            $outlet->save();
-
-            // Sync services pivots
-            $services = \App\Domains\Service\Models\Service::all();
-            foreach ($services as $s) {
-                $isActive = $request->has('selectedServices.' . $s->id);
-                $price = $request->input('customPrices.' . $s->id);
-                $duration = $request->input('customDurations.' . $s->id);
-
-                $exists = DB::table('outlet_services')
-                    ->where('outlet_id', $outlet->id)
-                    ->where('service_id', $s->id)
-                    ->exists();
-
-                if ($exists) {
-                    DB::table('outlet_services')
-                        ->where('outlet_id', $outlet->id)
-                        ->where('service_id', $s->id)
-                        ->update([
-                            'is_active' => (bool)$isActive,
-                            'price' => !empty($price) ? $price : null,
-                            'duration' => !empty($duration) ? $duration : null,
-                            'updated_at' => now()
-                        ]);
-                } else {
-                    DB::table('outlet_services')->insert([
-                        'outlet_id' => $outlet->id,
-                        'service_id' => $s->id,
-                        'is_active' => (bool)$isActive,
-                        'price' => !empty($price) ? $price : null,
-                        'duration' => !empty($duration) ? $duration : null,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
-            }
-
-            return back()->with('message', 'Pengaturan outlet berhasil disimpan.');
         }
 
-        return back()->with('error', 'Outlet gagal disimpan.');
+        // Handle new uploads
+        if ($request->hasFile('newPhotos')) {
+            foreach ($request->file('newPhotos') as $photo) {
+                $path = $photo->store('outlets/gallery', 'public');
+                $gallery[] = '/storage/' . $path;
+            }
+        }
+
+        $outlet->gallery = $gallery;
+        $outlet->description = $request->description;
+        $outlet->map_iframe = $request->mapIframe;
+        $outlet->save();
+
+        // Sync services pivots
+        $services = \App\Domains\Service\Models\Service::all();
+        foreach ($services as $s) {
+            $isActive = $request->has('selectedServices.' . $s->id);
+            $price = $request->input('customPrices.' . $s->id);
+            $duration = $request->input('customDurations.' . $s->id);
+
+            DB::table('outlet_services')->updateOrInsert(
+                [
+                    'outlet_id' => $outlet->id,
+                    'service_id' => $s->id,
+                ],
+                [
+                    'is_active' => (bool)$isActive,
+                    'price' => (is_numeric($price) && (float)$price > 0) ? (float)$price : null,
+                    'duration' => (is_numeric($duration) && (int)$duration > 0) ? (int)$duration : null,
+                    'updated_at' => now(),
+                ]
+            );
+        }
+
+        return back()->with('message', 'Pengaturan outlet berhasil disimpan.');
     }
 
     public function bookings(Request $request)
