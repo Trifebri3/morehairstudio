@@ -2,12 +2,12 @@
 
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch h-full py-4 relative">
-    <!-- Left Column: Camera Scanner simulator -->
-    <div class="glass-panel p-8 rounded-3xl flex flex-col justify-between items-center text-center border-stone-200 bg-white">
+    <!-- Left Column: Camera Scanner -->
+    <div class="glass-panel p-8 rounded-3xl flex flex-col justify-between items-center text-center border-stone-200 bg-white shadow-2xs">
         <div>
-            <h3 class="text-xl font-bold text-stone-900 mb-2">Simulasi QR Scanner</h3>
+            <h3 class="text-xl font-bold text-stone-900 mb-2">Kamera Scanner QR Code</h3>
             <p class="text-stone-500 text-xs leading-relaxed max-w-xs mx-auto">
-                Scan QR Code yang tertera pada invoice customer langsung dari layar HP mereka.
+                Arahkan QR Code tiket customer atau barcode stylist ke arah kamera tablet.
             </p>
         </div>
 
@@ -25,13 +25,13 @@
              } }"
              x-init="initWebcam()">
             <!-- scanner corner guides -->
-            <div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-blue-600 z-10"></div>
-            <div class="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-blue-600 z-10"></div>
-            <div class="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-blue-600 z-10"></div>
-            <div class="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-blue-600 z-10"></div>
+            <div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-[#c9512d] z-10"></div>
+            <div class="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-[#c9512d] z-10"></div>
+            <div class="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-[#c9512d] z-10"></div>
+            <div class="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-[#c9512d] z-10"></div>
 
             <!-- Glowing laser scanning line -->
-            <div class="absolute w-72 h-0.5 bg-blue-500/50 shadow-md shadow-blue-500/80 top-0 left-4 animate-[bounce_3s_infinite] pointer-events-none z-10"></div>
+            <div class="absolute w-72 h-0.5 bg-[#c9512d]/70 shadow-md shadow-[#c9512d]/80 top-0 left-4 animate-[bounce_3s_infinite] pointer-events-none z-10"></div>
 
             <!-- Live Video Element -->
             <video x-ref="webcam" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover" x-show="hasWebcam"></video>
@@ -42,12 +42,9 @@
             </div>
         </div>
 
-        <div class="w-full mt-6 space-y-3">
-            <a href="?searchQuery=MOR-180826-A1B2C" class="block w-full py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 text-[10px] font-bold uppercase tracking-widest rounded-xl transition">
-                Simulasikan Scan QR Code
-            </a>
+        <div class="w-full mt-6">
             <a href="{{ route('tablet.walk-in') }}" 
-               class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-black text-xs uppercase tracking-widest shadow-lg hover:shadow-blue-500/25 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center space-x-2">
+               class="w-full py-3.5 px-6 rounded-2xl bg-[#c9512d] hover:bg-[#a03b1e] text-white font-bold text-xs uppercase tracking-widest shadow-md transition-all duration-300 flex items-center justify-center space-x-2">
                 <span>Mulai Walk-In Booking Baru</span>
                 <span class="text-sm font-extrabold">&rarr;</span>
             </a>
@@ -58,8 +55,8 @@
     <div class="glass-panel p-8 rounded-3xl flex flex-col justify-between border-stone-200 bg-white">
         <div class="space-y-6">
             <div>
-                <h3 class="text-xl font-bold text-stone-900 mb-2">Input Manual</h3>
-                <p class="text-stone-500 text-xs">Masukkan kode booking atau token unik secara manual</p>
+                <h3 class="text-xl font-bold text-stone-900 mb-1">Input Manual Kode Booking</h3>
+                <p class="text-stone-500 text-xs">Prefix tanggal otomatis terisi per hari ini. Cukup ketik <strong>5 digit kode unik</strong> customer.</p>
             </div>
 
             <!-- Alerts -->
@@ -81,20 +78,91 @@
                 </x-ui.alert>
             @endif
 
-            <!-- Code input form -->
-            <form method="GET" action="{{ route('tablet.check-in') }}" class="flex space-x-3 items-end">
-                <div class="flex-grow">
-                    <x-ui.input label="Kode Booking" name="searchQuery" placeholder="e.g. MOR-180826-A1B2C" value="{{ $searchQuery }}" />
-                </div>
-                <x-ui.button variant="primary" type="submit" class="h-[48px] rounded-lg">
-                    Cari
-                </x-ui.button>
-            </form>
+            <!-- Code input form with Auto-Updated Daily Date Prefix -->
+            @php
+                $currentYmd = \Carbon\Carbon::today()->format('ymd');
+                $initialUnique = '';
+                $initialDate = $currentYmd;
+                if (!empty($searchQuery)) {
+                    if (preg_match('/(?:MORE|MOR)-(\d{6})-([A-Z0-9]+)/i', $searchQuery, $matches)) {
+                        $initialDate = $matches[1];
+                        $initialUnique = $matches[2];
+                    } else {
+                        $initialUnique = $searchQuery;
+                    }
+                }
+            @endphp
+
+            <div x-data="checkInCodeInput({ todayYmd: '{{ $currentYmd }}', initialDate: '{{ $initialDate }}', initialCode: '{{ $initialUnique }}' })" class="space-y-3">
+                <label class="block text-[11px] font-mono font-bold uppercase tracking-wider text-stone-700">
+                    Kode Booking Customer
+                </label>
+
+                <form method="GET" action="{{ route('tablet.check-in') }}" @submit="onSubmit($event)" class="space-y-2.5">
+                    <input type="hidden" name="searchQuery" :value="computedFullCode">
+
+                    <!-- Segmented Input: Locked Today Prefix + 5-Char Unique Code + Submit Button -->
+                    <div class="flex items-stretch rounded-2xl border-2 border-stone-200 focus-within:border-[#c9512d] bg-white overflow-hidden shadow-2xs transition">
+                        
+                        <!-- Auto-updating prefix -->
+                        <div class="bg-stone-100/90 border-r border-stone-200 px-3 sm:px-4 py-3.5 flex items-center space-x-1.5 select-none text-stone-700 font-mono font-bold text-sm sm:text-base tracking-wider flex-shrink-0">
+                            <span class="text-[#c9512d] font-black">MORE</span>-<span x-text="dateYmd"></span>-
+                            <span class="text-[8px] uppercase tracking-wider bg-stone-200 text-stone-600 px-1.5 py-0.5 rounded font-extrabold hidden sm:inline" x-text="isToday ? 'Hari Ini' : 'Khusus'"></span>
+                        </div>
+
+                        <!-- 5-character input -->
+                        <input type="text" 
+                               x-ref="uniqueInput"
+                               x-model="uniqueCode"
+                               @input="handleInput($event)"
+                               @paste="handlePaste($event)"
+                               placeholder="GDKYS" 
+                               maxlength="18"
+                               autocapitalize="characters"
+                               autocomplete="off"
+                               spellcheck="false"
+                               class="flex-1 min-w-0 px-3 sm:px-4 py-3 text-base sm:text-lg font-mono font-black uppercase tracking-widest text-stone-900 placeholder:text-stone-300 focus:outline-none bg-transparent" />
+
+                        <!-- Submit action -->
+                        <button type="submit" 
+                                :disabled="!uniqueCode.trim()"
+                                class="px-5 sm:px-6 py-3 bg-[#c9512d] hover:bg-[#a03b1e] disabled:bg-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed text-white font-bold text-xs sm:text-sm tracking-wide transition flex items-center space-x-1.5 flex-shrink-0 cursor-pointer">
+                            <span>Cari</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </button>
+                    </div>
+
+                    <!-- Helper Info & Date Modifier -->
+                    <div class="flex items-center justify-between text-[11px] text-stone-400 font-medium px-1">
+                        <span>Format: <strong>MORE-<span x-text="dateYmd"></span>-[5 Karakter]</strong></span>
+                        <button type="button" 
+                                @click="showCustomDate = !showCustomDate" 
+                                class="text-[#c9512d] font-bold hover:underline">
+                            <span x-text="showCustomDate ? 'Kembali ke Hari Ini' : 'Booking Tanggal Lain?'"></span>
+                        </button>
+                    </div>
+
+                    <!-- Optional Date Modifier for non-today bookings -->
+                    <div x-show="showCustomDate" 
+                         x-transition 
+                         class="bg-stone-50 border border-stone-200 rounded-xl p-3 space-y-2 text-xs">
+                        <label class="block text-stone-600 font-bold text-[11px]">Pilih Tanggal Reservasi Customer:</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="date" 
+                                   x-model="customDateInput" 
+                                   @change="onDateChanged()"
+                                   class="px-3 py-1.5 bg-white border border-stone-200 rounded-lg text-xs font-mono text-stone-800 focus:outline-none focus:border-[#c9512d]" />
+                            <span class="text-stone-500 font-mono text-[11px]">Prefix menjadi: MORE-<span class="font-bold text-stone-900" x-text="dateYmd"></span>-</span>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
 
             <!-- Booking details if found -->
             @if($booking)
-                <div class="border border-blue-100 bg-stone-50 rounded-2xl p-6 space-y-4">
-                    <h4 class="font-bold text-xs uppercase tracking-wider text-blue-600 border-b border-stone-200 pb-2">
+                <div class="border border-[#faede7] bg-stone-50 rounded-2xl p-6 space-y-4">
+                    <h4 class="font-bold text-xs uppercase tracking-wider text-[#c9512d] border-b border-stone-200 pb-2">
                         Data Booking Ditemukan
                     </h4>
                     
@@ -221,4 +289,77 @@
         </script>
     @endif
 </div>
+
+<script>
+function checkInCodeInput(config) {
+    const initDate = config.initialDate || config.todayYmd;
+    let initDateInput = new Date().toISOString().split('T')[0];
+    if (initDate && initDate.length === 6) {
+        initDateInput = `20${initDate.slice(0, 2)}-${initDate.slice(2, 4)}-${initDate.slice(4, 6)}`;
+    }
+
+    return {
+        todayYmd: config.todayYmd,
+        dateYmd: initDate,
+        uniqueCode: config.initialCode || '',
+        showCustomDate: (initDate !== config.todayYmd),
+        customDateInput: initDateInput,
+
+        get isToday() {
+            return this.dateYmd === this.todayYmd;
+        },
+
+        get computedFullCode() {
+            const clean = (this.uniqueCode || '').trim().toUpperCase();
+            if (!clean) return '';
+            // If user pasted or typed full code with prefix
+            if (clean.startsWith('MORE-') || clean.startsWith('MOR-')) {
+                return clean;
+            }
+            return `MORE-${this.dateYmd}-${clean}`;
+        },
+
+        handleInput(e) {
+            let val = e.target.value.toUpperCase();
+            // If user typed/pasted full code starting with MORE- or MOR-
+            const match = val.match(/^(?:MORE|MOR)-(\d{6})-([A-Z0-9]+)$/);
+            if (match) {
+                this.dateYmd = match[1];
+                this.uniqueCode = match[2];
+                return;
+            }
+            this.uniqueCode = val.replace(/[^A-Z0-9]/g, '');
+        },
+
+        handlePaste(e) {
+            setTimeout(() => {
+                let val = (this.uniqueCode || '').toUpperCase();
+                const match = val.match(/(?:MORE|MOR)-(\d{6})-([A-Z0-9]+)/);
+                if (match) {
+                    this.dateYmd = match[1];
+                    this.uniqueCode = match[2];
+                }
+            }, 10);
+        },
+
+        onDateChanged() {
+            if (!this.customDateInput) {
+                this.dateYmd = this.todayYmd;
+                return;
+            }
+            const parts = this.customDateInput.split('-');
+            if (parts.length === 3) {
+                const yy = parts[0].slice(-2);
+                const mm = parts[1];
+                const dd = parts[2];
+                this.dateYmd = `${yy}${mm}${dd}`;
+            }
+        },
+
+        onSubmit(e) {
+            // allow default GET submission with computedFullCode
+        }
+    };
+}
+</script>
 @endsection

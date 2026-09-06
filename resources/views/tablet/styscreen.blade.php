@@ -92,11 +92,11 @@
                             <p><strong>Customer:</strong> {{ $b->customer->name }} ({{ $b->customer->phone }})</p>
                             <p><strong>Layanan:</strong> {{ $serviceName }}</p>
                             <p><strong>Stylist:</strong> {{ $b->stylist?->name ?? 'Any Stylist' }}</p>
-                            <p class="text-sm font-bold text-[#0A3D91] mt-2">Total: Rp {{ number_format($b->net_amount, 0, ',', '.') }}</p>
+                            <p class="text-sm font-bold text-[#c9512d] mt-2">Total: Rp {{ number_format($b->net_amount, 0, ',', '.') }}</p>
                         </div>
 
                         <div class="pt-2">
-                            <a href="?{{ http_build_query(array_merge(request()->query(), ['pay_booking_id' => $b->id])) }}" class="block w-full text-center py-2.5 rounded-xl bg-[#0A3D91] text-white hover:bg-blue-800 transition text-xxs font-black uppercase tracking-wider">
+                            <a href="?{{ http_build_query(array_merge(request()->query(), ['pay_booking_id' => $b->id])) }}" class="block w-full text-center py-2.5 rounded-xl bg-[#c9512d] text-white hover:bg-[#a03b1e] transition text-xxs font-black uppercase tracking-wider">
                                 Bayar via EDC / Tunai
                             </a>
                         </div>
@@ -110,11 +110,11 @@
         <!-- Lane 2: PROSES / SEDANG TREATMENT (Paid & Serving) -->
         <div class="glass-panel p-6 rounded-3xl bg-white border border-stone-200 flex flex-col space-y-4 shadow-sm">
             <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="text-sm font-black uppercase tracking-wider text-blue-600 flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse"></span>
+                <h3 class="text-sm font-black uppercase tracking-wider text-stone-900 flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 bg-[#c9512d] rounded-full animate-pulse"></span>
                     Sedang Pengerjaan / Lunas Online
                 </h3>
-                <span class="px-2 py-0.5 bg-blue-50 text-blue-700 text-xxs font-black rounded-full">{{ $paidActiveBookings->count() }}</span>
+                <span class="px-2 py-0.5 bg-[#faede7] text-[#c9512d] text-xxs font-black rounded-full">{{ $paidActiveBookings->count() }}</span>
             </div>
 
             <div class="space-y-4 overflow-y-auto max-h-[600px] pr-1 flex-grow">

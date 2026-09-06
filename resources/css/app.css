@@ -1,60 +1,113 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Font-face fallbacks & typography mappings */
+@font-face {
+    font-family: 'Stack Sans Notch';
+    src: local('Stack Sans Notch'), local('Stack Sans'), local('Plus Jakarta Sans');
+    font-weight: 300 800;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Suisse Int\'l';
+    src: local('Suisse Int\'l'), local('Suisse Intl'), local('Inter');
+    font-weight: 300 800;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Adobe Caslon Pro';
+    src: local('Adobe Caslon Pro'), local('Caslon'), local('EB Garamond');
+    font-weight: 300 700;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Alverata';
+    src: local('Alverata'), local('EB Garamond'), local('Cinzel');
+    font-weight: 400 800;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Josefa Rounded';
+    src: local('Josefa Rounded'), local('Nunito');
+    font-weight: 300 800;
+    font-display: swap;
+}
+
 :root {
-    --color-blue-50: #eff6ff;
-    --color-blue-100: #dbeafe;
-    --color-blue-500: #0A3D91; /* Premium deep blue */
-    --color-blue-600: #0A3D91; /* Primary brand accent */
-    --color-blue-700: #062e70; /* Darker blue for hover states */
+    --color-burnt-orange: #c9512d;
+    --color-burnt-orange-dark: #b74423;
+    --color-burnt-orange-light: #faede7;
+    --color-burnt-orange-50: #fdf7f4;
+    --color-burnt-orange-100: #faede7;
+    --brand-primary: #c9512d;
+    --brand-dark: #171615;
 }
 
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    background-color: #fafaf9; /* Visually light off-white background */
-    color: #1c1917; /* Charcoal/Dark neutral text */
+    font-family: 'Suisse Int\'l', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #ffffff; /* Clean pure white dominance */
+    color: #171615; /* Crisp charcoal text */
     letter-spacing: -0.01em;
 }
 
-h1, h2, h3, h4, .font-serif {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    font-weight: 800;
+h1, h2, h3, h4, .font-headline, .font-primary {
+    font-family: 'Plus Jakarta Sans', 'Stack Sans Notch', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     letter-spacing: -0.02em;
 }
 
-/* Glassmorphism premium panels (Clean and light) */
+.font-editorial, .font-caslon, .font-serif {
+    font-family: 'Adobe Caslon Pro', 'Caslon', 'EB Garamond', Georgia, serif;
+}
+
+.font-secondary {
+    font-family: 'Suisse Int\'l', 'Inter', sans-serif;
+}
+
+.font-alverata {
+    font-family: 'Alverata', 'EB Garamond', serif;
+}
+
+.font-josefa {
+    font-family: 'Josefa Rounded', 'Nunito', sans-serif;
+}
+
+/* Glassmorphism / Clean Editorial Panels (Crisp white with subtle borders) */
 .glass-panel {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(231, 229, 228, 0.8);
+    background: #ffffff;
+    border: 1px solid #e7e5e4;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .glass-panel:hover {
-    border-color: rgba(10, 61, 145, 0.25);
-    box-shadow: 0 10px 30px -10px rgba(10, 61, 145, 0.05);
+    border-color: rgba(201, 81, 45, 0.4);
+    box-shadow: 0 12px 24px -8px rgba(201, 81, 45, 0.08);
 }
 
-/* Redefine old gold-gradient styles to use premium brand blue `#0A3D91` */
-.gold-gradient-text {
-    background: linear-gradient(135deg, #0A3D91 0%, #062e70 100%);
+/* Redefine old gradient styles with Burnt Orange `#c9512d` */
+.gold-gradient-text, .burnt-gradient-text {
+    background: linear-gradient(135deg, #c9512d 0%, #b74423 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     font-weight: 800;
 }
 
-.gold-gradient-bg {
-    background: #0A3D91;
+.gold-gradient-bg, .burnt-gradient-bg {
+    background: #c9512d;
     color: #ffffff;
 }
 
-.gold-gradient-border {
-    border-color: #0A3D91;
+.gold-gradient-border, .burnt-gradient-border {
+    border-color: #c9512d;
 }
 
-/* Custom scrollbars matching blue accents */
+/* Custom scrollbars matching Burnt Orange accents */
 ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -67,5 +120,58 @@ h1, h2, h3, h4, .font-serif {
     border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #0A3D91;
+    background: #c9512d;
 }
+
+/* Selection color matching brand orange */
+::selection {
+    background-color: #c9512d;
+    color: #ffffff;
+}
+
+/* Rich Service Description Styling */
+.service-description {
+    color: #57534e;
+    font-size: 0.8125rem;
+    line-height: 1.6;
+}
+
+.service-description p {
+    margin-bottom: 0.5rem;
+}
+
+.service-description p:last-child {
+    margin-bottom: 0;
+}
+
+.service-description strong {
+    font-weight: 600;
+    color: #1c1917;
+}
+
+.service-description ul.service-included-list,
+.service-description ul {
+    margin-top: 0.625rem;
+    margin-bottom: 0.625rem;
+    padding: 0.75rem 1rem 0.75rem 1.75rem;
+    background-color: #fafaf9;
+    border: 1px solid #f5f5f4;
+    border-radius: 0.875rem;
+    list-style-type: disc;
+}
+
+.service-description ul.service-included-list li,
+.service-description ul li {
+    margin-bottom: 0.35rem;
+    padding-left: 0.25rem;
+    color: #57534e;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.service-description ul.service-included-list li:last-child,
+.service-description ul li:last-child {
+    margin-bottom: 0;
+}
+
+

@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 class BookingCodeService
 {
     /**
-     * Generate booking code format: MOR-[yymmdd]-[RANDOM5]
+     * Generate booking code format: MORE-[yymmdd]-[RANDOM5]
      */
     public static function generateCode(string $dateString): string
     {
@@ -17,7 +17,7 @@ class BookingCodeService
         // Replace non-alphanumeric just in case
         $randomPart = preg_replace('/[^A-Z0-9]/', 'X', $randomPart);
         
-        return "MOR-{$datePart}-{$randomPart}";
+        return "MORE-{$datePart}-{$randomPart}";
     }
 
     /**

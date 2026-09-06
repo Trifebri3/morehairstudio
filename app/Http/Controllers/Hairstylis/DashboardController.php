@@ -44,6 +44,9 @@ class DashboardController extends Controller
             ];
         }
 
+        // Auto-complete active treatments whose service duration has elapsed
+        Booking::autoCompleteDueBookings(null, $stylist->id);
+
         // 1. Haircut schedules for the target date
         $schedules = Booking::where('stylist_id', $stylist->id)
             ->whereDate('booking_date', $targetDate)
@@ -184,22 +187,15 @@ class DashboardController extends Controller
     }
 
     /**
-     * Confirm booking.
+     * Booking status is automated; direct manual confirmation is disabled.
      */
     public function confirmBooking($id)
     {
-        $user = auth()->user();
-        $stylist = Stylist::where('user_id', $user->id)->firstOrFail();
-
-        $booking = Booking::where('stylist_id', $stylist->id)->findOrFail($id);
-        $booking->status = 'confirmed';
-        $booking->save();
-
-        return back()->with('message', 'Booking berhasil dikonfirmasi.');
+        return back()->with('message', 'Status booking dikelola otomatis oleh sistem saat customer check-in.');
     }
 
     /**
-     * Complete booking.
+     * Booking completion is automated based on service duration.
      */
     public function completeBooking($id)
     {
@@ -207,13 +203,11 @@ class DashboardController extends Controller
         $stylist = Stylist::where('user_id', $user->id)->firstOrFail();
 
         $booking = Booking::where('stylist_id', $stylist->id)->findOrFail($id);
-        $booking->status = 'completed';
-        $booking->save();
-
-        if (class_exists(\App\Domains\Booking\Events\BookingCompleted::class)) {
-            event(new \App\Domains\Booking\Events\BookingCompleted($booking));
+        if ($booking->shouldAutoComplete()) {
+            $booking->autoCompleteIfDue();
+            return back()->with('message', 'Booking telah diselesaikan secara otomatis berdasarkan durasi layanan.');
         }
 
-        return back()->with('message', 'Booking telah diselesaikan.');
+        return back()->with('message', 'Layanan akan otomatis selesai saat durasi pengerjaan telah tercapai.');
     }
 }

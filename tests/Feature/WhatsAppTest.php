@@ -69,7 +69,13 @@ class WhatsAppTest extends TestCase
      */
     public function test_meta_provider_sending_success()
     {
-        config(['whatsapp.provider' => 'meta']);
+        config([
+            'whatsapp.provider' => 'meta',
+            'whatsapp.meta.token' => 'EAAGtesttoken',
+            'whatsapp.meta.phone_number_id' => '1234567890',
+            'whatsapp-cloud.access_token' => 'EAAGtesttoken',
+            'whatsapp-cloud.phone_number_id' => '1234567890'
+        ]);
 
         Http::fake([
             'graph.facebook.com/*' => Http::response([
@@ -122,7 +128,13 @@ class WhatsAppTest extends TestCase
      */
     public function test_failed_message_handling()
     {
-        config(['whatsapp.provider' => 'meta']);
+        config([
+            'whatsapp.provider' => 'meta',
+            'whatsapp.meta.token' => 'EAAGtesttoken',
+            'whatsapp.meta.phone_number_id' => '1234567890',
+            'whatsapp-cloud.access_token' => 'EAAGtesttoken',
+            'whatsapp-cloud.phone_number_id' => '1234567890'
+        ]);
 
         Http::fake([
             'graph.facebook.com/*' => Http::response([

@@ -61,9 +61,10 @@ class CreateBooking
 
             $outletId = $data['outlet_id'];
             $stylistId = $data['stylist_id'];
-            $serviceId = $data['service_id'];
-            $dateString = $data['booking_date'];
-            $timeString = $data['booking_time']; // Format H:i
+            $serviceId = $data['service_id'] ?? ($data['items'][0]['service_id'] ?? null);
+            $isWalkIn = ($data['source'] ?? '') === 'walk_in';
+            $dateString = $isWalkIn ? Carbon::today()->toDateString() : $data['booking_date'];
+            $timeString = $isWalkIn ? ($data['booking_time'] ?: Carbon::now()->format('H:i')) : $data['booking_time']; // Format H:i
 
             // 3. Resolve service pricing and duration
             $outletService = DB::table('outlet_services')
@@ -83,7 +84,9 @@ class CreateBooking
             $startTime = Carbon::createFromFormat('H:i', $timeString);
             $endTime = $startTime->copy()->addMinutes($duration);
 
-            // 4. Overlap/double booking check
+            // 4. Overlap/double booking check (auto-expire past no-show bookings first so slot is free)
+            Booking::autoExpireNoShows($outletId);
+
             $isOverlap = Booking::where('stylist_id', $stylistId)
                 ->whereDate('booking_date', $dateString)
                 ->whereNotIn('status', ['cancelled', 'expired'])

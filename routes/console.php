@@ -10,35 +10,24 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-// Auto-cancellation job for no-show bookings past 15 minutes
+// Auto-complete active treatments based on check-in time and service duration (runs every minute)
+Artisan::command('bookings:auto-complete', function () {
+    $count = Booking::autoCompleteDueBookings();
+    $this->info("Auto-completed {$count} due bookings successfully.");
+})->purpose('Auto-complete treatments whose service duration has elapsed after check-in');
+
 Schedule::call(function () {
-    $today = Carbon::today()->toDateString();
-    
-    $bookings = Booking::whereDate('booking_date', $today)
-        ->whereIn('status', ['pending', 'confirmed'])
-        ->with('items')
-        ->get();
+    Booking::autoCompleteDueBookings();
+})->everyMinute();
 
-    foreach ($bookings as $booking) {
-        $item = $booking->items->first();
-        if ($item) {
-            $bookingTime = Carbon::parse($booking->booking_date->format('Y-m-d') . ' ' . $item->start_time);
-            
-            // Cancel booking if customer has not arrived 15 minutes after start time
-            if (Carbon::now()->gt($bookingTime->addMinutes(15))) {
-                $booking->update([
-                    'status' => 'expired'
-                ]);
+// Auto-cancel / expire no-show bookings that missed the outlet's configured check-in grace period (runs every minute)
+Artisan::command('bookings:auto-expire', function () {
+    $count = Booking::autoExpireNoShows();
+    $this->info("Auto-expired {$count} no-show bookings past check-in grace period. Slots freed.");
+})->purpose('Auto-expire bookings where customer did not check in within outlet grace period');
 
-                $booking->statusHistories()->create([
-                    'status' => 'expired',
-                    'reason' => 'Auto-expired: No-show 15 minutes past schedule.'
-                ]);
-
-                event(new \App\Domains\Booking\Events\BookingExpired($booking));
-            }
-        }
-    }
+Schedule::call(function () {
+    Booking::autoExpireNoShows();
 })->everyMinute();
 
 // Hourly Booking Reminder Job

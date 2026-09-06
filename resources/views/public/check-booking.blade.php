@@ -249,7 +249,7 @@
                         <div class="relative flex items-center">
                             <input type="text"
                                    x-model="searchQuery"
-                                   placeholder="Contoh: 08123456789 atau MOR-..."
+                                   placeholder="Contoh: 08123456789 atau MORE-..."
                                    class="w-full bg-white border border-stone-300 rounded-2xl py-4 pl-4 pr-32 text-sm font-mono text-[#171615] focus:outline-none focus:border-[#c9512d] placeholder:text-stone-400 font-bold transition shadow-xs">
                             
                             <button type="submit"

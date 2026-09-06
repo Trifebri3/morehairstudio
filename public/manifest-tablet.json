@@ -1,20 +1,31 @@
 {
-    "name": "SCANEOUTLET",
-    "short_name": "SCANEOUTLET",
-    "start_url": "/tablet",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#0A3D91",
-    "icons": [
-        {
-            "src": "/icon-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/icon-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
+  "name": "MORE Hair Studio — Tablet Terminal",
+  "short_name": "MORE Terminal",
+  "description": "Studio Operation & Front Desk Terminal for MORE Hair Studio",
+  "start_url": "/tablet",
+  "scope": "/tablet",
+  "display": "standalone",
+  "background_color": "#141210",
+  "theme_color": "#c9512d",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ]
 }

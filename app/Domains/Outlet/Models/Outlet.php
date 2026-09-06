@@ -43,4 +43,28 @@ class Outlet extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    public function getGoogleMapsUrlAttribute(): string
+    {
+        if ($this->latitude && $this->longitude) {
+            return "https://www.google.com/maps/search/?api=1&query={$this->latitude},{$this->longitude}";
+        }
+
+        return "https://www.google.com/maps/search/?api=1&query=" . urlencode($this->name . ' ' . $this->address);
+    }
+
+    public function getGoogleMapsEmbedUrlAttribute(): string
+    {
+        if (!empty($this->map_iframe)) {
+            if (preg_match('/src="([^"]+)"/', $this->map_iframe, $match)) {
+                return $match[1];
+            }
+        }
+
+        if ($this->latitude && $this->longitude) {
+            return "https://maps.google.com/maps?q={$this->latitude},{$this->longitude}&t=&z=16&ie=UTF8&iwloc=&output=embed";
+        }
+
+        return "https://maps.google.com/maps?q=" . urlencode($this->name . ' ' . $this->address) . "&t=&z=16&ie=UTF8&iwloc=&output=embed";
+    }
 }

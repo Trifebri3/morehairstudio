@@ -8,6 +8,8 @@ Route::get('/', [\App\Http\Controllers\PublicController::class, 'home'])->name('
 Route::get('/about', [\App\Http\Controllers\PublicController::class, 'about'])->name('about');
 Route::get('/services', [\App\Http\Controllers\PublicController::class, 'services'])->name('services.index');
 Route::get('/stylists', [\App\Http\Controllers\PublicController::class, 'stylists'])->name('stylists.index');
+Route::get('/jadwal', [\App\Http\Controllers\PublicController::class, 'schedule'])->name('schedule.index');
+Route::get('/schedule', [\App\Http\Controllers\PublicController::class, 'schedule'])->name('schedule.alias');
 Route::get('/outlets', [\App\Http\Controllers\PublicController::class, 'outlets'])->name('outlets.index');
 Route::get('/outlets/{slug}', [\App\Http\Controllers\PublicController::class, 'outletShow'])->name('outlets.show');
 Route::get('/terms', [\App\Http\Controllers\PublicController::class, 'terms'])->name('terms');
@@ -83,3 +85,10 @@ Route::get('/impersonate/stop', function () {
     auth()->login($originalUser);
     return redirect()->route('dashboard');
 })->middleware(['auth'])->name('impersonate.stop');
+
+// Hair Artist / Stylist Direct Public Profile & Instant Booking
+Route::get('/artist/{stylistSlug}', [\App\Http\Controllers\PublicController::class, 'stylistProfile'])->name('stylist.public.profile.alias');
+Route::get('/{stylistSlug}', [\App\Http\Controllers\PublicController::class, 'stylistProfile'])
+    ->where('stylistSlug', '^(?!(admin|outlet|tablet|booking|api|dashboard|profile|password|stylist|locale|impersonate|storage|favicon\.ico|robots\.txt)).*$')
+    ->name('stylist.public.profile');
+

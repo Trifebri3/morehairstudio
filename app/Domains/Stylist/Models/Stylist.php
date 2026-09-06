@@ -12,13 +12,29 @@ use App\Domains\Attendance\Models\Attendance;
 class Stylist extends Model
 {
     protected $fillable = [
-        'outlet_id', 'user_id', 'name', 'slug', 'photo', 'bio',
-        'specialization', 'rating', 'status', 'phone'
+        'outlet_id', 'user_id', 'name', 'slug', 'photo', 'photo_path', 'bio',
+        'specialization', 'rating', 'status', 'phone', 'instagram', 'tiktok'
     ];
 
     protected $casts = [
         'rating' => 'decimal:2',
     ];
+
+    public function getPublicProfileUrlAttribute(): string
+    {
+        return url('/' . ($this->slug ?: \Illuminate\Support\Str::slug($this->name)));
+    }
+
+    public function getDisplayPhotoAttribute(): string
+    {
+        if ($this->photo && (str_starts_with($this->photo, 'http') || str_starts_with($this->photo, '/storage') || str_starts_with($this->photo, 'storage/'))) {
+            return str_starts_with($this->photo, 'storage/') ? '/' . $this->photo : $this->photo;
+        }
+        if ($this->photo_path) {
+            return '/storage/' . ltrim($this->photo_path, '/');
+        }
+        return 'https://api.dicebear.com/7.x/avataaars/svg?seed=' . urlencode($this->slug ?: $this->name);
+    }
 
     public function outlet()
     {

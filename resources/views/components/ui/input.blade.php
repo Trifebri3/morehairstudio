@@ -7,7 +7,7 @@
 
 @php
     $id = $id ?? 'input-' . uniqid();
-    $inputClasses = 'bg-[#fafaf9] border border-stone-200 text-stone-900 placeholder-stone-450 focus:border-[#0A3D91]';
+    $inputClasses = 'bg-[#fafaf9] border border-stone-200 text-stone-900 placeholder-stone-450 focus:border-[#c9512d] focus:ring-1 focus:ring-[#c9512d]';
 @endphp
 
 <div class="w-full">

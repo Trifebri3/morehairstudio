@@ -12,15 +12,41 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Plus Jakarta Sans', 'Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['"Plus Jakarta Sans"', '"Suisse Int\'l"', 'Inter', ...defaultTheme.fontFamily.sans],
+                primary: ['"Plus Jakarta Sans"', '"Stack Sans Notch"', 'Inter', 'sans-serif'],
+                display: ['"Plus Jakarta Sans"', '"Stack Sans Notch"', 'Inter', 'sans-serif'],
+                headline: ['"Plus Jakarta Sans"', '"Stack Sans Notch"', 'Inter', 'sans-serif'],
+                secondary: ['"Plus Jakarta Sans"', '"Suisse Int\'l"', 'Inter', 'sans-serif'],
+                serif: ['"EB Garamond"', '"Adobe Caslon Pro"', 'Georgia', 'serif'],
+                caslon: ['"EB Garamond"', '"Adobe Caslon Pro"', 'Georgia', 'serif'],
+                alverata: ['"Plus Jakarta Sans"', 'sans-serif'],
+                josefa: ['"Plus Jakarta Sans"', 'sans-serif'],
+                mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
             },
             colors: {
                 brand: {
-                    50: '#eff6ff',
-                    100: '#dbeafe',
-                    500: '#0A3D91',
-                    600: '#0A3D91',
-                    700: '#062e70',
+                    50: '#fdf7f4',
+                    100: '#faede7',
+                    200: '#f6d9ce',
+                    300: '#efbba9',
+                    400: '#e59278',
+                    500: '#c9512d', // Burnt Orange primary
+                    600: '#b74423',
+                    700: '#98361b',
+                    800: '#7d2e1a',
+                    900: '#672a1a',
+                    950: '#38120a',
+                },
+                burnt: {
+                    DEFAULT: '#c9512d',
+                    hover: '#b74423',
+                    light: '#faede7',
+                    50: '#fdf7f4',
+                    100: '#faede7',
+                    200: '#f6d9ce',
+                    500: '#c9512d',
+                    600: '#b74423',
+                    700: '#98361b',
                 }
             }
         },
@@ -28,3 +54,4 @@ export default {
 
     plugins: [forms],
 };
+

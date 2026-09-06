@@ -6,6 +6,8 @@ use App\Http\Controllers\Booking\BookingController;
 Route::get('/booking', [BookingController::class, 'index'])->name('booking');
 Route::get('/booking/index', [BookingController::class, 'index'])->name('booking.index');
 Route::get('/booking/slots', [BookingController::class, 'getSlots'])->name('booking.slots');
+Route::get('/booking/month-occupancy', [BookingController::class, 'getMonthOccupancy'])->name('booking.month-occupancy');
+Route::get('/booking/check-interval', [BookingController::class, 'checkInterval'])->name('booking.check-interval');
 Route::get('/booking/customer-lookup', [BookingController::class, 'lookupCustomer'])->name('booking.customer-lookup');
 Route::get('/booking/apply-promo', [BookingController::class, 'applyPromo'])->name('booking.apply-promo');
 Route::post('/booking/confirm', [BookingController::class, 'confirmBooking'])->name('booking.confirm');

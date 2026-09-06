@@ -23,24 +23,61 @@ class TabletKioskController extends Controller
         if ($request->has('tablet_outlet_id')) {
             session(['tablet_outlet_id' => (int)$request->query('tablet_outlet_id')]);
         }
-        return view('tablet.dashboard');
+        $tabletOutletId = session('tablet_outlet_id', 2);
+        $outlet = Outlet::find($tabletOutletId) ?? Outlet::first();
+
+        // Auto-complete any active treatments that reached their duration
+        Booking::autoCompleteDueBookings($tabletOutletId);
+        // Auto-expire any no-show bookings that missed check-in grace period
+        Booking::autoExpireNoShows($tabletOutletId);
+
+        $today = Carbon::today()->toDateString();
+        $activeQueueCount = Booking::where('outlet_id', $tabletOutletId)
+            ->whereDate('booking_date', $today)
+            ->whereIn('status', ['confirmed', 'checked_in', 'in_progress'])
+            ->count();
+
+        $stylistsCount = Stylist::where('outlet_id', $tabletOutletId)
+            ->where('status', 'active')
+            ->count();
+
+        $completedTodayCount = Booking::where('outlet_id', $tabletOutletId)
+            ->whereDate('booking_date', $today)
+            ->where('status', 'completed')
+            ->count();
+
+        return view('tablet.dashboard', compact(
+            'outlet',
+            'activeQueueCount',
+            'stylistsCount',
+            'completedTodayCount'
+        ));
     }
 
     public function checkIn(Request $request)
     {
-        $tabletOutletId = session('tablet_outlet_id', 1);
+        $tabletOutletId = session('tablet_outlet_id', 2);
         $searchQuery = $request->get('searchQuery', '');
+        $uniqueCode = $request->get('unique_code', '');
         $booking = null;
         $errorMessage = null;
         $successMessage = null;
 
+        $todayYmd = Carbon::today()->format('ymd');
+        $todayPrefix = "MORE-{$todayYmd}-";
+
+        // If unique_code was sent from segmented input
+        if ($uniqueCode && !$searchQuery) {
+            $searchQuery = $todayPrefix . strtoupper(trim($uniqueCode));
+        }
+
         if ($searchQuery) {
-            $search = trim($searchQuery);
+            $search = strtoupper(trim($searchQuery));
 
             // Intercept stylist QR check-in
-            if (str_starts_with($search, 'stylist:') || preg_match('/^MH-ST-\d+$/', $search)) {
+            if (str_starts_with($search, 'STYLIST:') || preg_match('/^MH-ST-\d+$/', $search)) {
                 $stylistId = null;
-                if (str_starts_with($search, 'stylist:')) {
+                if (str_starts_with($search, 'STYLIST:')) {
                     $stylistId = (int) substr($search, 8);
                 } else {
                     $stylistId = (int) substr($search, 6);
@@ -101,13 +138,36 @@ class TabletKioskController extends Controller
                 }
             } else {
                 // Lookup by booking code or token
-                $booking = Booking::where('booking_code', $search)
-                    ->orWhere('booking_token', $search)
-                    ->with(['customer', 'outlet', 'stylist', 'items.service'])
-                    ->first();
+                // Support multiple formats: pure 5-digit code, MOR- prefix, or MORE- prefix
+                $candidates = [$search];
+                
+                // If pure unique code (no hyphens)
+                if (!str_contains($search, '-')) {
+                    $candidates[] = "MORE-{$todayYmd}-{$search}";
+                    $candidates[] = "MOR-{$todayYmd}-{$search}";
+                }
+                
+                // Normalize MORE- vs MOR-
+                if (str_starts_with($search, 'MORE-')) {
+                    $candidates[] = 'MOR-' . substr($search, 5);
+                } elseif (str_starts_with($search, 'MOR-')) {
+                    $candidates[] = 'MORE-' . substr($search, 4);
+                }
+
+                $booking = Booking::where(function ($q) use ($candidates, $search) {
+                    $q->whereIn('booking_code', $candidates)
+                      ->orWhere('booking_token', $search);
+                    
+                    // Suffix fallback: if user typed just the 5 letters
+                    if (strlen($search) <= 7 && !str_contains($search, '-')) {
+                        $q->orWhere('booking_code', 'like', "%-{$search}");
+                    }
+                })
+                ->with(['customer', 'outlet', 'stylist', 'items.service'])
+                ->first();
 
                 if (!$booking) {
-                    $errorMessage = 'Booking tidak ditemukan. Pastikan kode Anda benar.';
+                    $errorMessage = "Booking dengan kode '{$search}' tidak ditemukan. Pastikan kode unik sudah benar.";
                 } else if ($booking->outlet_id !== $tabletOutletId) {
                     $errorMessage = "Booking ini terdaftar untuk outlet: {$booking->outlet->name}. Silakan check-in di outlet tersebut.";
                     $booking = null;
@@ -115,7 +175,7 @@ class TabletKioskController extends Controller
             }
         }
 
-        return view('tablet.check-in', compact('booking', 'searchQuery', 'errorMessage', 'successMessage'));
+        return view('tablet.check-in', compact('booking', 'searchQuery', 'errorMessage', 'successMessage', 'todayPrefix', 'todayYmd'));
     }
 
     public function processCheckIn(Request $request, $id)
@@ -123,13 +183,16 @@ class TabletKioskController extends Controller
         try {
             $booking = Booking::findOrFail($id);
             $checkIn = new CheckInBooking();
-            $tabletOutletId = session('tablet_outlet_id', 1);
+            $tabletOutletId = session('tablet_outlet_id', 2);
             $checkIn->execute($booking, $tabletOutletId);
+
+            $duration = $booking->service_duration_minutes ?? $booking->calculateServiceDuration();
+            $estEnd = $booking->service_end_at ? $booking->service_end_at->format('H:i') : '-';
 
             return redirect()->route('tablet.check-in')
                 ->with('success_overlay', [
                     'type' => 'checkin',
-                    'message' => "Check-in berhasil! Selamat datang, {$booking->customer->name}."
+                    'message' => "Check-in berhasil! Layanan dimulai (durasi {$duration} menit, auto-selesai est. {$estEnd} WIB). Selamat datang, {$booking->customer->name}!"
                 ]);
         } catch (\Exception $e) {
             return redirect()->route('tablet.check-in', ['searchQuery' => $booking->booking_code])
@@ -207,9 +270,11 @@ class TabletKioskController extends Controller
 
     public function queue(Request $request)
     {
-        $today = Carbon::today()->toDateString();
-        $tabletOutletId = session('tablet_outlet_id', 1);
+        $tabletOutletId = session('tablet_outlet_id', 2);
+        Booking::autoCompleteDueBookings($tabletOutletId);
+        Booking::autoExpireNoShows($tabletOutletId);
 
+        $today = Carbon::today()->toDateString();
         $bookings = Booking::where('outlet_id', $tabletOutletId)
             ->where('booking_date', $today)
             ->whereIn('status', ['pending', 'confirmed', 'checked_in', 'in_progress', 'completed'])
@@ -222,12 +287,15 @@ class TabletKioskController extends Controller
     public function startService(Request $request, $id)
     {
         $booking = Booking::findOrFail($id);
+        if (!$booking->service_start_at) {
+            $booking->startServiceTiming();
+        }
         $booking->update(['status' => 'in_progress']);
 
         BookingStatusHistory::create([
             'booking_id' => $booking->id,
             'status' => 'in_progress',
-            'reason' => 'Stylist started treatment.'
+            'reason' => "Treatment dimulai. Durasi: {$booking->service_duration_minutes} menit."
         ]);
 
         return back()->with('message', "Treatment dimulai untuk booking: {$booking->booking_code}.");

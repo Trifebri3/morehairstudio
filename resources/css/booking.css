@@ -2,5 +2,6 @@
 
 /* Booking wizard steps timeline styles */
 .step-dot-active {
-    box-shadow: 0 0 10px #fbbf24;
+    box-shadow: 0 0 10px rgba(201, 81, 45, 0.4);
 }
+

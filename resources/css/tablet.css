@@ -1,41 +1,57 @@
 @import './app.css';
 
-/* Core light theme variables and body override for tablet */
+/* Core theme variables and body override for tablet */
 body {
-    background-color: #ffffff !important;
+    background-color: #fafaf9 !important;
     color: #1c1917 !important;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 /* Touch-friendly operations overrides */
-button, input, select {
+button, input, select, a.touch-btn {
     min-height: 48px; /* Large touch target for tablet tap precision */
 }
 
-/* White glassmorphism overrides for tablet cards */
-.glass-panel {
-    background: rgba(255, 255, 255, 0.95) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    border: 1px solid rgba(231, 229, 228, 0.8) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
+/* Luxury card panel overrides for tablet cards */
+.tablet-card {
+    background: #ffffff !important;
+    border: 1px solid #e7e5e4 !important;
+    box-shadow: 0 4px 20px -2px rgba(28, 25, 23, 0.04) !important;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.glass-panel:hover {
-    border-color: rgba(10, 61, 145, 0.2) !important;
-    box-shadow: 0 10px 30px -10px rgba(10, 61, 145, 0.05) !important;
+.tablet-card:hover, .tablet-card:active {
+    border-color: rgba(201, 81, 45, 0.4) !important;
+    box-shadow: 0 12px 30px -8px rgba(201, 81, 45, 0.12) !important;
+    transform: translateY(-2px);
 }
 
-/* Dashed blue scanner guide */
+/* Dashed camera preview guide */
 .camera-preview-container {
-    border: 3px dashed #0a3d91 !important;
+    border: 3px dashed #c9512d !important;
 }
 
 /* Custom scrollbars for lists */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
 ::-webkit-scrollbar-track {
-    background: #ffffff !important;
+    background: #fafaf9 !important;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: #e7e5e4 !important;
-    border-radius: 3px;
+    background: #d6d3d1 !important;
+    border-radius: 9999px;
+}
+
+/* Floating Bottom Dock styling */
+.tablet-dock {
+    background: rgba(28, 25, 23, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.3);
 }

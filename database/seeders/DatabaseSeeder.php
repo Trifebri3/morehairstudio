@@ -238,25 +238,17 @@ class DatabaseSeeder extends Seeder
 
         // Create Schedules for each stylist (Day 1 to 6 = Mon to Sat)
         foreach ([$budi, $ani, $john, $rina] as $stylist) {
-            for ($day = 1; $day <= 6; $day++) {
+            for ($day = 0; $day <= 6; $day++) {
                 StylistSchedule::create([
                     'stylist_id' => $stylist->id,
                     'day_of_week' => $day,
                     'start_time' => '10:00:00',
-                    'end_time' => '19:00:00',
-                    'break_start' => '13:00:00',
-                    'break_end' => '14:00:00',
+                    'end_time' => '20:00:00',
+                    'break_start' => null,
+                    'break_end' => null,
                     'is_working' => true
                 ]);
             }
-            // Sunday (0) is day off
-            StylistSchedule::create([
-                'stylist_id' => $stylist->id,
-                'day_of_week' => 0,
-                'start_time' => '10:00:00',
-                'end_time' => '18:00:00',
-                'is_working' => false
-            ]);
         }
 
         // 6. Create Promotions
@@ -330,7 +322,7 @@ class DatabaseSeeder extends Seeder
 
         // 8. Create some historical bookings
         $b1 = Booking::create([
-            'booking_code' => 'MOR-180826-A1B2C',
+            'booking_code' => 'MORE-180826-A1B2C',
             'booking_token' => Str::random(32),
             'customer_id' => $c1->id,
             'outlet_id' => $bandung->id,
@@ -375,7 +367,7 @@ class DatabaseSeeder extends Seeder
 
         // Booking 2: Jakarta booking for Siti
         $b2 = Booking::create([
-            'booking_code' => 'MOR-180826-X9Y8Z',
+            'booking_code' => 'MORE-180826-X9Y8Z',
             'booking_token' => Str::random(32),
             'customer_id' => $c2->id,
             'outlet_id' => $jakarta->id,

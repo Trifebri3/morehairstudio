@@ -41,40 +41,8 @@ class AvailabilityService
 
         $duration = $outletService ? ($outletService->duration ?? 45) : 45;
 
-        // Auto-expire past bookings that missed the check-in grace period
-        $outlet = Outlet::find($outletId);
-        $graceActive = $outlet ? (bool)($outlet->checkin_grace_period_active ?? true) : true;
-        $graceMinutes = $outlet ? ($outlet->checkin_grace_period_minutes ?? 15) : 15;
-
-        if ($graceActive) {
-            $now = Carbon::now();
-            $pendingBookings = Booking::where('outlet_id', $outletId)
-                ->where('status', 'confirmed')
-                ->where(function ($q) use ($now) {
-                    $q->whereDate('booking_date', '<', $now->toDateString())
-                      ->orWhere(function ($sub) use ($now) {
-                          $sub->whereDate('booking_date', $now->toDateString());
-                      });
-                })
-                ->with('items')
-                ->get();
-
-            foreach ($pendingBookings as $pb) {
-                $firstItem = $pb->items->first();
-                if ($firstItem) {
-                    $pbStart = Carbon::parse($pb->booking_date->toDateString() . ' ' . $firstItem->start_time);
-                    if ($pbStart->addMinutes($graceMinutes)->isPast()) {
-                        $pb->update(['status' => 'expired']);
-
-                        \App\Domains\Booking\Models\BookingStatusHistory::create([
-                            'booking_id' => $pb->id,
-                            'status' => 'expired',
-                            'reason' => "Booking auto-expired: missed check-in grace period of {$graceMinutes} minutes."
-                        ]);
-                    }
-                }
-            }
-        }
+        // Auto-expire no-show bookings that missed the check-in grace period
+        Booking::autoExpireNoShows($outletId);
 
         // Get existing active bookings for this stylist on this date
         $existingBookings = Booking::where('stylist_id', $stylistId)
@@ -83,30 +51,32 @@ class AvailabilityService
             ->with('items')
             ->get();
 
-        $startTime = Carbon::createFromFormat('H:i:s', $schedule->start_time);
-        $endTime = Carbon::createFromFormat('H:i:s', $schedule->end_time);
+        $outlet = Outlet::find($outletId);
+        $dayName = strtolower($date->format('l'));
+        $outletHours = ($outlet && isset($outlet->opening_hours[$dayName])) ? $outlet->opening_hours[$dayName] : null;
+        $isOutletOpen = $outletHours ? (bool)($outletHours['is_open'] ?? true) : true;
+        if (!$isOutletOpen) {
+            return [];
+        }
 
-        $breakStart = $schedule->break_start ? Carbon::createFromFormat('H:i:s', $schedule->break_start) : null;
-        $breakEnd = $schedule->break_end ? Carbon::createFromFormat('H:i:s', $schedule->break_end) : null;
+        $defaultOpen = ($outletHours && !empty($outletHours['open'])) ? $outletHours['open'] . ':00' : '10:00:00';
+        $defaultClose = ($outletHours && !empty($outletHours['close'])) ? $outletHours['close'] . ':00' : '20:00:00';
+
+        $startTimeStr = ($schedule && $schedule->start_time) ? $schedule->start_time : $defaultOpen;
+        $endTimeStr = ($schedule && $schedule->end_time) ? $schedule->end_time : $defaultClose;
+
+        $startTime = Carbon::createFromFormat('H:i:s', $startTimeStr);
+        $endTime = Carbon::createFromFormat('H:i:s', $endTimeStr);
 
         $slots = [];
         $current = $startTime->copy();
-
-        $outlet = Outlet::find($outletId);
         $leadTimeHours = $outlet ? $outlet->booking_lead_time_hours : 1;
 
-        // Increment slots every 30 minutes
+        // Increment slots by service duration
         while ($current->copy()->addMinutes($duration)->lte($endTime)) {
             $slotStart = $current->copy();
             $slotEnd = $current->copy()->addMinutes($duration);
             $isAvailable = true;
-
-            // Check if slot falls in break time
-            if ($breakStart && $breakEnd) {
-                if ($slotStart->lt($breakEnd) && $slotEnd->gt($breakStart)) {
-                    $isAvailable = false;
-                }
-            }
 
             // Check if slot overlaps with existing bookings
             if ($isAvailable) {
@@ -128,8 +98,8 @@ class AvailabilityService
                 $slotStartDateTime = Carbon::parse($dateString . ' ' . $slotStart->format('H:i:s'));
                 
                 if ($isWalkIn) {
-                    // Walk-in is immediately available at this time
-                    if ($slotStartDateTime->lt(Carbon::now())) {
+                    // Walk-in is immediately available at this time with 15 minutes grace
+                    if ($slotStartDateTime->lt(Carbon::now()->subMinutes(15))) {
                         $isAvailable = false;
                     }
                 } else {
@@ -152,5 +122,109 @@ class AvailabilityService
         }
 
         return $slots;
+    }
+
+    /**
+     * Check if a specific custom start time and duration is available for a stylist.
+     */
+    public function isIntervalAvailable(int $outletId, int $stylistId, int $serviceId, string $dateString, string $timeString, bool $isWalkIn = false): array
+    {
+        $date = Carbon::parse($dateString);
+        $dayOfWeek = $date->dayOfWeek;
+
+        $stylist = Stylist::with(['schedules' => function ($q) use ($dayOfWeek) {
+            $q->where('day_of_week', $dayOfWeek);
+        }])->find($stylistId);
+
+        if (!$stylist) {
+            return ['available' => false, 'message' => 'Stylist tidak ditemukan.'];
+        }
+
+        $schedule = $stylist->schedules->first();
+        if (!$schedule || !$schedule->is_working) {
+            return ['available' => false, 'message' => "Stylist {$stylist->name} tidak bertugas pada hari yang dipilih."];
+        }
+
+        // Resolve service duration
+        $outletService = DB::table('outlet_services')
+            ->where('outlet_id', $outletId)
+            ->where('service_id', $serviceId)
+            ->first();
+
+        $duration = $outletService ? ($outletService->duration ?? null) : null;
+        if ($duration === null) {
+            $service = Service::find($serviceId);
+            $duration = $service ? $service->default_duration : 45;
+        }
+
+        try {
+            $startTime = Carbon::createFromFormat('H:i', $timeString);
+        } catch (\Exception $e) {
+            return ['available' => false, 'message' => 'Format jam tidak valid (gunakan format JJ:MM).'];
+        }
+
+        $endTime = $startTime->copy()->addMinutes($duration);
+
+        $workStart = Carbon::createFromFormat('H:i:s', $schedule->start_time);
+        $workEnd = Carbon::createFromFormat('H:i:s', $schedule->end_time);
+
+        // Check working hours
+        if ($startTime->lt($workStart) || $endTime->gt($workEnd)) {
+            return [
+                'available' => false,
+                'message' => "Jam operasional stylist {$stylist->name} adalah {$workStart->format('H:i')} - {$workEnd->format('H:i')} WIB."
+            ];
+        }
+
+
+        // Auto-expire no-show bookings that missed the check-in grace period
+        Booking::autoExpireNoShows($outletId);
+
+        // Check existing bookings overlap
+        $existingBookings = Booking::where('stylist_id', $stylistId)
+            ->whereDate('booking_date', $dateString)
+            ->whereNotIn('status', ['cancelled', 'expired'])
+            ->with('items')
+            ->get();
+
+        foreach ($existingBookings as $booking) {
+            foreach ($booking->items as $item) {
+                $bStart = Carbon::createFromFormat('H:i:s', $item->start_time);
+                $bEnd = Carbon::createFromFormat('H:i:s', $item->end_time);
+
+                if ($startTime->lt($bEnd) && $endTime->gt($bStart)) {
+                    return [
+                        'available' => false,
+                        'message' => "Stylist {$stylist->name} sudah memiliki jadwal sesi jam {$bStart->format('H:i')} - {$bEnd->format('H:i')} WIB. Sesi {$startTime->format('H:i')} - {$endTime->format('H:i')} bertabrakan."
+                    ];
+                }
+            }
+        }
+
+        // Check past time and lead time
+        $outlet = Outlet::find($outletId);
+        $leadTimeHours = $outlet ? $outlet->booking_lead_time_hours : 1;
+        $slotStartDateTime = Carbon::parse($dateString . ' ' . $startTime->format('H:i:s'));
+
+        if ($isWalkIn) {
+            if ($slotStartDateTime->lt(Carbon::now()->subMinutes(15))) {
+                return ['available' => false, 'message' => 'Waktu sesi walk-in lebih dari 15 menit yang lalu.'];
+            }
+        } else {
+            if ($slotStartDateTime->lt(Carbon::now()->addHours($leadTimeHours))) {
+                return [
+                    'available' => false,
+                    'message' => "Pemesanan online minimal {$leadTimeHours} jam sebelum sesi dimulai."
+                ];
+            }
+        }
+
+        return [
+            'available' => true,
+            'duration' => $duration,
+            'start_time' => $startTime->format('H:i'),
+            'end_time' => $endTime->format('H:i'),
+            'message' => "Sesi {$startTime->format('H:i')} - {$endTime->format('H:i')} WIB ({$duration} Menit) tersedia!"
+        ];
     }
 }

@@ -8,7 +8,9 @@
 
     @if ($error_unlinked)
         <div class="p-6 max-w-lg mx-auto bg-white border border-stone-200 rounded-2xl shadow-sm text-center space-y-4">
-            <div class="text-4xl">⚠️</div>
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+            </div>
             <h3 class="font-extrabold text-stone-900 text-lg uppercase tracking-tight">Akun Belum Terhubung</h3>
             <p class="text-stone-500 text-sm">Akun user Anda belum terhubung dengan data Stylist di Outlet manapun. Silakan hubungi Administrator atau Outlet Manager Anda untuk mengaitkan akun ini.</p>
         </div>
@@ -18,7 +20,7 @@
             @if(session()->has('message'))
                 <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-semibold flex items-center justify-between shadow-sm">
                     <div class="flex items-center space-x-2">
-                        <span>✅</span>
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                         <span>{{ session('message') }}</span>
                     </div>
                 </div>
@@ -27,7 +29,7 @@
             @if(session()->has('error'))
                 <div class="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-sm font-semibold flex items-center justify-between shadow-sm">
                     <div class="flex items-center space-x-2">
-                        <span>❌</span>
+                        <svg class="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                         <span>{{ session('error') }}</span>
                     </div>
                 </div>
@@ -208,25 +210,51 @@
                                                 </svg>
                                             </a>
 
-                                            <!-- Status operations -->
-                                            @if ($booking->status === 'pending')
-                                                <form method="POST" action="{{ route('stylist.booking.confirm', $booking->id) }}">
-                                                    @csrf
-                                                    <button type="submit" class="px-4 py-2 bg-brand-50 hover:bg-brand-100 text-brand-600 font-extrabold text-[10px] uppercase rounded-xl tracking-wider transition border border-brand-100 shadow-sm">
-                                                        Konfirmasi
-                                                    </button>
-                                                </form>
-                                            @elseif ($booking->status === 'confirmed')
-                                                <form method="POST" action="{{ route('stylist.booking.complete', $booking->id) }}">
-                                                    @csrf
-                                                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[10px] uppercase rounded-xl tracking-wider transition shadow-sm">
-                                                        Selesaikan
-                                                    </button>
-                                                </form>
+                                            <!-- Automated Lifecycle Status Indicator (Read-Only Monitoring) -->
+                                            @if ($booking->status === 'checked_in' || $booking->status === 'in_progress')
+                                                <div class="flex flex-col items-end space-y-1">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-[#faede7] text-[#c9512d] border border-[#f4cbba] uppercase tracking-wider shadow-2xs">
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#c9512d] mr-1.5 animate-ping"></span>
+                                                        Sedang Dikerjakan
+                                                    </span>
+                                                    <div class="text-[10px] text-stone-500 font-mono text-right">
+                                                        @if($booking->service_start_at && $booking->service_end_at)
+                                                            <span>{{ $booking->service_start_at->format('H:i') }} - {{ $booking->service_end_at->format('H:i') }} WIB</span>
+                                                            <span class="font-bold text-[#c9512d] block">(Sisa {{ $booking->remaining_service_minutes }} mnt)</span>
+                                                        @else
+                                                            <span>Durasi: {{ $booking->service_duration_minutes ?? $booking->calculateServiceDuration() }} mnt</span>
+                                                        @endif
+                                                    </div>
+                                                </div>
                                             @elseif ($booking->status === 'completed')
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">Selesai</span>
+                                                <div class="flex flex-col items-end space-y-0.5">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">
+                                                        Selesai
+                                                    </span>
+                                                    @if($booking->service_end_at)
+                                                        <span class="text-[9px] text-stone-400 font-mono">Pkl {{ $booking->service_end_at->format('H:i') }} WIB</span>
+                                                    @endif
+                                                </div>
+                                            @elseif ($booking->status === 'confirmed')
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-blue-50 text-[#0A3D91] border border-blue-200 uppercase tracking-wider">
+                                                    Menunggu Check-In
+                                                </span>
+                                            @elseif ($booking->status === 'pending')
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-amber-50 text-amber-700 border border-amber-200 uppercase tracking-wider">
+                                                    Pending
+                                                </span>
                                             @elseif ($booking->status === 'cancelled')
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-stone-100 text-stone-500 border border-stone-200 uppercase tracking-wider">Batal</span>
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-stone-100 text-stone-500 border border-stone-200 uppercase tracking-wider">
+                                                    Batal
+                                                </span>
+                                            @elseif ($booking->status === 'expired')
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-rose-50 text-rose-600 border border-rose-200 uppercase tracking-wider">
+                                                    Kedaluwarsa
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-stone-100 text-stone-600 border border-stone-200 uppercase tracking-wider">
+                                                    {{ ucfirst($booking->status) }}
+                                                </span>
                                             @endif
                                         </div>
                                     </div>

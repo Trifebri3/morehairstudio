@@ -94,24 +94,27 @@
         <div class="glass-panel p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-6">
             <div>
                 <h3 class="text-lg font-bold text-stone-900 mb-1">Pengaturan Toleransi & Pemesanan Online</h3>
-                <p class="text-xs text-stone-500">Kelola batas minimum waktu pemesanan online sebelum sesi dimulai dan toleransi keterlambatan hadir.</p>
+                <p class="text-xs text-stone-500">Kelola batas waktu pemesanan online serta toleransi keterlambatan check-in (booking otomatis hangus dan slot kembali kosong jika pelanggan telat).</p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                 <div>
                     <x-ui.input label="Batas Minimum Booking Online (Jam)" type="number" min="0" max="72" name="bookingLeadTime" value="{{ old('bookingLeadTime', $bookingLeadTime) }}" required />
                     <x-input-error :messages="$errors->get('bookingLeadTime')" class="mt-1" />
+                    <p class="text-[10px] text-stone-400 mt-1">Contoh: 1 jam sebelum jadwal dimulai.</p>
                 </div>
                 <div>
-                    <x-ui.select label="Auto-Cancel Grace Period" name="checkinGraceActive" id="grace-period-select" onchange="toggleGraceInput(this.value)">
-                        <option value="1" {{ old('checkinGraceActive', $checkinGraceActive) == 1 ? 'selected' : '' }}>Aktif (Auto-Cancel)</option>
-                        <option value="0" {{ old('checkinGraceActive', $checkinGraceActive) == 0 ? 'selected' : '' }}>Nonaktif</option>
+                    <x-ui.select label="Auto-Hangus Jika Tidak Cekin" name="checkinGraceActive" id="grace-period-select" onchange="toggleGraceInput(this.value)">
+                        <option value="1" {{ old('checkinGraceActive', $checkinGraceActive) == 1 ? 'selected' : '' }}>Aktif (Otomatis Hangus)</option>
+                        <option value="0" {{ old('checkinGraceActive', $checkinGraceActive) == 0 ? 'selected' : '' }}>Nonaktif (Tetap Tersimpan)</option>
                     </x-ui.select>
                     <x-input-error :messages="$errors->get('checkinGraceActive')" class="mt-1" />
+                    <p class="text-[10px] text-stone-400 mt-1">Hanguskan pesanan no-show secara otomatis.</p>
                 </div>
                 <div>
-                    <x-ui.input label="Batas Waktu Hadir (Menit)" type="number" min="1" max="180" name="checkinGraceMinutes" id="grace-minutes-input" value="{{ old('checkinGraceMinutes', $checkinGraceMinutes) }}" />
+                    <x-ui.input label="Batas Toleransi Telat (Menit)" type="number" min="1" max="180" name="checkinGraceMinutes" id="grace-minutes-input" value="{{ old('checkinGraceMinutes', $checkinGraceMinutes) }}" />
                     <x-input-error :messages="$errors->get('checkinGraceMinutes')" class="mt-1" />
+                    <p class="text-[10px] text-stone-400 mt-1">Default 15 menit. Setelah waktu ini, slot kosong lagi.</p>
                 </div>
             </div>
         </div>
