@@ -14,6 +14,8 @@ use App\Domains\Booking\Models\Booking;
 use App\Domains\Booking\Services\TicketGeneratorService;
 use App\Domains\System\Services\CommunicationService;
 use App\Domains\WhatsApp\Models\WhatsAppTemplate;
+use App\Domains\Customer\Services\PhoneNormalizer;
+use App\Domains\Stylist\Models\Stylist;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -27,7 +29,17 @@ class CommunicationListener
         $ticket = TicketGeneratorService::generateForBooking($booking);
 
         $this->processAutomations('BOOKING_CREATED', $booking, $ticket);
-        $this->notifyStylist($booking);
+
+        // Always ensure stylist is notified (if not already handled by automation)
+        $hasStylistAutomation = DB::table('whatsapp_automations')
+            ->where('event_type', 'BOOKING_CREATED')
+            ->where('recipient', 'stylist')
+            ->where('is_active', true)
+            ->exists();
+
+        if (!$hasStylistAutomation) {
+            $this->notifyStylist($booking, 'created');
+        }
 
         // Deliver QR Code image & PDF ticket immediately on booking creation if not handled by automation
         if (CommunicationService::isWhatsAppEnabled() && $booking->customer) {
@@ -59,8 +71,16 @@ class CommunicationListener
         // 2. Trigger automations for BOOKING_CONFIRMED
         $this->processAutomations('BOOKING_CONFIRMED', $booking, $ticket);
 
-        // Notify stylist
-        $this->notifyStylist($booking);
+        // Notify stylist if not already handled by automation
+        $hasStylistAutomation = DB::table('whatsapp_automations')
+            ->where('event_type', 'BOOKING_CONFIRMED')
+            ->where('recipient', 'stylist')
+            ->where('is_active', true)
+            ->exists();
+
+        if (!$hasStylistAutomation) {
+            $this->notifyStylist($booking, 'confirmed');
+        }
 
         // 3. Deliver QR Code if not already dispatched by automations
         if (CommunicationService::isWhatsAppEnabled() && $booking->customer) {
@@ -154,6 +174,7 @@ class CommunicationListener
     public function handleBookingCheckedIn(BookingCheckedIn $event): void
     {
         $this->processAutomations('BOOKING_CHECKED_IN', $event->booking);
+        $this->notifyStylist($event->booking, 'checked_in');
     }
 
     public function handleBookingExpired(BookingExpired $event): void
@@ -169,28 +190,48 @@ class CommunicationListener
     /**
      * Notify stylist on booking event.
      */
-    protected function notifyStylist(Booking $booking): void
+    protected function notifyStylist(Booking $booking, string $action = 'created'): void
     {
         try {
-            $stylist = $booking->stylist;
-            if ($stylist && !empty($stylist->phone)) {
-                $customerName = $booking->customer->name ?? 'Guest';
-                $bookingDate = $booking->booking_date->format('d M Y');
-                $items = $booking->items()->with('service')->get();
-                $firstItem = $items->first();
-                $bookingTime = $firstItem ? substr($firstItem->start_time, 0, 5) : 'Sesuai Jadwal';
-                $serviceNames = $items->map(fn($i) => $i->service->name)->implode(', ');
+            $stylist = $booking->stylist ?: Stylist::find($booking->stylist_id);
+            $rawPhone = $stylist?->phone ?: ($stylist?->user?->phone ?? null);
 
-                $msg = "Halo {$stylist->name}, Anda memiliki reservasi baru:\n";
-                $msg .= "Kode Booking: {$booking->booking_code}\n";
-                $msg .= "Pelanggan: {$customerName}\n";
-                $msg .= "Layanan: {$serviceNames}\n";
-                $msg .= "Tanggal: {$bookingDate}\n";
-                $msg .= "Pukul: {$bookingTime}\n\n";
-                $msg .= "Mohon bersiap-siap melayani pelanggan.";
-
-                CommunicationService::sendWhatsApp($stylist->phone, $msg, $booking->id);
+            if (!$rawPhone) {
+                Log::warning("Stylist has no phone number configured for booking {$booking->booking_code}");
+                return;
             }
+
+            $phone = PhoneNormalizer::normalize($rawPhone);
+            $customerName = $booking->customer->name ?? 'Guest';
+            $bookingDate = $booking->booking_date ? $booking->booking_date->format('d M Y') : \Carbon\Carbon::today()->format('d M Y');
+            $items = $booking->items()->with('service')->get();
+            $firstItem = $items->first();
+            $bookingTime = $firstItem ? substr($firstItem->start_time, 0, 5) : 'Sesuai Jadwal';
+            $serviceNames = $items->map(fn($i) => $i->service->name)->implode(', ') ?: 'Layanan MORE Hair Studio';
+
+            if ($action === 'checked_in') {
+                $msg = "🔔 *PELANGGAN TIBA DI STUDIO (CHECK-IN)*\n\n";
+                $msg .= "Halo *{$stylist->name}*, pelanggan Anda telah hadir dan check-in di studio:\n\n";
+                $msg .= "• *Kode Booking*: {$booking->booking_code}\n";
+                $msg .= "• *Pelanggan*: {$customerName}\n";
+                $msg .= "• *Layanan*: {$serviceNames}\n";
+                $msg .= "• *Waktu Sesi*: {$bookingTime} WIB\n\n";
+                $msg .= "Pelanggan menunggu di lounge, mohon segera persiapkan tempat dan alat kerja Anda.";
+            } else {
+                $isWalkIn = $booking->source === 'walk_in';
+                $title = $isWalkIn ? "⚡ *SESI WALK-IN LANGSUNG*" : "📅 *RESERVASI BARU TERKONFIRMASI*";
+
+                $msg = "{$title}\n\n";
+                $msg .= "Halo *{$stylist->name}*, Anda memiliki jadwal baru:\n\n";
+                $msg .= "• *Kode Booking*: {$booking->booking_code}\n";
+                $msg .= "• *Pelanggan*: {$customerName}\n";
+                $msg .= "• *Layanan*: {$serviceNames}\n";
+                $msg .= "• *Tanggal*: {$bookingDate}\n";
+                $msg .= "• *Pukul*: {$bookingTime} WIB\n\n";
+                $msg .= "Mohon periksa jadwal Anda dan persiapkan pelayanan terbaik.";
+            }
+
+            CommunicationService::sendWhatsApp($phone, $msg, $booking->id);
         } catch (\Exception $e) {
             Log::error("Failed to notify stylist: " . $e->getMessage());
         }
@@ -216,9 +257,11 @@ class CommunicationListener
                 // Determine recipient phone
                 $phone = null;
                 if ($auto->recipient === 'stylist') {
-                    $phone = $booking->stylist->phone ?? null;
+                    $stylist = $booking->stylist ?: Stylist::find($booking->stylist_id);
+                    $rawPhone = $stylist?->phone ?: ($stylist?->user?->phone ?? null);
+                    $phone = $rawPhone ? PhoneNormalizer::normalize($rawPhone) : null;
                 } else {
-                    $phone = $booking->customer->phone ?? null;
+                    $phone = $booking->customer?->phone ? PhoneNormalizer::normalize($booking->customer->phone) : null;
                 }
 
                 if (!$phone) {

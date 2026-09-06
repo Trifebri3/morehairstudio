@@ -1,6 +1,7 @@
 @extends('layouts.booking')
 
 @section('content')
+<style>[x-cloak] { display: none !important; }</style>
 @php
     $isId = session('locale', 'id') === 'id';
     
@@ -22,46 +23,64 @@
      x-data="bookingWizard()"
      x-init="init()">
 
-    <!-- Fullscreen Anti-Double-Click Processing Overlay -->
-    <div x-show="isSubmitting" 
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 backdrop-blur-none"
-         x-transition:enter-end="opacity-100 backdrop-blur-sm"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100 backdrop-blur-sm"
-         x-transition:leave-end="opacity-0 backdrop-blur-none"
-         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm"
-         style="display: none;">
-        <div class="relative w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl border border-stone-100 text-center transform transition-all">
-            <!-- Pulsing luxury glowing ring -->
-            <div class="relative mx-auto mb-6 w-20 h-20 flex items-center justify-center">
-                <div class="absolute inset-0 rounded-full bg-[#faede7] animate-ping opacity-60"></div>
-                <div class="relative w-16 h-16 rounded-full bg-gradient-to-tr from-[#c9512d] to-[#e6754e] flex items-center justify-center shadow-lg text-white">
-                    <svg class="animate-spin w-8 h-8 text-white" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+    <!-- Fullscreen Anti-Double-Click Luxury Overlay (Teleported to Body to isolate stacking context) -->
+    <template x-teleport="body">
+        <div x-show="isSubmitting" 
+             x-cloak
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 backdrop-blur-none"
+             x-transition:enter-end="opacity-100 backdrop-blur-sm"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 backdrop-blur-sm"
+             x-transition:leave-end="opacity-0 backdrop-blur-none"
+             class="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-stone-950/80 backdrop-blur-sm"
+             style="display: none;">
+            
+            <div class="relative w-full max-w-sm bg-white rounded-3xl p-8 shadow-2xl border border-stone-100 text-center select-none"
+                 @click.stop>
+                <!-- Animated Status Icon -->
+                <div class="relative mx-auto mb-6 w-16 h-16 flex items-center justify-center">
+                    <div class="absolute inset-0 rounded-full"
+                         :class="submittingSuccess ? 'bg-emerald-100 animate-ping opacity-40' : 'bg-[#faede7] animate-ping opacity-60'"></div>
+                    
+                    <div class="relative w-14 h-14 rounded-full flex items-center justify-center shadow-md text-white transition-colors duration-300"
+                         :class="submittingSuccess ? 'bg-emerald-600' : 'bg-gradient-to-tr from-[#c9512d] to-[#e6754e]'">
+                        <!-- Spinner while processing -->
+                        <svg x-show="!submittingSuccess" class="animate-spin w-7 h-7 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+
+                        <!-- Success checkmark when finished -->
+                        <svg x-show="submittingSuccess" class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    </div>
                 </div>
-            </div>
 
-            <h3 class="text-base font-bold text-stone-900 uppercase tracking-wider mb-2" 
-                x-text="submittingTitle || (isWalkIn ? 'Mendaftarkan Sesi Walk-In' : 'Mengamankan Jadwal Anda')">
-            </h3>
-            
-            <p class="text-xs text-stone-500 leading-relaxed mb-6 font-light"
-               x-text="submittingSubtitle || 'Mohon tunggu sebentar, sistem sedang memverifikasi slot dan mengonfirmasi reservasi Anda.'">
-            </p>
+                <!-- Title -->
+                <h3 class="text-base font-extrabold text-stone-900 uppercase tracking-wider mb-2 font-sans" 
+                    x-text="submittingTitle || (isWalkIn ? 'Mendaftarkan Sesi Walk-In' : 'Mengamankan Jadwal Anda')">
+                </h3>
+                
+                <!-- Subtitle / Explanation -->
+                <p class="text-xs text-stone-500 leading-relaxed mb-6 font-normal px-2"
+                   x-text="submittingSubtitle || 'Mohon tunggu sebentar, sistem sedang memverifikasi slot dan mengonfirmasi reservasi Anda.'">
+                </p>
 
-            <!-- Progress bar animation -->
-            <div class="w-full bg-stone-100 rounded-full h-1.5 overflow-hidden">
-                <div class="bg-gradient-to-r from-[#c9512d] to-[#e6754e] h-full rounded-full animate-pulse w-full"></div>
+                <!-- Subtle Brand Progress Bar -->
+                <div class="w-full bg-stone-100 rounded-full h-1.5 overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-500"
+                         :class="submittingSuccess ? 'bg-emerald-500 w-full' : 'bg-gradient-to-r from-[#c9512d] to-[#e6754e] w-full animate-pulse'"></div>
+                </div>
+                
+                <!-- Reassurance Safety Text -->
+                <p class="text-[10px] text-stone-400 mt-4 tracking-wide font-medium">
+                    Mohon jangan menutup atau me-refresh halaman ini
+                </p>
             </div>
-            
-            <p class="text-[10px] text-stone-400 mt-4 tracking-wide">
-                Mohon jangan menutup atau me-refresh halaman ini
-            </p>
         </div>
-    </div>
+    </template>
      
     <!-- Stepper & Main Column (Left/Center) -->
     <div class="lg:col-span-2 space-y-6">
@@ -791,11 +810,8 @@
                         <button type="button" 
                                 @click="confirmBooking"
                                 :disabled="isSubmitting"
-                                :class="isSubmitting ? 'opacity-85 cursor-wait pointer-events-none shadow-inner' : 'hover:bg-[#b74423] cursor-pointer hover:shadow-md hover:scale-[1.01] active:scale-[0.99]'"
+                                :class="isSubmitting ? 'opacity-70 cursor-wait pointer-events-none' : 'hover:bg-[#b74423] cursor-pointer hover:shadow-md hover:scale-[1.01] active:scale-[0.99]'"
                                 class="relative overflow-hidden px-8 py-3.5 rounded-xl bg-[#c9512d] text-white font-bold text-xs uppercase tracking-wider shadow-sm transition-all duration-200 flex items-center justify-center gap-2 min-w-[220px]">
-                            <!-- Subtle shimmer bar during submission -->
-                            <div x-show="isSubmitting" class="absolute inset-0 -translate-x-full animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-
                             <!-- Animated spinner -->
                             <svg x-show="isSubmitting" class="animate-spin h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" style="display: none;">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -803,7 +819,7 @@
                             </svg>
 
                             <!-- Button text -->
-                            <span x-text="isSubmitting ? (submittingText || (isWalkIn ? 'Mendaftarkan Sesi Walk-In...' : 'Sedang Memproses Reservasi...')) : (isWalkIn ? 'Mulai Treatment Walk-In Sekarang' : 'Book your experience')"></span>
+                            <span x-text="isSubmitting ? 'Sedang Memproses...' : (isWalkIn ? 'Mulai Treatment Walk-In Sekarang' : 'Book your experience')"></span>
 
                             <!-- Default arrow icon -->
                             <svg x-show="!isSubmitting" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1039,7 +1055,7 @@ function bookingWizard() {
         // Submission & Anti-duplicate State
         isSubmitting: false,
         isApplyingPromo: false,
-        submittingText: '',
+        submittingSuccess: false,
         submittingTitle: '',
         submittingSubtitle: '',
 
@@ -1706,18 +1722,22 @@ function bookingWizard() {
 
                 const data = await res.json();
                 if (data.success) {
+                    this.submittingSuccess = true;
                     this.submittingTitle = 'Reservasi Berhasil!';
                     this.submittingSubtitle = 'Jadwal Anda telah diamankan. Mengalihkan ke rincian pesanan...';
-                    this.submittingText = 'Reservasi Berhasil! Mengalihkan...';
                     localStorage.removeItem('morehair_booking_draft');
-                    window.location.href = data.redirect_url;
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 650);
                 } else {
                     this.isSubmitting = false;
+                    this.submittingSuccess = false;
                     alert(data.message || 'Gagal memproses booking. Silakan coba lagi.');
                 }
             } catch (e) {
                 console.error(e);
                 this.isSubmitting = false;
+                this.submittingSuccess = false;
                 alert('Gagal menghubungi server. Silakan periksa koneksi internet Anda dan coba lagi.');
             }
         }
