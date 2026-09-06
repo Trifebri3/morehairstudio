@@ -25,7 +25,7 @@
         <div class="space-y-3.5 text-xs">
             <div class="flex justify-between items-center text-stone-500">
                 <span>Nama Pelanggan</span>
-                <span class="font-bold text-stone-900">{{ $booking->customer->name }}</span>
+                <span class="font-bold text-stone-900">{{ $booking->customer?->name ?? 'Tamu' }}</span>
             </div>
             <div class="flex justify-between items-center text-stone-500">
                 <span>Kode Reservasi</span>
@@ -39,7 +39,7 @@
             </div>
             <div class="flex justify-between items-center text-stone-500">
                 <span>Studio Lounge</span>
-                <span class="font-bold text-stone-900">{{ $booking->outlet->name }}</span>
+                <span class="font-bold text-stone-900">{{ $booking->outlet?->name ?? '-' }}</span>
             </div>
             <div class="flex justify-between items-center text-stone-500">
                 <span>Jadwal Sesi</span>

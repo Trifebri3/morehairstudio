@@ -75,11 +75,11 @@
                 <div class="space-y-4 text-xs font-secondary">
                     <div class="flex justify-between items-center border-b border-stone-100 pb-3">
                         <span class="text-stone-400 font-bold uppercase tracking-wider text-[9px] font-mono">Treatment</span>
-                        <span class="text-stone-900 font-bold text-right">{{ $booking->items->first()->service->name }}</span>
+                        <span class="text-stone-900 font-bold text-right">{{ $booking->items->first()?->service?->name ?? 'Custom Service' }}</span>
                     </div>
                     <div class="flex justify-between items-center border-b border-stone-100 pb-3">
                         <span class="text-stone-400 font-bold uppercase tracking-wider text-[9px] font-mono">Hair Artist</span>
-                        <span class="text-stone-900 font-bold text-right">{{ $booking->stylist->name }}</span>
+                        <span class="text-stone-900 font-bold text-right">{{ $booking->stylist?->name ?? 'Any Stylist' }}</span>
                     </div>
                     <div class="flex justify-between items-center border-b border-stone-100 pb-3">
                         <span class="text-stone-400 font-bold uppercase tracking-wider text-[9px] font-mono">Date</span>

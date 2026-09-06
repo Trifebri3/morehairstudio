@@ -280,10 +280,10 @@
                     @forelse($recentBookings as $booking)
                         <tr class="hover:bg-stone-50/70 transition duration-150 text-stone-700">
                             <td class="py-4 px-5 font-mono text-[#0A3D91] font-bold tracking-wide">{{ $booking->booking_code }}</td>
-                            <td class="py-4 px-5 font-bold text-stone-800">{{ $booking->customer->name }}</td>
-                            <td class="py-4 px-5 text-stone-600 font-medium">{{ $booking->stylist->name }}</td>
-                            <td class="py-4 px-5 text-stone-550">{{ $booking->booking_date->format('d M Y') }}</td>
-                            <td class="py-4 px-5 text-right font-mono font-bold text-stone-900">Rp {{ number_format($booking->net_amount, 0, ',', '.') }}</td>
+                            <td class="py-4 px-5 font-bold text-stone-800">{{ $booking->customer?->name ?? 'Guest Customer' }}</td>
+                            <td class="py-4 px-5 text-stone-600 font-medium">{{ $booking->stylist?->name ?? 'Any Stylist' }}</td>
+                            <td class="py-4 px-5 text-stone-550">{{ $booking->booking_date ? \Carbon\Carbon::parse($booking->booking_date)->format('d M Y') : '-' }}</td>
+                            <td class="py-4 px-5 text-right font-mono font-bold text-stone-900">Rp {{ number_format($booking->net_amount ?? 0, 0, ',', '.') }}</td>
                             <td class="py-4 px-5 text-center">
                                 <x-ui.badge variant="{{ $booking->status === 'completed' ? 'success' : ($booking->status === 'cancelled' ? 'danger' : 'primary') }}">
                                     {{ $booking->status }}
