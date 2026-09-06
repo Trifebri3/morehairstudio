@@ -90,7 +90,7 @@ class CommunicationListener
             $emailBody = "
                 <div style='font-family: Arial, sans-serif; padding: 25px; color: #222; max-width: 580px; margin: 0 auto; border: 1px solid #eaeaea; border-radius: 16px; background: #ffffff;'>
                     <div style='text-align: center; margin-bottom: 20px;'>
-                        <h2 style='color: #c9512d; margin: 0; letter-spacing: 1px;'>MORE HAIR STUDIO</h2>
+                        <img src='https://defineyoumore.com/logo/logo.png' alt='MORE Hair Studio' style='height: 38px; margin: 0 auto 8px auto; display: block;' />
                         <p style='color: #888; font-size: 11px; text-transform: uppercase; margin-top: 4px;'>Urban Barbershop & Creative Ecosystem</p>
                     </div>
 

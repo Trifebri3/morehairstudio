@@ -116,7 +116,15 @@
 <body>
     <div class="ticket-container">
         <div class="header">
-            <h1>MORE HAIR STUDIO</h1>
+            @php
+                $logoPath = public_path('logo/logo.png');
+                $logoData = file_exists($logoPath) ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPath)) : null;
+            @endphp
+            @if($logoData)
+                <img src="{{ $logoData }}" alt="MORE Hair Studio" style="height: 38px; margin: 0 auto 8px auto; display: block;" />
+            @else
+                <h1>MORE HAIR STUDIO</h1>
+            @endif
             <p>Digital Booking & Verification Pass</p>
         </div>
 

@@ -3,8 +3,10 @@
 @section('content')
 <div class="min-h-screen flex items-center justify-center bg-stone-50 p-4">
     <div class="w-full max-w-md p-8 glass-panel rounded-3xl bg-white border border-stone-200 shadow-xl space-y-6">
-        <div class="text-center space-y-2">
-            <span class="text-3xl font-black font-serif tracking-widest text-[#0A3D91]">MORE</span>
+        <div class="text-center space-y-3">
+            <a href="/" class="inline-block">
+                <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-10 mx-auto object-contain">
+            </a>
             <h2 class="text-xl font-bold text-stone-900 uppercase tracking-tight">STYSCREEN LOGIN</h2>
             <p class="text-xs text-stone-500">Masukkan email dan password admin outlet untuk membuka layar monitor kasir.</p>
         </div>

@@ -20,13 +20,20 @@
            :class="sidebarOpen ? 'w-64 translate-x-0' : 'w-20 -translate-x-full lg:translate-x-0 lg:w-20'">
         <!-- Header -->
         <div class="h-20 flex items-center justify-between px-6 border-b border-stone-200">
-            <div class="flex items-center space-x-2" x-show="sidebarOpen">
-                <span class="text-lg font-bold tracking-widest text-[#0A3D91]">MORE</span>
-                <span class="text-[9px] uppercase tracking-wider bg-blue-50 text-blue-600 px-2 py-0.5 rounded font-extrabold border border-blue-100">
+            <div class="flex items-center space-x-2.5" x-show="sidebarOpen">
+                <a href="{{ route('admin.dashboard') }}" class="flex items-center">
+                    <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-7 w-auto object-contain">
+                </a>
+                <span class="text-[9px] uppercase tracking-wider bg-stone-200 text-stone-700 px-2 py-0.5 rounded font-extrabold border border-stone-300">
                     {{ auth()->user()->role === 'super_admin' ? 'Super' : (auth()->user()->role === 'outlet_admin' ? 'Outlet' : 'Stylist') }}
                 </span>
             </div>
-            <button @click="sidebarOpen = !sidebarOpen" class="text-stone-500 hover:text-blue-600 transition">
+            <div x-show="!sidebarOpen" class="hidden lg:block">
+                <a href="{{ route('admin.dashboard') }}">
+                    <img src="/logokotak.png" alt="MORE" class="h-7 w-auto object-contain mx-auto">
+                </a>
+            </div>
+            <button @click="sidebarOpen = !sidebarOpen" class="text-stone-500 hover:text-stone-900 transition">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>

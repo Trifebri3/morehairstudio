@@ -1,4 +1,4 @@
-const CACHE_NAME = 'more-tablet-v2';
+const CACHE_NAME = 'more-tablet-v3';
 const STATIC_ASSETS = [
   '/tablet',
   '/manifest.json',

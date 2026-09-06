@@ -49,8 +49,10 @@
 <meta name="twitter:image" content="{{ $seoData['image'] }}">
 
 <!-- Icons & Theme -->
-<link rel="icon" type="image/png" href="{{ asset('logo/logo.png') }}">
-<link rel="apple-touch-icon" href="{{ asset('logo/logo.png') }}">
+<link rel="icon" type="image/png" sizes="192x192" href="{{ asset('icon-192x192.png') }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ asset('logokotak.png') }}">
+<link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
+<link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
 <meta name="theme-color" content="#121110">
 
 <!-- JSON-LD Structured Data Schema for Google LocalBusiness & Rich Search Results -->

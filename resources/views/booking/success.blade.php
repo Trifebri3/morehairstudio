@@ -26,7 +26,7 @@
                 
                 <div class="relative z-10 space-y-1">
                     <span class="text-[9px] uppercase tracking-widest text-[#c9512d] font-bold font-mono block">Official Pass &bull; 2026</span>
-                    <img src="/logo/logo.png" alt="MORE" class="h-6 w-auto object-contain brightness-0 invert" style="height: 24px; width: auto;">
+                    <img src="/logo/logo-desc-white.png" alt="MORE Hair Studio" class="h-7 w-auto object-contain" style="height: 28px; width: auto;">
                 </div>
                 
                 <div class="relative z-10 text-right space-y-1">

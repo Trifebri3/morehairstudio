@@ -24,7 +24,9 @@
                     <div class="flex">
                         <!-- Logo -->
                         <div class="flex-shrink-0 flex items-center">
-                            <a href="{{ route('dashboard') }}" class="text-xl font-bold tracking-widest text-[#0A3D91] font-serif">MORE</a>
+                            <a href="{{ route('dashboard') }}" class="flex items-center">
+                                <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-8 w-auto object-contain">
+                            </a>
                         </div>
                     </div>
 

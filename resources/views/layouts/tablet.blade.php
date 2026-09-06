@@ -227,8 +227,8 @@
          class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-stone-200 text-center space-y-5"
              @click.outside="showPwaModal = false">
-            <div class="w-20 h-20 mx-auto rounded-2xl bg-stone-950 p-3 shadow-lg border border-stone-800">
-                <img src="/icons/icon-192.png" alt="MORE Icon" class="w-full h-full object-contain">
+            <div class="w-20 h-20 mx-auto rounded-2xl bg-white p-2.5 shadow-lg border border-stone-200 flex items-center justify-center">
+                <img src="/logokotak.png" alt="MORE Icon" class="w-full h-full object-contain">
             </div>
 
             <div class="space-y-1">
@@ -295,7 +295,7 @@
                 // Register service worker
                 if ('serviceWorker' in navigator) {
                     navigator.serviceWorker.register('/sw.js')
-                        .then(() => console.log('MORE Tablet PWA v2 Registered'))
+                        .then(() => console.log('MORE Tablet PWA v3 Registered'))
                         .catch(err => console.warn('SW registration warning:', err));
                 }
             },
