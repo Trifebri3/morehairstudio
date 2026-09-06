@@ -57,6 +57,9 @@ class WhatsAppController extends Controller
                 $fonnteToken = $decrypted['token'] ?? '';
             } catch (\Exception $e) {}
         }
+        if (empty($fonnteToken)) {
+            $fonnteToken = env('FONNTE_TOKEN') ?: '';
+        }
 
         // Detect current active provider
         $activeProvider = 'cloud_api';

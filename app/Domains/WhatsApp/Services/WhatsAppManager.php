@@ -21,24 +21,36 @@ class WhatsAppManager
                 ->where('is_active', true)
                 ->first();
 
+            $configData = [];
             if ($activeConfig && !empty($activeConfig->config)) {
-                $decryptedJson = Crypt::decryptString($activeConfig->config);
-                $configData = json_decode($decryptedJson, true);
+                try {
+                    $decryptedJson = Crypt::decryptString($activeConfig->config);
+                    $configData = json_decode($decryptedJson, true) ?: [];
+                } catch (\Exception $decryptEx) {
+                    Log::warning("Could not decrypt whatsapp config from DB: " . $decryptEx->getMessage());
+                }
 
                 if ($activeConfig->provider === 'cloud_api') {
-                    return new CloudApiWhatsAppProvider($configData);
-                } elseif ($activeConfig->provider === 'fonnte') {
-                    if (empty($configData['token']) && env('FONNTE_TOKEN') && !app()->runningUnitTests()) {
-                        $configData['token'] = env('FONNTE_TOKEN');
+                    if (!empty($configData['token'])) {
+                        return new CloudApiWhatsAppProvider($configData);
                     }
-                    return new FonnteWhatsAppProvider($configData);
+                } elseif ($activeConfig->provider === 'fonnte') {
+                    $token = $configData['token'] ?? env('FONNTE_TOKEN');
+                    if (!empty($token)) {
+                        return new FonnteWhatsAppProvider([
+                            'token' => $token,
+                            'mock' => false
+                        ]);
+                    }
                 }
             }
 
-            // Fallback directly to .env environment variable if database is unconfigured (except in unit tests)
-            if (env('FONNTE_TOKEN') && !app()->runningUnitTests()) {
+            // Fallback directly to .env environment variable
+            $envToken = env('FONNTE_TOKEN');
+            if (!empty($envToken) && !app()->runningUnitTests()) {
                 return new FonnteWhatsAppProvider([
-                    'token' => env('FONNTE_TOKEN')
+                    'token' => $envToken,
+                    'mock' => false
                 ]);
             }
         } catch (\Exception $e) {
