@@ -241,7 +241,9 @@
                         @for($d = 0; $d <= 6; $d++)
                             @php
                                 $sch = $schedules->get($d);
-                                $isWork = $sch && $sch->is_working;
+                                $isWork = $sch ? (bool)$sch->is_working : true;
+                                $startTime = $sch ? substr($sch->start_time, 0, 5) : '10:00';
+                                $endTime = $sch ? substr($sch->end_time, 0, 5) : '20:00';
                                 $dayName = $daysMap[$d] ?? 'Hari';
                             @endphp
                             <div class="flex items-center justify-between text-xs py-1.5 border-b border-stone-100 last:border-none">
@@ -250,7 +252,7 @@
                                 </span>
                                 @if($isWork)
                                     <span class="font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                                        {{ substr($sch->start_time, 0, 5) }} - {{ substr($sch->end_time, 0, 5) }} WIB
+                                        {{ $startTime }} - {{ $endTime }} WIB
                                     </span>
                                 @else
                                     <span class="font-mono text-[11px] text-stone-400 bg-stone-50 px-2 py-0.5 rounded-md">

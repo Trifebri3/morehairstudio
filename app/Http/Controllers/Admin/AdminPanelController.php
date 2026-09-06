@@ -197,7 +197,7 @@ class AdminPanelController extends Controller
         }
 
         // 3. Create Stylist profile
-        Stylist::create([
+        $newStylist = Stylist::create([
             'user_id' => $user->id,
             'outlet_id' => $request->outlet_id,
             'name' => $request->name,
@@ -212,6 +212,19 @@ class AdminPanelController extends Controller
             'photo' => $photoUrl,
             'rating' => 5.00,
         ]);
+
+        // Auto-seed default 7-day working schedules
+        for ($day = 0; $day <= 6; $day++) {
+            \App\Domains\Stylist\Models\StylistSchedule::create([
+                'stylist_id' => $newStylist->id,
+                'day_of_week' => $day,
+                'start_time' => '10:00:00',
+                'end_time' => '20:00:00',
+                'break_start' => null,
+                'break_end' => null,
+                'is_working' => true,
+            ]);
+        }
 
         return redirect()->route('admin.stylists')->with('message', 'Stylist & Akun Login berhasil dibuat.');
     }

@@ -25,8 +25,8 @@ class AvailabilityService
         }])->findOrFail($stylistId);
 
         $schedule = $stylist->schedules->first();
-        if (!$schedule || !$schedule->is_working) {
-            return []; // Stylist is not working on this day
+        if ($schedule && !$schedule->is_working) {
+            return []; // Stylist is explicitly set to not working on this day
         }
 
         // Get Service price and duration (from outlet overrides or fallback default)
