@@ -62,12 +62,9 @@
         <!-- Left: Logo & Device Status -->
         <div class="flex items-center space-x-3 sm:space-x-4">
             <a href="{{ route('tablet.dashboard') }}" class="flex items-center space-x-3 group">
-                <div class="w-9 h-9 rounded-xl bg-stone-950 flex items-center justify-center p-1.5 shadow-sm border border-stone-800 group-hover:border-[#c9512d] transition">
-                    <img src="/icons/icon-192.png" alt="MORE Logo" class="w-full h-full object-contain">
-                </div>
-                <div class="flex flex-col">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-base sm:text-lg font-black tracking-tight text-stone-950 font-serif">MORE</span>
+                <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-8 sm:h-9 w-auto object-contain">
+                <div class="flex flex-col border-l border-stone-200 pl-3">
+                    <div class="flex items-center space-x-1.5">
                         <span class="text-[9px] uppercase tracking-wider bg-[#faede7] text-[#c9512d] font-extrabold px-2 py-0.5 rounded">Terminal</span>
                     </div>
                     <div class="flex items-center space-x-1.5 mt-0.5">

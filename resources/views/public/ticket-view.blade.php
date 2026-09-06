@@ -24,9 +24,8 @@
     <div class="max-w-md w-full bg-white border border-stone-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
         
         <!-- Logo Header -->
-        <div class="text-center pb-5 border-b border-stone-200 space-y-1">
-            <span class="text-[10px] font-mono uppercase tracking-widest text-[#c9512d] font-bold">Identity Human-Hair Centered Design</span>
-            <h1 class="text-xl font-black tracking-tight text-stone-900 uppercase font-primary">MORE HAIR STUDIO</h1>
+        <div class="text-center pb-5 border-b border-stone-200 space-y-2">
+            <img src="/logo/logo.png" alt="MORE Hair Studio" class="h-8 sm:h-9 mx-auto object-contain">
             <p class="text-[10px] font-mono text-stone-400 uppercase tracking-wider">Official E-Ticket &bull; Passcode Verification</p>
         </div>
 
