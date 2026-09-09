@@ -13,7 +13,7 @@
     @endif
 
     @if(session()->has('error'))
-        <x-ui.alert variant="error">
+        <x-ui.alert variant="danger">
             {{ session('error') }}
         </x-ui.alert>
     @endif
