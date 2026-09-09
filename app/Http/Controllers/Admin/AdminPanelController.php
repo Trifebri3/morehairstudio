@@ -397,8 +397,9 @@ class AdminPanelController extends Controller
 
         $outlets = Outlet::all();
         $format = strtolower($request->get('format', 'xlsx'));
+        $hasSpreadsheet = class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class);
 
-        if ($format === 'csv') {
+        if ($format === 'csv' || !$hasSpreadsheet) {
             $fileName = 'Template_Import_Stylist_MORE.csv';
             return response()->streamDownload(function () use ($outlets) {
                 $file = fopen('php://output', 'w');
@@ -649,8 +650,9 @@ class AdminPanelController extends Controller
 
         $stylists = Stylist::with(['outlet', 'user'])->latest()->get();
         $format = strtolower($request->get('format', 'xlsx'));
+        $hasSpreadsheet = class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class);
 
-        if ($format === 'csv') {
+        if ($format === 'csv' || !$hasSpreadsheet) {
             $fileName = 'morehair_stylists_export_' . date('Ymd_His') . '.csv';
             return response()->streamDownload(function () use ($stylists) {
                 $file = fopen('php://output', 'w');
@@ -799,10 +801,13 @@ class AdminPanelController extends Controller
         $filePath = $file->getRealPath();
         $extension = strtolower($file->getClientOriginalExtension());
 
-        $rows = [];
+        $hasSpreadsheet = class_exists(\PhpOffice\PhpSpreadsheet\Spreadsheet::class);
 
         try {
             if (in_array($extension, ['xlsx', 'xls'])) {
+                if (!$hasSpreadsheet) {
+                    return redirect()->route('admin.stylists')->with('error', 'Server belum memiliki library PhpSpreadsheet untuk membaca format .xlsx langsung. Silakan simpan file Excel Anda sebagai format CSV (.csv) dari Microsoft Excel (File -> Save As -> CSV UTF-8) lalu unggah kembali, atau jalankan perintah "composer install" di terminal server hosting.');
+                }
                 $spreadsheet = IOFactory::load($filePath);
                 $worksheet = $spreadsheet->getActiveSheet();
                 $rows = $worksheet->toArray(null, true, true, false);
