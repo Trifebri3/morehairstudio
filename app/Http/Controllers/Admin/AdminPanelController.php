@@ -12,10 +12,18 @@ use App\Domains\WhatsApp\Models\WhatsAppMessage;
 use App\Domains\POS\Models\PosTransaction;
 use App\Domains\Outlet\Models\Outlet;
 use App\Models\User;
+use App\Services\AccountDeletionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class AdminPanelController extends Controller
 {
@@ -355,8 +363,670 @@ class AdminPanelController extends Controller
 
     public function deleteCustomer($id)
     {
-        Customer::destroy($id);
-        return redirect()->route('admin.customers')->with('message', 'Pelanggan berhasil dihapus.');
+        $customer = Customer::findOrFail($id);
+        $customerName = $customer->name;
+        $result = AccountDeletionService::deleteCustomerAccount($customer, 'Dihapus oleh Admin melalui Panel CRM');
+
+        $message = "Data & akun pelanggan '{$customerName}' berhasil dihapus dan dianonimkan secara aman.";
+        if (!empty($result['cancelled_bookings']) && $result['cancelled_bookings'] > 0) {
+            $message .= " ({$result['cancelled_bookings']} reservasi mendatang otomatis dibatalkan).";
+        }
+
+        return redirect()->route('admin.customers')->with('message', $message);
+    }
+
+    public function deleteStylist($id)
+    {
+        if (auth()->user()->role !== 'super_admin') { return redirect()->route('dashboard'); }
+
+        $stylist = Stylist::with('user')->findOrFail($id);
+        $stylistName = $stylist->name;
+
+        try {
+            AccountDeletionService::deleteStylistAccount($stylist, 'Dihapus oleh Super Admin dari Panel Manajemen Stylist');
+            return redirect()->route('admin.stylists')->with('message', "Akun login dan profil stylist '{$stylistName}' berhasil dihapus & dinonaktifkan secara aman.");
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errorMsg = $e->validator->errors()->first('stylist') ?? 'Tidak dapat menghapus stylist.';
+            return redirect()->route('admin.stylists')->with('error', $errorMsg);
+        }
+    }
+
+    public function downloadStylistTemplate(Request $request)
+    {
+        if (auth()->user()->role !== 'super_admin') { return redirect()->route('dashboard'); }
+
+        $outlets = Outlet::all();
+        $format = strtolower($request->get('format', 'xlsx'));
+
+        if ($format === 'csv') {
+            $fileName = 'Template_Import_Stylist_MORE.csv';
+            return response()->streamDownload(function () use ($outlets) {
+                $file = fopen('php://output', 'w');
+                // UTF-8 BOM for Microsoft Excel
+                fputs($file, "\xEF\xBB\xBF");
+
+                // Headers
+                fputcsv($file, [
+                    'Nama Stylist (Wajib)',
+                    'Email Login (Wajib)',
+                    'Password Akun (Default: password123)',
+                    'Outlet Studio (Nama atau ID Outlet)',
+                    'Spesialisasi',
+                    'Nomor WhatsApp',
+                    'Instagram',
+                    'TikTok',
+                    'Bio Singkat',
+                    'Status (active / inactive)'
+                ]);
+
+                // Sample Rows
+                $defaultOutletName = $outlets->first()?->name ?? 'MORE Hair Studio';
+                fputcsv($file, [
+                    'Raka Pratama',
+                    'raka.pratama@morehair.com',
+                    'password123',
+                    $defaultOutletName,
+                    'Haircut & Styling',
+                    '081234567890',
+                    '@raka_styling',
+                    '@raka_styling',
+                    'Senior Stylist spesialis modern scissor cut dan men grooming',
+                    'active'
+                ]);
+
+                fputcsv($file, [
+                    'Dimas Setiawan',
+                    'dimas.setiawan@morehair.com',
+                    'password123',
+                    $defaultOutletName,
+                    'Colorist & Bleaching',
+                    '082198765432',
+                    '@dimas_haircolor',
+                    '@dimas_haircolor',
+                    'Spesialis balayage, highlight, scalp care, and coloring',
+                    'active'
+                ]);
+
+                fclose($file);
+            }, $fileName, [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            ]);
+        }
+
+        // Generate Excel (.xlsx) using PhpSpreadsheet
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->getProperties()
+            ->setCreator('MORE Hair Studio')
+            ->setTitle('Template Import Stylist & Akun')
+            ->setSubject('Template Import Stylist')
+            ->setDescription('Template impor data hair stylist dan akun login MORE Hair Studio.');
+
+        // ------------------ SHEET 1: TEMPLATE DATA ------------------
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Template Stylist');
+
+        $headers = [
+            'A1' => 'Nama Stylist (Wajib)',
+            'B1' => 'Email Login (Wajib)',
+            'C1' => 'Password Akun (Default: password123)',
+            'D1' => 'Outlet Studio (Nama atau ID Outlet)',
+            'E1' => 'Spesialisasi',
+            'F1' => 'Nomor WhatsApp',
+            'G1' => 'Instagram',
+            'H1' => 'TikTok',
+            'I1' => 'Bio Singkat',
+            'J1' => 'Status (active / inactive)',
+        ];
+
+        foreach ($headers as $cell => $text) {
+            $sheet->setCellValue($cell, $text);
+        }
+
+        // Header Style (MORE Navy Blue, White Bold, Centered)
+        $headerStyle = [
+            'font' => [
+                'bold' => true,
+                'color' => ['argb' => 'FFFFFFFF'],
+                'size' => 10,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+                'wrapText' => true,
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF0A3D91'],
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['argb' => 'FFCCCCCC'],
+                ],
+            ],
+        ];
+        $sheet->getStyle('A1:J1')->applyFromArray($headerStyle);
+        $sheet->getRowDimension(1)->setRowHeight(30);
+
+        // Sample Data Rows
+        $defaultOutletName = $outlets->first()?->name ?? 'MORE Hair Studio';
+        $sampleData = [
+            [
+                'Raka Pratama',
+                'raka.pratama@morehair.com',
+                'password123',
+                $defaultOutletName,
+                'Haircut & Styling',
+                '081234567890',
+                '@raka_styling',
+                '@raka_styling',
+                'Senior Stylist spesialis modern scissor cut dan men grooming',
+                'active',
+            ],
+            [
+                'Dimas Setiawan',
+                'dimas.setiawan@morehair.com',
+                'password123',
+                $defaultOutletName,
+                'Colorist & Bleaching',
+                '082198765432',
+                '@dimas_haircolor',
+                '@dimas_haircolor',
+                'Spesialis balayage, highlight, scalp care, and coloring',
+                'active',
+            ],
+        ];
+
+        $sheet->fromArray($sampleData, null, 'A2');
+        $sheet->getRowDimension(2)->setRowHeight(22);
+        $sheet->getRowDimension(3)->setRowHeight(22);
+        $rowNum = 4;
+
+        // Data rows border and text format
+        $dataRange = 'A2:J' . ($rowNum - 1);
+        $sheet->getStyle($dataRange)->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['argb' => 'FFE5E7EB'],
+                ],
+            ],
+            'alignment' => [
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+        ]);
+
+        // Auto-fit column widths
+        foreach (range('A', 'J') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // ------------------ SHEET 2: DAFTAR OUTLET & PETUNJUK ------------------
+        $instructionSheet = $spreadsheet->createSheet();
+        $instructionSheet->setTitle('Petunjuk & Outlet');
+
+        // Instructions
+        $instructionSheet->setCellValue('A1', 'PETUNJUK PENGISIAN TEMPLATE IMPORT STYLIST');
+        $instructionSheet->getStyle('A1')->getFont()->setBold(true)->setSize(13)->getColor()->setARGB('FF0A3D91');
+        $instructionSheet->getRowDimension(1)->setRowHeight(25);
+
+        $notes = [
+            '1. Kolom "Nama Stylist" dan "Email Login" wajib diisi untuk setiap baris data stylist.',
+            '2. Email Login harus unik (belum pernah terdaftar di sistem). Akun ini digunakan stylist untuk login ke Dasbor Stylist.',
+            '3. Password Akun bersifat opsional; jika dikosongkan akan otomatis disetel ke "password123".',
+            '4. Kolom "Outlet Studio" dapat diisi Nama Outlet atau ID Outlet dari tabel di bawah. Jika dikosongkan, akan menggunakan outlet default yang dipilih saat upload file.',
+            '5. Nomor WhatsApp dapat diawali dengan "08" atau "628" (sistem otomatis menstandarkan ke awalan 62).',
+            '6. Kolom Status dapat diisi "active" (aktif melayani) atau "inactive" (cuti/tidak aktif). Default adalah "active".',
+            '7. Setiap stylist yang berhasil diimpor otomatis dibuatkan jadwal kerja mingguan standar (Senin s/d Minggu, 10:00 - 20:00).',
+        ];
+
+        $noteRow = 3;
+        foreach ($notes as $note) {
+            $instructionSheet->setCellValue('A' . $noteRow, $note);
+            $instructionSheet->getStyle('A' . $noteRow)->getFont()->setSize(10);
+            $noteRow++;
+        }
+
+        // Outlet Table
+        $tableStartRow = $noteRow + 2;
+        $instructionSheet->setCellValue('A' . $tableStartRow, 'DAFTAR OUTLET TERSEDIA DI SISTEM');
+        $instructionSheet->getStyle('A' . $tableStartRow)->getFont()->setBold(true)->setSize(11);
+        
+        $tableHeaderRow = $tableStartRow + 1;
+        $instructionSheet->setCellValue('A' . $tableHeaderRow, 'ID Outlet');
+        $instructionSheet->setCellValue('B' . $tableHeaderRow, 'Nama Outlet');
+        $instructionSheet->setCellValue('C' . $tableHeaderRow, 'Alamat Studio');
+        $instructionSheet->getStyle("A{$tableHeaderRow}:C{$tableHeaderRow}")->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['argb' => 'FFFFFFFF']],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF0A3D91'],
+            ],
+            'alignment' => ['vertical' => Alignment::VERTICAL_CENTER],
+        ]);
+        $instructionSheet->getRowDimension($tableHeaderRow)->setRowHeight(24);
+
+        $outRow = $tableHeaderRow + 1;
+        foreach ($outlets as $o) {
+            $instructionSheet->setCellValue('A' . $outRow, $o->id);
+            $instructionSheet->setCellValue('B' . $outRow, $o->name);
+            $instructionSheet->setCellValue('C' . $outRow, $o->address ?? '-');
+            $instructionSheet->getRowDimension($outRow)->setRowHeight(20);
+            $outRow++;
+        }
+
+        $instructionSheet->getStyle("A{$tableHeaderRow}:C" . ($outRow - 1))->applyFromArray([
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['argb' => 'FFCCCCCC'],
+                ],
+            ],
+        ]);
+
+        foreach (['A', 'B', 'C'] as $col) {
+            $instructionSheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Set active sheet back to Sheet 1
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $fileName = 'Template_Import_Stylist_MORE.xlsx';
+
+        return response()->streamDownload(function () use ($spreadsheet) {
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+        ]);
+    }
+
+    public function exportStylists(Request $request)
+    {
+        if (auth()->user()->role !== 'super_admin') { return redirect()->route('dashboard'); }
+
+        $stylists = Stylist::with(['outlet', 'user'])->latest()->get();
+        $format = strtolower($request->get('format', 'xlsx'));
+
+        if ($format === 'csv') {
+            $fileName = 'morehair_stylists_export_' . date('Ymd_His') . '.csv';
+            return response()->streamDownload(function () use ($stylists) {
+                $file = fopen('php://output', 'w');
+                fputs($file, "\xEF\xBB\xBF");
+                fputcsv($file, [
+                    'No', 'Nama Stylist', 'Slug Profil', 'Email Akun Login', 'Outlet Studio',
+                    'Spesialisasi', 'Nomor WhatsApp', 'Instagram', 'TikTok', 'Status',
+                    'Bio', 'Rating', 'Tanggal Terdaftar'
+                ]);
+
+                $i = 1;
+                foreach ($stylists as $s) {
+                    fputcsv($file, [
+                        $i++,
+                        $s->name,
+                        $s->slug,
+                        $s->user?->email ?? '-',
+                        $s->outlet?->name ?? '-',
+                        $s->specialization ?? '-',
+                        $s->phone ?? '-',
+                        $s->instagram ? '@' . ltrim($s->instagram, '@') : '-',
+                        $s->tiktok ? '@' . ltrim($s->tiktok, '@') : '-',
+                        $s->status,
+                        $s->bio ?? '-',
+                        $s->rating ?? '5.00',
+                        $s->created_at ? $s->created_at->format('Y-m-d H:i') : '-'
+                    ]);
+                }
+                fclose($file);
+            }, $fileName, [
+                'Content-Type' => 'text/csv; charset=UTF-8',
+                'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            ]);
+        }
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Data Stylist');
+
+        $headers = [
+            'A1' => 'No',
+            'B1' => 'Nama Stylist',
+            'C1' => 'Slug Profil',
+            'D1' => 'Email Akun Login',
+            'E1' => 'Outlet Studio',
+            'F1' => 'Spesialisasi',
+            'G1' => 'Nomor WhatsApp',
+            'H1' => 'Instagram',
+            'I1' => 'TikTok',
+            'J1' => 'Status',
+            'K1' => 'Bio',
+            'L1' => 'Rating',
+            'M1' => 'Tanggal Terdaftar',
+        ];
+
+        foreach ($headers as $cell => $text) {
+            $sheet->setCellValue($cell, $text);
+        }
+
+        $sheet->getStyle('A1:M1')->applyFromArray([
+            'font' => [
+                'bold' => true,
+                'color' => ['argb' => 'FFFFFFFF'],
+                'size' => 10,
+            ],
+            'alignment' => [
+                'horizontal' => Alignment::HORIZONTAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
+            ],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['argb' => 'FF0A3D91'],
+            ],
+            'borders' => [
+                'allBorders' => [
+                    'borderStyle' => Border::BORDER_THIN,
+                    'color' => ['argb' => 'FFCCCCCC'],
+                ],
+            ],
+        ]);
+        $sheet->getRowDimension(1)->setRowHeight(28);
+
+        $rowNum = 2;
+        $i = 1;
+        foreach ($stylists as $s) {
+            $sheet->setCellValue('A' . $rowNum, $i++);
+            $sheet->setCellValue('B' . $rowNum, $s->name);
+            $sheet->setCellValue('C' . $rowNum, $s->slug);
+            $sheet->setCellValue('D' . $rowNum, $s->user?->email ?? '-');
+            $sheet->setCellValue('E' . $rowNum, $s->outlet?->name ?? '-');
+            $sheet->setCellValue('F' . $rowNum, $s->specialization ?? '-');
+            $sheet->setCellValue('G' . $rowNum, $s->phone ?? '-');
+            $sheet->setCellValue('H' . $rowNum, $s->instagram ? '@' . ltrim($s->instagram, '@') : '-');
+            $sheet->setCellValue('I' . $rowNum, $s->tiktok ? '@' . ltrim($s->tiktok, '@') : '-');
+            $sheet->setCellValue('J' . $rowNum, strtoupper($s->status));
+            $sheet->setCellValue('K' . $rowNum, $s->bio ?? '-');
+            $sheet->setCellValue('L' . $rowNum, $s->rating ?? '5.00');
+            $sheet->setCellValue('M' . $rowNum, $s->created_at ? $s->created_at->format('Y-m-d H:i') : '-');
+
+            $sheet->getRowDimension($rowNum)->setRowHeight(20);
+            $rowNum++;
+        }
+
+        if ($rowNum > 2) {
+            $sheet->getStyle('A2:M' . ($rowNum - 1))->applyFromArray([
+                'borders' => [
+                    'allBorders' => [
+                        'borderStyle' => Border::BORDER_THIN,
+                        'color' => ['argb' => 'FFE5E7EB'],
+                    ],
+                ],
+                'alignment' => [
+                    'vertical' => Alignment::VERTICAL_CENTER,
+                ],
+            ]);
+        }
+
+        foreach (range('A', 'M') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $fileName = 'morehair_stylists_export_' . date('Ymd_His') . '.xlsx';
+
+        return response()->streamDownload(function () use ($spreadsheet) {
+            $writer = new Xlsx($spreadsheet);
+            $writer->save('php://output');
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+        ]);
+    }
+
+    public function importStylists(Request $request)
+    {
+        if (auth()->user()->role !== 'super_admin') { return redirect()->route('dashboard'); }
+
+        $request->validate([
+            'file' => 'required|file|max:10240',
+            'default_outlet_id' => 'nullable|exists:outlets,id',
+        ], [
+            'file.required' => 'Silakan pilih file Excel (.xlsx) atau CSV untuk diunggah.',
+            'file.max' => 'Ukuran file maksimal 10MB.',
+        ]);
+
+        $file = $request->file('file');
+        $filePath = $file->getRealPath();
+        $extension = strtolower($file->getClientOriginalExtension());
+
+        $rows = [];
+
+        try {
+            if (in_array($extension, ['xlsx', 'xls'])) {
+                $spreadsheet = IOFactory::load($filePath);
+                $worksheet = $spreadsheet->getActiveSheet();
+                $rows = $worksheet->toArray(null, true, true, false);
+            } else {
+                // CSV fallback
+                $handle = fopen($filePath, 'r');
+                $bom = fread($handle, 3);
+                if ($bom !== "\xEF\xBB\xBF") {
+                    rewind($handle);
+                }
+                while (($data = fgetcsv($handle, 10000, ',')) !== false) {
+                    if (count($data) === 1 && str_contains($data[0], ';')) {
+                        $data = str_getcsv($data[0], ';');
+                    }
+                    $rows[] = $data;
+                }
+                fclose($handle);
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('admin.stylists')->with('error', 'Gagal membaca file data: ' . $e->getMessage());
+        }
+
+        if (empty($rows) || count($rows) < 2) {
+            return redirect()->route('admin.stylists')->with('error', 'File tidak memiliki baris data atau hanya berisi judul kolom.');
+        }
+
+        // Parse header row
+        $headerRow = array_map(function ($h) {
+            return strtolower(trim((string)$h));
+        }, $rows[0]);
+
+        $columnMap = [
+            'name' => null,
+            'email' => null,
+            'password' => null,
+            'outlet' => null,
+            'specialization' => null,
+            'phone' => null,
+            'instagram' => null,
+            'tiktok' => null,
+            'bio' => null,
+            'status' => null,
+        ];
+
+        foreach ($headerRow as $idx => $header) {
+            if (str_contains($header, 'nama')) {
+                $columnMap['name'] = $idx;
+            } elseif (str_contains($header, 'email')) {
+                $columnMap['email'] = $idx;
+            } elseif (str_contains($header, 'pass')) {
+                $columnMap['password'] = $idx;
+            } elseif (str_contains($header, 'outlet') || str_contains($header, 'studio')) {
+                $columnMap['outlet'] = $idx;
+            } elseif (str_contains($header, 'spesialis') || str_contains($header, 'keahlian')) {
+                $columnMap['specialization'] = $idx;
+            } elseif (str_contains($header, 'wa') || str_contains($header, 'phone') || str_contains($header, 'telepon') || str_contains($header, 'whatsapp')) {
+                $columnMap['phone'] = $idx;
+            } elseif (str_contains($header, 'ig') || str_contains($header, 'instagram')) {
+                $columnMap['instagram'] = $idx;
+            } elseif (str_contains($header, 'tt') || str_contains($header, 'tiktok')) {
+                $columnMap['tiktok'] = $idx;
+            } elseif (str_contains($header, 'bio') || str_contains($header, 'deskripsi')) {
+                $columnMap['bio'] = $idx;
+            } elseif (str_contains($header, 'status')) {
+                $columnMap['status'] = $idx;
+            }
+        }
+
+        // Fallback default index positions if headers did not match
+        if ($columnMap['name'] === null) $columnMap['name'] = 0;
+        if ($columnMap['email'] === null) $columnMap['email'] = 1;
+        if ($columnMap['password'] === null) $columnMap['password'] = 2;
+        if ($columnMap['outlet'] === null) $columnMap['outlet'] = 3;
+        if ($columnMap['specialization'] === null) $columnMap['specialization'] = 4;
+        if ($columnMap['phone'] === null) $columnMap['phone'] = 5;
+        if ($columnMap['instagram'] === null) $columnMap['instagram'] = 6;
+        if ($columnMap['tiktok'] === null) $columnMap['tiktok'] = 7;
+        if ($columnMap['bio'] === null) $columnMap['bio'] = 8;
+        if ($columnMap['status'] === null) $columnMap['status'] = 9;
+
+        $outlets = Outlet::all();
+        $defaultOutletId = $request->default_outlet_id ?: ($outlets->first()?->id ?? 1);
+
+        $successCount = 0;
+        $errors = [];
+
+        for ($i = 1; $i < count($rows); $i++) {
+            $row = $rows[$i];
+            $rowNum = $i + 1;
+
+            $nonEmpty = array_filter($row, function ($val) {
+                return trim((string)$val) !== '';
+            });
+            if (empty($nonEmpty)) {
+                continue;
+            }
+
+            $name = trim((string)($row[$columnMap['name']] ?? ''));
+            $email = trim((string)($row[$columnMap['email']] ?? ''));
+            $password = trim((string)($row[$columnMap['password']] ?? ''));
+            $outletVal = trim((string)($row[$columnMap['outlet']] ?? ''));
+            $specialization = trim((string)($row[$columnMap['specialization']] ?? ''));
+            $phone = trim((string)($row[$columnMap['phone']] ?? ''));
+            $instagram = trim((string)($row[$columnMap['instagram']] ?? ''));
+            $tiktok = trim((string)($row[$columnMap['tiktok']] ?? ''));
+            $bio = trim((string)($row[$columnMap['bio']] ?? ''));
+            $status = strtolower(trim((string)($row[$columnMap['status']] ?? '')));
+
+            // Validation 1: Required Name & Email
+            if (empty($name)) {
+                $errors[] = "Baris $rowNum: Kolom Nama Stylist wajib diisi.";
+                continue;
+            }
+            if (empty($email)) {
+                $errors[] = "Baris $rowNum: Kolom Email Akun Login untuk stylist '{$name}' wajib diisi.";
+                continue;
+            }
+
+            // Validation 2: Email Format
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $errors[] = "Baris $rowNum: Format email '{$email}' tidak valid.";
+                continue;
+            }
+
+            // Validation 3: Unique Email
+            if (User::where('email', $email)->exists()) {
+                $errors[] = "Baris $rowNum: Email '{$email}' sudah digunakan oleh pengguna lain.";
+                continue;
+            }
+
+            // Resolve Outlet
+            $outletId = $defaultOutletId;
+            if (!empty($outletVal)) {
+                if (is_numeric($outletVal) && $outlets->contains('id', (int)$outletVal)) {
+                    $outletId = (int)$outletVal;
+                } else {
+                    $matchedOutlet = $outlets->first(function ($o) use ($outletVal) {
+                        return str_contains(strtolower($o->name), strtolower($outletVal)) || str_contains(strtolower($outletVal), strtolower($o->name));
+                    });
+                    if ($matchedOutlet) {
+                        $outletId = $matchedOutlet->id;
+                    }
+                }
+            }
+
+            // Normalize Status
+            $validStatuses = ['active', 'inactive', 'pending_active', 'pending_inactive'];
+            $status = in_array($status, $validStatuses) ? $status : 'active';
+
+            // Clean Phone (e.g. 0812... -> 62812...)
+            if (!empty($phone)) {
+                $phone = preg_replace('/[^0-9]/', '', $phone);
+                if (str_starts_with($phone, '0')) {
+                    $phone = '62' . substr($phone, 1);
+                }
+            } else {
+                $phone = null;
+            }
+
+            // Clean Instagram & TikTok handles
+            $instagram = !empty($instagram) ? ltrim($instagram, '@') : null;
+            $tiktok = !empty($tiktok) ? ltrim($tiktok, '@') : null;
+
+            // Generate Unique Slug
+            $baseSlug = Str::slug($name);
+            if (empty($baseSlug)) {
+                $baseSlug = 'stylist-' . Str::random(5);
+            }
+            $slug = $baseSlug;
+            $counter = 2;
+            while (Stylist::where('slug', $slug)->exists()) {
+                $slug = $baseSlug . '-' . $counter++;
+            }
+
+            try {
+                DB::transaction(function () use ($name, $email, $password, $outletId, $specialization, $phone, $status, $bio, $instagram, $tiktok, $slug) {
+                    $user = User::create([
+                        'name' => $name,
+                        'email' => $email,
+                        'password' => Hash::make(!empty($password) ? $password : 'password123'),
+                        'role' => 'stylist',
+                        'outlet_id' => $outletId,
+                    ]);
+
+                    $stylist = Stylist::create([
+                        'user_id' => $user->id,
+                        'outlet_id' => $outletId,
+                        'name' => $name,
+                        'slug' => $slug,
+                        'specialization' => !empty($specialization) ? $specialization : 'Haircut & Styling',
+                        'phone' => $phone,
+                        'status' => $status,
+                        'bio' => !empty($bio) ? $bio : null,
+                        'instagram' => $instagram,
+                        'tiktok' => $tiktok,
+                        'rating' => 5.00,
+                    ]);
+
+                    for ($day = 0; $day <= 6; $day++) {
+                        \App\Domains\Stylist\Models\StylistSchedule::create([
+                            'stylist_id' => $stylist->id,
+                            'day_of_week' => $day,
+                            'start_time' => '10:00:00',
+                            'end_time' => '20:00:00',
+                            'break_start' => null,
+                            'break_end' => null,
+                            'is_working' => true,
+                        ]);
+                    }
+                });
+
+                $successCount++;
+            } catch (\Exception $e) {
+                $errors[] = "Baris $rowNum: Gagal menyimpan data ({$e->getMessage()}).";
+            }
+        }
+
+        $msg = "Berhasil mengimpor {$successCount} data stylist dan akun login baru.";
+        if (count($errors) > 0) {
+            $msg .= " Terdapat " . count($errors) . " baris yang dilewati karena tidak memenuhi validasi.";
+            session()->flash('import_errors', $errors);
+        }
+
+        return redirect()->route('admin.stylists')->with('message', $msg);
     }
 
     public function promotions(Request $request)

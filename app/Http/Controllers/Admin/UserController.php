@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Domains\Outlet\Models\Outlet;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AccountDeletionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -82,11 +84,22 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         if (auth()->id() === $user->id) {
-            return redirect()->route('admin.users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
+            return redirect()->route('admin.users.index')->with('error', 'Anda tidak dapat menghapus akun Anda sendiri dari panel ini. Silakan gunakan menu Pengaturan Profil jika ingin menghapus akun Anda.');
         }
 
-        $user->delete();
+        try {
+            if ($user->isStylist()) {
+                AccountDeletionService::deleteStylistAccount($user, 'Dihapus oleh Super Admin dari Panel Users');
+            } elseif ($user->isSuperAdmin() || $user->isOutletAdmin()) {
+                AccountDeletionService::deleteAdminAccount($user, 'Dihapus oleh Super Admin dari Panel Users');
+            } else {
+                AccountDeletionService::deleteCustomerAccount($user, 'Dihapus oleh Super Admin dari Panel Users');
+            }
 
-        return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus.');
+            return redirect()->route('admin.users.index')->with('success', "Akun '{$user->name}' berhasil dihapus secara aman.");
+        } catch (ValidationException $e) {
+            $errorMsg = collect($e->errors())->flatten()->first() ?? 'Gagal memproses penghapusan user.';
+            return redirect()->route('admin.users.index')->with('error', $errorMsg);
+        }
     }
 }

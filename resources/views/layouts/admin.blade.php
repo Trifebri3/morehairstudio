@@ -83,6 +83,12 @@
                 <a href="{{ route('admin.analytics') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-stone-200/70 text-stone-700 hover:text-stone-900 transition">
                     <span>Analytics</span>
                 </a>
+                <a href="{{ route('admin.database-research') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-stone-200/70 text-stone-700 hover:text-stone-900 transition">
+                    <span>Database Research</span>
+                </a>
+                <a href="{{ route('admin.database-backup') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-stone-200/70 text-stone-700 hover:text-stone-900 transition">
+                    <span>Database Backup</span>
+                </a>
                 <a href="{{ route('admin.settings') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-stone-200/70 text-stone-700 hover:text-stone-900 transition">
                     <span>System Settings</span>
                 </a>
@@ -91,6 +97,9 @@
                 </a>
                 <a href="{{ route('admin.email') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-stone-200/70 text-stone-700 hover:text-stone-900 transition">
                     <span>Email Center</span>
+                </a>
+                <a href="{{ route('admin.users.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg hover:bg-stone-200/70 text-stone-700 hover:text-stone-900 transition">
+                    <span>Admin & User Accounts</span>
                 </a>
             @elseif(auth()->user()->role === 'outlet_admin')
                 <!-- Outlet Admin Menu -->
@@ -125,7 +134,7 @@
 
         <!-- Footer profile and logout -->
         <div class="p-4 border-t border-stone-200 flex items-center justify-between">
-            <div class="flex items-center space-x-3" x-show="sidebarOpen">
+            <a href="{{ route('profile') }}" class="flex items-center space-x-3 hover:opacity-80 transition" x-show="sidebarOpen" title="Buka Pengaturan Akun & Profil">
                 @if(auth()->user()->isStylist() && auth()->user()->stylist)
                     <img src="{{ auth()->user()->stylist->display_photo }}" alt="{{ auth()->user()->name }}" class="h-9 w-9 rounded-lg object-cover border border-stone-200 flex-shrink-0">
                 @else
@@ -137,7 +146,7 @@
                     <p class="text-xs font-semibold text-stone-800 truncate">{{ auth()->user()->name }}</p>
                     <p class="text-xxs text-stone-500 truncate font-mono">{{ auth()->user()->email }}</p>
                 </div>
-            </div>
+            </a>
             <!-- Logout Button -->
             <form method="POST" action="{{ route('logout') }}">
                 @csrf

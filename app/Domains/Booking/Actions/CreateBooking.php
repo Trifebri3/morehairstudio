@@ -84,6 +84,16 @@ class CreateBooking
             $startTime = Carbon::createFromFormat('H:i', $timeString);
             $endTime = $startTime->copy()->addMinutes($duration);
 
+            // Lead time check (must be at least 15 minutes ahead for online bookings today)
+            if (!$isWalkIn) {
+                $sessionStartDateTime = Carbon::parse($dateString . ' ' . $startTime->format('H:i:s'));
+                $minBookingTime = Carbon::now()->addMinutes(15);
+                if ($sessionStartDateTime->lt($minBookingTime)) {
+                    $maxBookingTime = $startTime->copy()->subMinutes(15)->format('H:i');
+                    throw new BookingUnavailableException("Pemesanan online minimal 15 menit sebelum jam mulai. Untuk sesi jam {$startTime->format('H:i')} WIB, maksimal booking sebelum jam {$maxBookingTime} WIB (minimal jam sesi saat ini {$minBookingTime->format('H:i')} WIB).");
+                }
+            }
+
             // 4. Overlap/double booking check (auto-expire past no-show bookings first so slot is free)
             Booking::autoExpireNoShows($outletId);
 

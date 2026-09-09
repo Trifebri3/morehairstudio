@@ -89,52 +89,84 @@ class AvailabilityService
         $isToday = ($dateString === $now->toDateString());
         $nowMin = ($now->hour * 60) + $now->minute;
         $walkInMinLimit = $nowMin - 15;
-        $leadTimeMinLimit = $nowMin + ($leadTimeHours * 60);
+        $leadTimeMinLimit = $nowMin + 15; // Online booking lead time strictly 15 minutes
+
+        // Sesi treatment dan haircut diset 1 jam (60 menit) per jam bulat
+        $sessionDuration = max(60, $duration);
+
+        // Generate kandidat jam per jam bulat (misal 10:00, 11:00, 12:00, 13:00, dst.)
+        $startHour = (int)ceil($startMin / 60);
+        $endHour = (int)floor($endMin / 60);
+
+        $candidateMinutes = [];
+        for ($h = $startHour; ($h * 60) + $sessionDuration <= $endMin; $h++) {
+            $candidateMinutes[] = $h * 60;
+        }
 
         $slots = [];
+        $firstFound = false;
 
-        // Increment slots by service duration using integer minutes (nanosecond comparison)
-        for ($currMin = $startMin; $currMin + $duration <= $endMin; $currMin += $duration) {
-            $slotStartMin = $currMin;
-            $slotEndMin = $currMin + $duration;
-            $isAvailable = true;
+        foreach ($candidateMinutes as $slotStartMin) {
+            $slotEndMin = $slotStartMin + $sessionDuration;
 
-            // 1. Check if slot overlaps with existing bookings
+            // Pastikan dalam batas jam kerja
+            if ($slotStartMin < $startMin || $slotEndMin > $endMin) {
+                continue;
+            }
+
+            // Aturan lead time jika booking untuk hari ini
+            if ($isToday) {
+                if ($isWalkIn) {
+                    if ($slotStartMin < $walkInMinLimit) {
+                        continue;
+                    }
+                } else {
+                    // Online booking wajib minimal 15 menit sebelum jam mulai sesi
+                    // Misal jam 11:09, batas minimal adalah 11:24. Sesi 11:00 tertolak, sesi 12:00 tersedia.
+                    if ($slotStartMin < $leadTimeMinLimit) {
+                        continue;
+                    }
+                }
+            }
+
+            // Cek bentrok dengan booking aktif yang sudah ada
+            $hasOverlap = false;
             foreach ($bookedIntervals as [$bStart, $bEnd]) {
                 if ($slotStartMin < $bEnd && $slotEndMin > $bStart) {
-                    $isAvailable = false;
+                    $hasOverlap = true;
                     break;
                 }
             }
 
-            // 2. Check past slots and booking lead time
-            if ($isAvailable && $isToday) {
-                if ($isWalkIn) {
-                    if ($slotStartMin < $walkInMinLimit) {
-                        $isAvailable = false;
-                    }
-                } else {
-                    if ($slotStartMin < $leadTimeMinLimit) {
-                        $isAvailable = false;
-                    }
-                }
+            if ($hasOverlap) {
+                continue;
             }
 
-            if ($isAvailable) {
-                $hStart = str_pad((string)floor($slotStartMin / 60), 2, '0', STR_PAD_LEFT);
-                $mStart = str_pad((string)($slotStartMin % 60), 2, '0', STR_PAD_LEFT);
-                $hEnd = str_pad((string)floor($slotEndMin / 60), 2, '0', STR_PAD_LEFT);
-                $mEnd = str_pad((string)($slotEndMin % 60), 2, '0', STR_PAD_LEFT);
+            // Slot pertama yang tersedia setelah lead time adalah Rekomendasi Tercepat
+            $isPriority = false;
+            $badge = '';
 
-                $timeStr = "{$hStart}:{$mStart}";
-                $endTimeStrFormatted = "{$hEnd}:{$mEnd}";
-
-                $slots[] = [
-                    'time' => $timeStr,
-                    'label' => "{$timeStr} - {$endTimeStrFormatted}",
-                    'end_time' => $endTimeStrFormatted
-                ];
+            if (!$firstFound) {
+                $isPriority = true;
+                $badge = 'Paling Cepat';
+                $firstFound = true;
             }
+
+            $hStart = str_pad((string)floor($slotStartMin / 60), 2, '0', STR_PAD_LEFT);
+            $mStart = str_pad((string)($slotStartMin % 60), 2, '0', STR_PAD_LEFT);
+            $hEnd = str_pad((string)floor($slotEndMin / 60), 2, '0', STR_PAD_LEFT);
+            $mEnd = str_pad((string)($slotEndMin % 60), 2, '0', STR_PAD_LEFT);
+
+            $timeStr = "{$hStart}:{$mStart}";
+            $endTimeStrFormatted = "{$hEnd}:{$mEnd}";
+
+            $slots[] = [
+                'time' => $timeStr,
+                'label' => "{$timeStr} - {$endTimeStrFormatted}",
+                'end_time' => $endTimeStrFormatted,
+                'is_priority' => $isPriority,
+                'badge' => $badge,
+            ];
         }
 
         return $slots;
@@ -217,9 +249,7 @@ class AvailabilityService
             }
         }
 
-        // Check past time and lead time
-        $outlet = Outlet::find($outletId);
-        $leadTimeHours = $outlet ? $outlet->booking_lead_time_hours : 1;
+        // Check past time and lead time (strictly 15 minutes for online booking)
         $slotStartDateTime = Carbon::parse($dateString . ' ' . $startTime->format('H:i:s'));
 
         if ($isWalkIn) {
@@ -227,10 +257,12 @@ class AvailabilityService
                 return ['available' => false, 'message' => 'Waktu sesi walk-in lebih dari 15 menit yang lalu.'];
             }
         } else {
-            if ($slotStartDateTime->lt(Carbon::now()->addHours($leadTimeHours))) {
+            $minBookingTime = Carbon::now()->addMinutes(15);
+            if ($slotStartDateTime->lt($minBookingTime)) {
+                $maxBookingTime = $startTime->copy()->subMinutes(15)->format('H:i');
                 return [
                     'available' => false,
-                    'message' => "Pemesanan online minimal {$leadTimeHours} jam sebelum sesi dimulai."
+                    'message' => "Pemesanan online minimal dilakukan 15 menit sebelum jam mulai. Untuk sesi jam {$startTime->format('H:i')} WIB, maksimal booking sebelum jam {$maxBookingTime} WIB (minimal jam sesi saat ini {$minBookingTime->format('H:i')} WIB)."
                 ];
             }
         }

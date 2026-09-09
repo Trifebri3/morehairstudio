@@ -422,10 +422,90 @@
                                     reader.readAsDataURL(file);
                                 }
                             }
-                        </script>
-
                     </div>
 
+                    <!-- Zona Bahaya: Hapus Akun Stylist -->
+                    <div x-data="{ showDeleteModal: false, confirmPhrase: '' }" class="glass-panel p-6 rounded-2xl bg-white border border-rose-200 shadow-sm space-y-4 mt-6">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 flex-shrink-0">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-rose-900 text-sm uppercase tracking-tight">Zona Bahaya: Hapus Akun Stylist</h4>
+                                <p class="text-stone-500 text-xs">Penghapusan akun bersifat permanen dan tidak dapat dibatalkan.</p>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-stone-600 leading-relaxed bg-rose-50/50 p-3.5 rounded-xl border border-rose-100 space-y-1.5">
+                            <p class="font-bold text-rose-900">Penting sebelum menghapus:</p>
+                            <ul class="list-disc list-inside space-y-1 text-stone-600 text-[11px]">
+                                <li>Akun login email Anda akan dihapus permanen dari sistem.</li>
+                                <li>Profil publik dan seluruh jadwal kerja akan dinonaktifkan secara otomatis.</li>
+                                <li>Sistem memblokir penghapusan jika Anda masih memiliki reservasi aktif mendatang.</li>
+                            </ul>
+                        </div>
+
+                        <button type="button" @click="showDeleteModal = true" class="w-full py-2.5 px-4 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl shadow-sm transition duration-150 text-xs flex items-center justify-center space-x-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <span>Hapus Akun Stylist Saya</span>
+                        </button>
+
+                        <!-- Modal Konfirmasi Hapus Akun -->
+                        <div x-show="showDeleteModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                                <div x-show="showDeleteModal" @click="showDeleteModal = false" class="fixed inset-0 bg-stone-900/60 backdrop-blur-xs transition-opacity"></div>
+                                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                                <div x-show="showDeleteModal" class="relative inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-stone-200">
+                                    <form method="POST" action="{{ route('profile.destroy') }}" class="p-6 space-y-4">
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <div class="flex items-center space-x-3 text-rose-600">
+                                            <div class="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center flex-shrink-0">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-base font-extrabold text-stone-900" id="modal-title">Konfirmasi Hapus Akun Stylist</h3>
+                                                <p class="text-xs text-stone-500">Tindakan ini permanen dan tidak dapat dipulihkan.</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs text-rose-800 space-y-1">
+                                            <p class="font-bold">Apakah Anda yakin ingin menghapus akun barber ini?</p>
+                                            <p class="text-[11px] text-rose-700 leading-relaxed">Akses Anda ke dasbor ini akan diputus permanen. Seluruh jadwal dinonaktifkan, sedangkan histori absensi payroll & ulasan tetap diarsipkan demi audit internal.</p>
+                                        </div>
+
+                                        <div class="space-y-3 pt-2">
+                                            <div>
+                                                <label class="block text-xs font-semibold text-stone-700 mb-1">Ketik kata <span class="font-mono font-bold text-rose-600 bg-rose-100/70 px-1.5 py-0.5 rounded">HAPUS AKUN</span> untuk konfirmasi:</label>
+                                                <input type="text" name="confirmation" x-model="confirmPhrase" placeholder="HAPUS AKUN" required class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-rose-500 focus:ring-rose-500 shadow-sm font-mono">
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-xs font-semibold text-stone-700 mb-1">Kata Sandi Saat Ini:</label>
+                                                <input type="password" name="password" placeholder="Masukkan kata sandi aktif" required class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-rose-500 focus:ring-rose-500 shadow-sm">
+                                            </div>
+
+                                            <div>
+                                                <label class="block text-xs font-semibold text-stone-700 mb-1">Alasan Penghapusan (Opsional):</label>
+                                                <input type="text" name="reason" placeholder="Contoh: Pengunduran diri / Pindah tugas" class="block w-full px-3 py-2 text-xs rounded-xl border border-stone-300 focus:border-stone-400 shadow-sm">
+                                            </div>
+                                        </div>
+
+                                        <div class="flex justify-end space-x-2 pt-4 border-t border-stone-100">
+                                            <button type="button" @click="showDeleteModal = false" class="px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl text-xs transition">
+                                                Batalkan
+                                            </button>
+                                            <button type="submit" :disabled="confirmPhrase !== 'HAPUS AKUN'" :class="confirmPhrase === 'HAPUS AKUN' ? 'bg-rose-600 hover:bg-rose-700 cursor-pointer text-white' : 'bg-stone-200 text-stone-400 cursor-not-allowed'" class="px-4 py-2 font-bold rounded-xl text-xs transition shadow-sm">
+                                                Ya, Hapus Akun Permanen
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>

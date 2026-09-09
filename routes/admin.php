@@ -19,8 +19,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('/categories/{id}', [\App\Http\Controllers\Admin\AdminPanelController::class, 'deleteCategory'])->name('categories.delete');
 
     Route::get('/stylists', [\App\Http\Controllers\Admin\AdminPanelController::class, 'stylists'])->name('stylists');
+    Route::get('/stylists/template', [\App\Http\Controllers\Admin\AdminPanelController::class, 'downloadStylistTemplate'])->name('stylists.template');
+    Route::get('/stylists/export', [\App\Http\Controllers\Admin\AdminPanelController::class, 'exportStylists'])->name('stylists.export');
+    Route::post('/stylists/import', [\App\Http\Controllers\Admin\AdminPanelController::class, 'importStylists'])->name('stylists.import');
     Route::post('/stylists', [\App\Http\Controllers\Admin\AdminPanelController::class, 'storeStylist'])->name('stylists.store');
     Route::put('/stylists/{id}', [\App\Http\Controllers\Admin\AdminPanelController::class, 'updateStylist'])->name('stylists.update');
+    Route::delete('/stylists/{id}', [\App\Http\Controllers\Admin\AdminPanelController::class, 'deleteStylist'])->name('stylists.delete');
+
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
 
     Route::get('/customers', [\App\Http\Controllers\Admin\AdminPanelController::class, 'customers'])->name('customers');
     Route::post('/customers', [\App\Http\Controllers\Admin\AdminPanelController::class, 'storeCustomer'])->name('customers.store');
@@ -76,4 +82,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/email/template', [\App\Http\Controllers\Admin\EmailController::class, 'createTemplate'])->name('email.template');
     Route::delete('/email/template/{id}', [\App\Http\Controllers\Admin\EmailController::class, 'deleteTemplate'])->name('email.delete-template');
     Route::post('/email/test', [\App\Http\Controllers\Admin\EmailController::class, 'sendTestEmail'])->name('email.test');
+
+    // Database Research & Intelligence
+    Route::get('/database-research', [\App\Http\Controllers\Admin\DatabaseResearchController::class, 'index'])->name('database-research');
+    Route::post('/database-research/query', [\App\Http\Controllers\Admin\DatabaseResearchController::class, 'runQuery'])->name('database-research.query');
+    Route::get('/database-research/export', [\App\Http\Controllers\Admin\DatabaseResearchController::class, 'export'])->name('database-research.export');
+
+    // Database Backup & Disaster Recovery
+    Route::get('/database-backup', [\App\Http\Controllers\Admin\DatabaseBackupController::class, 'index'])->name('database-backup');
+    Route::post('/database-backup/create', [\App\Http\Controllers\Admin\DatabaseBackupController::class, 'create'])->name('database-backup.create');
+    Route::get('/database-backup/download/{filename}', [\App\Http\Controllers\Admin\DatabaseBackupController::class, 'download'])->name('database-backup.download');
+    Route::delete('/database-backup/{filename}', [\App\Http\Controllers\Admin\DatabaseBackupController::class, 'destroy'])->name('database-backup.destroy');
+    Route::post('/database-backup/restore', [\App\Http\Controllers\Admin\DatabaseBackupController::class, 'restore'])->name('database-backup.restore');
 });

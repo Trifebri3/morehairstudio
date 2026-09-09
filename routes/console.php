@@ -92,3 +92,11 @@ Schedule::call(function () {
         }
     }
 })->everyTenMinutes();
+
+// Daily Automated Database Backup at 02:00 AM with 7-day auto-pruning retention
+Schedule::command('db:backup --retention=7')
+    ->dailyAt('02:00')
+    ->onFailure(function () {
+        Illuminate\Support\Facades\Log::error('Scheduled daily database backup failed at 02:00 AM.');
+    });
+

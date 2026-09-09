@@ -105,6 +105,7 @@ class BookingController extends Controller
         $busyIntervals = [];
         $workingHours = [];
         $freeWindows = [];
+        $liveStatus = [];
 
         // Auto-expire any past no-show bookings for this outlet so expired slots are immediately freed
         Booking::autoExpireNoShows($outletId);
@@ -207,6 +208,7 @@ class BookingController extends Controller
             'working_hours' => $workingHours,
             'live_status' => $liveStatus,
             'lead_time_hours' => $leadTimeHours,
+            'lead_time_minutes' => 15,
             'server_time' => Carbon::now()->format('H:i'),
             'today_date' => Carbon::today()->toDateString()
         ]);

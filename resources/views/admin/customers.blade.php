@@ -121,10 +121,10 @@
                                         <a href="?edit={{ $customer->id }}" class="inline-flex items-center justify-center px-3 py-1.5 border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 rounded-lg text-xs font-bold transition">
                                             Edit
                                         </a>
-                                        <form method="POST" action="{{ route('admin.customers.delete', $customer->id) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data customer ini?')" class="inline">
+                                        <form method="POST" action="{{ route('admin.customers.delete', $customer->id) }}" onsubmit="return confirm('PERINGATAN PRIVASI: Apakah Anda yakin ingin menghapus akun pelanggan {{ addslashes($customer->name) }}? Seluruh data identitas personal (HP, email, alamat, poin) akan dianonimkan secara permanen dan reservasi mendatang akan dibatalkan. Riwayat transaksi masa lalu tetap diarsipkan secara anonim demi audit finansial studio.');" class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 bg-red-50 text-red-750 hover:bg-red-100 border border-red-200 rounded-lg text-xs font-bold transition">
+                                            <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200 rounded-lg text-xs font-bold transition shadow-sm" title="Hapus & Anonimkan Pelanggan">
                                                 Hapus
                                             </button>
                                         </form>

@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" x-data="{ importModalOpen: false, selectedFileName: '' }">
     @if(session()->has('message'))
         <x-ui.alert variant="success">
             {{ session('message') }}
@@ -16,6 +16,20 @@
         <x-ui.alert variant="error">
             {{ session('error') }}
         </x-ui.alert>
+    @endif
+
+    @if(session()->has('import_errors') && count(session('import_errors')) > 0)
+        <div class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs space-y-1.5 shadow-sm">
+            <div class="font-extrabold flex items-center gap-1.5 text-amber-800">
+                <svg class="w-4 h-4 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <span>Catatan Baris Yang Dilewati:</span>
+            </div>
+            <ul class="list-disc list-inside space-y-1 pl-1 text-stone-700 font-mono text-[11px]">
+                @foreach(session('import_errors') as $err)
+                    <li>{{ $err }}</li>
+                @endforeach
+            </ul>
+        </div>
     @endif
 
     @if($isCreating || $editingStylist)
@@ -167,14 +181,36 @@
     @else
         <!-- List View Card -->
         <div class="glass-panel p-6 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <form method="GET" action="{{ route('admin.stylists') }}" class="w-full md:max-w-xs">
+            <div class="flex flex-col lg:flex-row justify-between items-stretch lg:items-center gap-4 pb-1">
+                <form method="GET" action="{{ route('admin.stylists') }}" class="w-full lg:max-w-xs">
                     <x-ui.input placeholder="Cari nama, nomor WhatsApp, email..." name="search" value="{{ $search }}" onchange="this.form.submit()" />
                 </form>
-                <a href="?create=1" class="inline-flex items-center justify-center px-4 py-2.5 bg-[#0A3D91] hover:bg-blue-800 text-white font-bold rounded-xl text-xs transition shadow-sm space-x-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                    <span>Add New Stylist & Account</span>
-                </a>
+                
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <!-- Download Template Excel -->
+                    <a href="{{ route('admin.stylists.template') }}" title="Unduh file template Excel (.xlsx) untuk pengisian massal data stylist" class="inline-flex items-center justify-center px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300/80 font-bold rounded-xl text-xs transition shadow-xs space-x-1.5 group">
+                        <svg class="w-4 h-4 text-emerald-600 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Download Template</span>
+                    </a>
+
+                    <!-- Export Data Excel -->
+                    <a href="{{ route('admin.stylists.export') }}" title="Unduh seluruh data stylist yang ada ke dalam file Excel (.xlsx)" class="inline-flex items-center justify-center px-3.5 py-2.5 bg-stone-50 hover:bg-stone-100 text-stone-700 border border-stone-200 font-bold rounded-xl text-xs transition shadow-xs space-x-1.5">
+                        <svg class="w-4 h-4 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <span>Export Data</span>
+                    </a>
+
+                    <!-- Import Excel / CSV -->
+                    <button type="button" @click="importModalOpen = true" title="Unggah file Excel atau CSV untuk mendaftarkan stylist secara massal" class="inline-flex items-center justify-center px-3.5 py-2.5 bg-blue-50 hover:bg-blue-100 text-[#0A3D91] border border-blue-200 font-bold rounded-xl text-xs transition shadow-xs space-x-1.5">
+                        <svg class="w-4 h-4 text-[#0A3D91]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        <span>Import Excel / CSV</span>
+                    </button>
+
+                    <!-- Add Single Stylist -->
+                    <a href="?create=1" class="inline-flex items-center justify-center px-4 py-2.5 bg-[#0A3D91] hover:bg-blue-800 text-white font-bold rounded-xl text-xs transition shadow-xs space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        <span>Add New Stylist & Account</span>
+                    </a>
+                </div>
             </div>
 
             <div class="overflow-x-auto rounded-xl border border-stone-200">
@@ -246,6 +282,13 @@
                                                 Masuk Akun
                                             </a>
                                         @endif
+                                        <form method="POST" action="{{ route('admin.stylists.delete', $stylist->id) }}" onsubmit="return confirm('PERINGATAN: Apakah Anda yakin ingin menghapus akun login dan menonaktifkan profil stylist {{ addslashes($stylist->name) }}? Akun login user akan dihapus dan jadwal kerja akan dinonaktifkan secara permanen.');" class="inline">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-bold transition shadow-sm" title="Hapus Akun & Profil Stylist">
+                                                Hapus
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>
@@ -263,6 +306,133 @@
             </div>
         </div>
     @endif
+
+    <!-- Modal Dialog: Import Excel / CSV -->
+    <div x-show="importModalOpen" 
+         x-cloak 
+         class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4" 
+         style="display: none;">
+        
+        <!-- Backdrop -->
+        <div x-show="importModalOpen" 
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             @click="importModalOpen = false" 
+             class="fixed inset-0 bg-stone-900/60 backdrop-blur-xs transition-opacity"></div>
+
+        <!-- Modal Box -->
+        <div x-show="importModalOpen"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:scale-95"
+             class="relative bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-lg overflow-hidden z-10">
+            
+            <!-- Header -->
+            <div class="px-6 py-5 border-b border-stone-100 bg-stone-50/70 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-[#0A3D91] shadow-xs">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-sm font-extrabold text-stone-900">Import Stylist via Excel / CSV</h3>
+                        <p class="text-xxs text-stone-500">Daftarkan banyak hair stylist & akun login sekaligus</p>
+                    </div>
+                </div>
+                <button type="button" @click="importModalOpen = false" class="text-stone-400 hover:text-stone-600 p-1.5 rounded-xl hover:bg-stone-100 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <form method="POST" action="{{ route('admin.stylists.import') }}" enctype="multipart/form-data" class="p-6 space-y-5">
+                @csrf
+
+                <!-- Download Template Banner inside modal -->
+                <div class="p-4 rounded-2xl bg-stone-50 border border-stone-200/80 flex items-center justify-between gap-3">
+                    <div class="space-y-0.5">
+                        <span class="text-xs font-bold text-stone-800">Belum punya format template?</span>
+                        <p class="text-xxs text-stone-500 leading-normal">Unduh template resmi dengan panduan kolom & contoh data.</p>
+                    </div>
+                    <a href="{{ route('admin.stylists.template') }}" class="flex-shrink-0 inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-xl text-xxs transition shadow-xs">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        <span>Unduh Excel</span>
+                    </a>
+                </div>
+
+                <!-- Dropzone File Selector -->
+                <div>
+                    <label class="block text-[10px] uppercase tracking-widest text-stone-500 font-extrabold mb-1.5">Pilih File Excel (.xlsx, .xls) atau CSV *</label>
+                    <div class="relative border-2 border-dashed border-stone-300 hover:border-[#0A3D91] rounded-2xl p-6 text-center bg-stone-50/50 hover:bg-blue-50/30 transition group cursor-pointer">
+                        <input type="file" 
+                               name="file" 
+                               id="excel-file-input" 
+                               accept=".xlsx, .xls, .csv, text/csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" 
+                               required
+                               @change="selectedFileName = $event.target.files[0] ? $event.target.files[0].name : ''"
+                               class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        
+                        <div class="flex flex-col items-center justify-center space-y-2 pointer-events-none">
+                            <div class="w-12 h-12 rounded-2xl bg-white border border-stone-200 flex items-center justify-center text-stone-400 group-hover:text-[#0A3D91] group-hover:border-blue-200 group-hover:scale-105 transition shadow-xs">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                            </div>
+                            <template x-if="!selectedFileName">
+                                <div>
+                                    <span class="text-xs font-bold text-stone-800 block">Pilih file atau seret file ke sini</span>
+                                    <span class="text-xxs text-stone-400">Format yang didukung: .xlsx, .xls, .csv (Maks. 10MB)</span>
+                                </div>
+                            </template>
+                            <template x-if="selectedFileName">
+                                <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold font-mono">
+                                    <span x-text="selectedFileName"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fallback Outlet Selection -->
+                <div>
+                    <label class="block text-[10px] uppercase tracking-widest text-stone-500 font-extrabold mb-1.5">Outlet Studio Default</label>
+                    <select name="default_outlet_id" class="w-full px-4 py-2.5 bg-white border border-stone-200 text-stone-900 rounded-xl text-xs transition duration-300 focus:outline-none focus:border-[#0A3D91]">
+                        @foreach($outlets as $outlet)
+                            <option value="{{ $outlet->id }}">{{ $outlet->name }}</option>
+                        @endforeach
+                    </select>
+                    <span class="block mt-1 text-xxs text-stone-400">Digunakan apabila kolom Outlet Studio pada file Excel dikosongkan.</span>
+                </div>
+
+                <!-- System Info Points -->
+                <div class="p-4 rounded-2xl bg-blue-50/50 border border-blue-200/70 space-y-1.5 text-xxs text-stone-600">
+                    <div class="font-extrabold text-[#0A3D91] flex items-center gap-1.5">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Sistem Otomatis:</span>
+                    </div>
+                    <ul class="list-disc list-inside space-y-0.5 pl-1">
+                        <li>Akun login (role Stylist) otomatis dibuatkan untuk setiap baris.</li>
+                        <li>Password default akun: <strong>password123</strong> (jika di file kosong).</li>
+                        <li>Jadwal kerja aktif 7 hari (10:00 - 20:00) otomatis diaktifkan.</li>
+                    </ul>
+                </div>
+
+                <!-- Actions -->
+                <div class="flex justify-end items-center space-x-3 pt-3 border-t border-stone-100">
+                    <button type="button" @click="importModalOpen = false" class="px-4 py-2.5 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold rounded-xl text-xs transition border border-stone-200">
+                        Batal
+                    </button>
+                    <button type="submit" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#0A3D91] hover:bg-blue-800 text-white font-extrabold rounded-xl text-xs transition shadow-sm space-x-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                        <span>Mulai Import Data</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>

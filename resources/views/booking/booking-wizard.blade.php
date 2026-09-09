@@ -524,7 +524,8 @@
                             </div>
 
                             <!-- REGULAR BOOKING ONLY: Manual Time & Quick Recommendations -->
-                            <div x-show="!isWalkIn" class="pt-4 border-t border-stone-100 space-y-4">
+                            <div x-show="!isWalkIn" class="pt-4 border-t border-stone-100 space-y-5">
+                                <!-- 1. PILIH JAM SESI (BEBAS / MANUAL) - TETAP DI ATAS -->
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
                                         <label class="block text-[10px] uppercase tracking-widest text-stone-900 font-extrabold">
@@ -560,46 +561,64 @@
                                         </button>
                                     </div>
 
-                                    <!-- Clean Minimalist Session Interval & Validation line -->
-                                    <div class="mt-2.5 text-xs">
+                                    <!-- Clean Session Interval & Validation line -->
+                                    <div class="mt-2 text-xs">
                                         <template x-if="isTimeValid && manualTime">
                                             <div class="text-stone-500 font-mono text-[11px] flex items-center gap-2">
-                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                                <span>Rentang Sesi: <strong class="text-stone-900 font-bold" x-text="manualTime + ' - ' + calculateEndTime(manualTime) + ' WIB'"></strong> (<span x-text="serviceDuration"></span> Menit) &bull; <span class="text-emerald-600 font-bold">Tersedia</span></span>
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0"></span>
+                                                <span>Rentang Sesi: <strong class="text-stone-900 font-bold" x-text="manualTime + ' - ' + calculateEndTime(manualTime) + ' WIB'"></strong> (<span x-text="serviceDuration"></span> Menit) &bull; <span class="text-emerald-600 font-bold">Tersedia & Siap</span></span>
                                             </div>
                                         </template>
                                         <template x-if="!isTimeValid">
-                                            <div class="text-rose-600 font-medium text-xs flex items-center gap-1.5">
-                                                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            <div class="text-rose-600 font-medium text-xs flex items-start gap-1.5 p-2.5 bg-rose-50 border border-rose-200 rounded-xl">
+                                                <svg class="w-4 h-4 flex-shrink-0 mt-0.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                                 <span x-text="timeConflictMessage"></span>
                                             </div>
                                         </template>
                                     </div>
                                 </div>
 
-                                <!-- Compact Quick Recommendations (Hidden for Walk-In) -->
-                                <div class="pt-2" x-show="!isWalkIn">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <label class="block text-[9px] uppercase tracking-widest text-stone-400 font-extrabold">
-                                            {{ $isId ? 'Rekomendasi Jam (Pilihan Cepat)' : 'Quick Time Recommendations' }}
-                                        </label>
-                                        <span class="text-[9px] text-stone-400 font-normal">Klik untuk langsung mengisi jam</span>
+                                <!-- 2. TOMBOL NAVIGASI JAM REKOMENDASI KOSONG (PRIORITAS) -->
+                                <div class="pt-3 border-t border-stone-100 space-y-2.5">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-1.5">
+                                            <label class="block text-[10px] uppercase tracking-widest text-stone-900 font-extrabold">
+                                                {{ $isId ? 'REKOMENDASI JAM KOSONG (SESI PER JAM)' : 'RECOMMENDED AVAILABLE SESSIONS (HOURLY)' }}
+                                            </label>
+                                        </div>
+                                        <span class="text-[10px] text-stone-400 font-normal">
+                                            {{ $isId ? 'Pilih sesi jam yang tersedia (1 jam per sesi)' : 'Select available hourly session (1 hour per session)' }}
+                                        </span>
                                     </div>
 
+                                    <!-- When no automatic slots are found -->
                                     <template x-if="getSelectedStylistSlots().length === 0">
                                         <div class="text-[11px] text-stone-400 italic py-1">
-                                            {{ $isId ? 'Semua slot otomatis pada tanggal ini penuh. Anda tetap bisa memasukkan jam secara bebas di atas atau memilih tanggal lain.' : 'All automated slots on this date are booked. You can still input manual time or pick another date.' }}
+                                            {{ $isId ? 'Semua slot otomatis pada tanggal ini penuh atau sudah terlewat. Anda tetap dapat memasukkan jam secara bebas di atas atau memilih tanggal lain.' : 'All automated slots on this date are booked or past. You can still input manual time above or pick another date.' }}
                                         </div>
                                     </template>
 
+                                    <!-- Grid of Recommended Slot Buttons on Mobile (HP) & Desktop (Laptop) -->
                                     <template x-if="getSelectedStylistSlots().length > 0">
-                                        <div class="flex flex-wrap gap-1.5">
+                                        <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 pt-0.5">
                                             <template x-for="slot in getSelectedStylistSlots()" :key="slot.time">
                                                 <button type="button" 
-                                                        class="py-1 px-2.5 rounded-md border text-[11px] font-bold font-mono transition select-none"
-                                                        :class="manualTime === slot.time ? 'border-[#c9512d] bg-[#faede7] text-[#c9512d] ring-1 ring-[#c9512d]' : 'border-stone-200 bg-stone-50/70 text-stone-600 hover:border-[#c9512d] hover:bg-white hover:text-[#c9512d]'"
+                                                        class="p-2 sm:p-2.5 rounded-xl border text-center transition-all duration-150 select-none relative flex flex-col items-center justify-center cursor-pointer group active:scale-[0.97]"
+                                                        :class="manualTime === slot.time 
+                                                            ? 'border-[#c9512d] bg-[#c9512d] text-white shadow-sm ring-2 ring-[#c9512d]/30 font-bold' 
+                                                            : (slot.is_priority 
+                                                                ? 'border-amber-300 bg-amber-50/70 hover:border-[#c9512d] hover:bg-white text-stone-900 shadow-2xs' 
+                                                                : 'border-stone-200 bg-white hover:border-[#c9512d] hover:bg-stone-50 text-stone-700')"
                                                         @click="pickRecommendedSlot(slot.time)">
-                                                    <span x-text="slot.time"></span>
+                                                    <template x-if="slot.is_priority && manualTime !== slot.time">
+                                                        <span class="absolute -top-1.5 -right-1 px-1.5 py-0.2 rounded-full text-[8px] font-bold bg-amber-200 text-amber-900 border border-amber-300 shadow-2xs tracking-tight">
+                                                            <span x-text="slot.badge || 'Prioritas'"></span>
+                                                        </span>
+                                                    </template>
+                                                    <span class="text-xs sm:text-sm font-black font-mono tracking-tight" x-text="slot.time"></span>
+                                                    <span class="text-[9px] sm:text-[10px] mt-0.5 font-medium" 
+                                                          :class="manualTime === slot.time ? 'text-white/85' : 'text-stone-400'"
+                                                          x-text="'s/d ' + slot.end_time"></span>
                                                 </button>
                                             </template>
                                         </div>
@@ -1032,6 +1051,7 @@ function bookingWizard() {
         calYear: {{ \Carbon\Carbon::today()->year }},
         calMonth: {{ \Carbon\Carbon::today()->month }},
         leadTimeHours: 1,
+        leadTimeMinutes: 15,
         serverTime: '{{ \Carbon\Carbon::now()->format('H:i:s') }}',
         todayDate: '{{ \Carbon\Carbon::today()->toDateString() }}',
 
@@ -1482,6 +1502,7 @@ function bookingWizard() {
                 this.workingHours = data.working_hours || {};
                 this.liveStatus = data.live_status || {};
                 this.leadTimeHours = data.lead_time_hours || 1;
+                this.leadTimeMinutes = data.lead_time_minutes || 15;
                 this.serverTime = data.server_time || '';
                 this.todayDate = data.today_date || '';
 
@@ -1518,7 +1539,7 @@ function bookingWizard() {
 
         calculateEndTime(startTime) {
             if (!startTime) return '--:--';
-            const dur = this.serviceDuration || 45;
+            const dur = Math.max(60, this.serviceDuration || 60);
             const startM = this.timeToMinutes(startTime);
             return this.minutesToTime(startM + dur);
         },
@@ -1527,10 +1548,13 @@ function bookingWizard() {
             this.validateManualTime();
         },
 
-        pickRecommendedSlot(time) {
+        pickRecommendedSlot(time, autoProceed = false) {
             this.manualTime = time;
             this.selectedTime = time;
             this.validateManualTime();
+            if (autoProceed && this.isTimeValid) {
+                this.confirmTimeAndProceed();
+            }
         },
 
         confirmTimeAndProceed() {
@@ -1563,7 +1587,7 @@ function bookingWizard() {
             }
 
             const stylistId = this.selectedStylistId;
-            const dur = this.serviceDuration || 45;
+            const dur = Math.max(60, this.serviceDuration || 60);
             const startM = this.timeToMinutes(this.manualTime);
             const endM = startM + dur;
             const stylist = this.selectedStylist;
@@ -1587,12 +1611,12 @@ function bookingWizard() {
                 }
             }
 
-            // 2. Check past time and lead time if today
+            // 2. Check past time and lead time if today (strictly 15 minutes for online booking)
             const today = this.todayDate || new Date().toISOString().split('T')[0];
             if (this.selectedDate === today) {
                 const now = new Date();
                 const nowMinutes = now.getHours() * 60 + now.getMinutes();
-                const leadMinutes = this.isWalkIn ? 0 : ((this.leadTimeHours || 1) * 60);
+                const leadMinutes = this.isWalkIn ? 0 : (this.leadTimeMinutes || 15);
 
                 if (this.isWalkIn) {
                     // 15-minute grace tolerance for walk-ins
@@ -1611,7 +1635,8 @@ function bookingWizard() {
                     if (startM < (nowMinutes + leadMinutes)) {
                         this.isTimeValid = false;
                         const minAllowed = this.minutesToTime(nowMinutes + leadMinutes);
-                        this.timeConflictMessage = `Pemesanan online untuk hari ini minimal ${this.leadTimeHours} jam sebelum sesi (minimal jam ${minAllowed} WIB).`;
+                        const maxBookingTime = this.minutesToTime(Math.max(0, startM - 15));
+                        this.timeConflictMessage = `Pemesanan online minimal dilakukan 15 menit sebelum jam mulai. Untuk sesi jam ${this.manualTime} WIB, maksimal booking sebelum jam ${maxBookingTime} WIB (minimal jam sesi saat ini ${minAllowed} WIB).`;
                         return;
                     }
                 }
