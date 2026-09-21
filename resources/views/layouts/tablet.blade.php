@@ -32,40 +32,6 @@
 
     <!-- Local Fonts Preload (Suisse Intl) -->
     <link rel="preload" href="/fonts/SuisseIntlTrial-Regular.otf" as="font" type="font/otf" crossorigin>
-@php
-    if (request()->has('tablet_outlet_id')) {
-        session(['tablet_outlet_id' => (int) request()->query('tablet_outlet_id')]);
-    }
-    $tabletOutletId = session('tablet_outlet_id', 2);
-    $tabletOutlet = \App\Domains\Outlet\Models\Outlet::find($tabletOutletId) ?? \App\Domains\Outlet\Models\Outlet::first();
-    $tabletOutletName = $tabletOutlet ? $tabletOutlet->name : 'MORE Hair Studio';
-    $allOutlets = \App\Domains\Outlet\Models\Outlet::where('status', 'active')->get();
-@endphp
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>Tablet Operation Terminal | MORE Hair Studio</title>
-
-    <!-- PWA Primary Tags -->
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#c9512d">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MORE Terminal">
-
-    <!-- PWA Icons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png?v=3">
-    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png?v=3">
-    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96.png?v=3">
-    <link rel="shortcut icon" href="/icons/icon-192.png?v=3">
-
-    <!-- Local Fonts Preload (Suisse Intl) -->
-    <link rel="preload" href="/fonts/SuisseIntlTrial-Regular.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="/fonts/SuisseIntlTrial-Medium.otf" as="font" type="font/otf" crossorigin>
     <link rel="preload" href="/fonts/SuisseIntlTrial-Bold.otf" as="font" type="font/otf" crossorigin>
 
@@ -148,7 +114,7 @@
         html, body, p, span, div, li, td, th, label, a, input, button, select, textarea { font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
         h1, h2, h3, h4, h5, h6, .font-display, .font-headline, [class*="text-2xl"], [class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"], [class*="text-6xl"], [class*="text-7xl"], [class*="text-8xl"], [class*="text-9xl"] { font-family: 'Stack Sans Notch', -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: -0.02em; }
         .font-mono, code, kbd, pre, samp { font-family: 'SuisseIntlMono', 'Courier New', monospace !important; letter-spacing: 0; }
-    <style>
+    </style>
         [x-cloak] { display: none !important; }
 
         /* ── Loading Progress Bar ── */
