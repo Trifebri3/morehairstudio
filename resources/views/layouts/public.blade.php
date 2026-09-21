@@ -103,6 +103,12 @@
             font-family: 'SuisseIntlMono', 'Courier New', monospace !important;
             letter-spacing: 0;
         }
+
+        /* ── SPA TURBO PROGRESS BAR ── */
+        .turbo-progress-bar {
+            height: 3px;
+            background-color: #c9512d;
+        }
     </style>
 
     <style>
@@ -126,11 +132,6 @@
             100% { background-position: -200% 0; }
         }
 
-        /* ── Page Fade-In ── */
-        #page-content { opacity: 0; transform: translateY(8px); transition: opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1); }
-        #page-content.visible { opacity: 1; transform: translateY(0); }
-        body.page-leaving #page-content { opacity: 0; transform: translateY(-6px); transition: opacity 0.2s ease, transform 0.2s ease; }
-
         /* ── Smooth all links & buttons ── */
         a, button { transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, opacity 0.2s ease; }
         a:active, button:active { transform: scale(0.97); }
@@ -138,6 +139,7 @@
         /* ── Smooth scroll ── */
         html { scroll-behavior: smooth; }
     </style>
+    
 </head>
 <body class="bg-[#fafaf9] text-stone-900 min-h-screen flex flex-col antialiased pb-20 md:pb-0 font-sans">
 
