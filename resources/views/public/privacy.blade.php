@@ -1,4 +1,4 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', 'Privacy Policy • Kebijakan Privasi | MORE Hair Studio')
 @section('meta_description', 'Kebijakan privasi dan perlindungan data pelanggan di MORE Hair Studio Bandung.')
@@ -10,24 +10,24 @@
             <span class="text-xs font-mono font-bold uppercase tracking-widest text-[#c9512d] block">
                 (02) Legal &bull; Data Governance
             </span>
-            <h1 class="text-3xl sm:text-5xl font-black font-primary text-stone-900 uppercase tracking-tight">
+            <h1 class="text-3xl font-display sm:text-5xl font-display font-black font-display text-stone-900 uppercase tracking-tight">
                 Privacy Policy
             </h1>
             <p class="text-xs font-mono text-stone-400 uppercase tracking-wider">Perlindungan Data Pelanggan &bull; Edisi 2026</p>
         </div>
 
-        <div class="text-stone-700 space-y-6 text-sm sm:text-base leading-relaxed font-light font-secondary">
+        <div class="text-stone-700 space-y-6 text-sm sm:text-base leading-relaxed font-light font-sans">
             <p>
                 Di <strong class="text-stone-900 font-bold">MORE Hair Studio</strong>, kami menghormati dan menjaga kerahasiaan data privasi pelanggan kami. Kebijakan ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda.
             </p>
             <div class="border-l-2 border-[#c9512d] pl-4 space-y-3 py-1">
-                <h4 class="font-bold text-stone-900 uppercase text-xs tracking-wider font-mono">1. Informasi yang Kami Kumpulkan</h4>
+                <h4 class="font-bold text-stone-900 uppercase text-xs tracking-wider font-mono font-display">1. Informasi yang Kami Kumpulkan</h4>
                 <p class="text-xs text-stone-600 leading-relaxed font-light">
                     Kami mencatat nama, nomor telepon WhatsApp (ternormalisasi), alamat email, dan histori preferensi treatment rambut Anda murni untuk keperluan konfirmasi reservasi, pengiriman E-Ticket, dan validasi promo loyalitas.
                 </p>
             </div>
             <div class="border-l-2 border-[#c9512d] pl-4 space-y-3 py-1">
-                <h4 class="font-bold text-stone-900 uppercase text-xs tracking-wider font-mono">2. Keamanan &amp; Kerahasiaan</h4>
+                <h4 class="font-bold text-stone-900 uppercase text-xs tracking-wider font-mono font-display">2. Keamanan &amp; Kerahasiaan</h4>
                 <p class="text-xs text-stone-600 leading-relaxed font-light">
                     Kami tidak pernah memperjualbelikan data pelanggan kepada pihak ketiga mana pun. Akses data internal dilindungi dengan enkripsi standar industri dan kontrol otorisasi bertingkat.
                 </p>

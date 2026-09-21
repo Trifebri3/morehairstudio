@@ -7,7 +7,7 @@
                 <span class="text-xs font-mono uppercase tracking-widest text-[#c9512d] font-bold block mb-2">
                     (06) Spektrum Treatment
                 </span>
-                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-stone-900 mb-3 uppercase tracking-tight font-primary">
+                <h2 class="text-3xl font-display sm:text-4xl font-display md:text-5xl font-display font-black text-stone-900 mb-3 uppercase tracking-tight font-display">
                     How would you like to experience More?
                 </h2>
                 <p class="text-xs text-stone-500 uppercase tracking-widest font-mono">
@@ -27,8 +27,8 @@
                         <span class="text-[10px] font-bold text-[#c9512d] uppercase tracking-wider block font-mono">
                             {{ $service->category->name }}
                         </span>
-                        <h4 class="text-lg font-bold text-stone-900 font-primary uppercase tracking-tight">{{ $service->name }}</h4>
-                        <p class="text-stone-600 text-xs sm:text-sm leading-relaxed max-w-lg font-light font-secondary">{{ $service->description }}</p>
+                        <h4 class="text-lg font-bold text-stone-900 font-display uppercase tracking-tight">{{ $service->name }}</h4>
+                        <p class="text-stone-600 text-xs sm:text-sm leading-relaxed max-w-lg font-light font-sans">{{ $service->description }}</p>
                         <div class="pt-2">
                             <span class="text-[10px] text-stone-400 font-mono uppercase font-bold">Duration: {{ $service->default_duration }} Min</span>
                         </div>

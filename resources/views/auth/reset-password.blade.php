@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <h2 class="text-2xl font-extrabold text-stone-900 tracking-tight">Atur Ulang Password</h2>
+        <h2 class="text-2xl font-display font-extrabold text-stone-900 tracking-tight">Atur Ulang Password</h2>
         <p class="mt-2 text-sm text-stone-500">Silakan masukkan password baru Anda</p>
     </div>
 

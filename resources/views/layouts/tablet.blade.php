@@ -30,55 +30,245 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96.png?v=3">
     <link rel="shortcut icon" href="/icons/icon-192.png?v=3">
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Local Fonts Preload (Suisse Intl) -->
+    <link rel="preload" href="/fonts/SuisseIntlTrial-Regular.otf" as="font" type="font/otf" crossorigin>
+@php
+    if (request()->has('tablet_outlet_id')) {
+        session(['tablet_outlet_id' => (int) request()->query('tablet_outlet_id')]);
+    }
+    $tabletOutletId = session('tablet_outlet_id', 2);
+    $tabletOutlet = \App\Domains\Outlet\Models\Outlet::find($tabletOutletId) ?? \App\Domains\Outlet\Models\Outlet::first();
+    $tabletOutletName = $tabletOutlet ? $tabletOutlet->name : 'MORE Hair Studio';
+    $allOutlets = \App\Domains\Outlet\Models\Outlet::where('status', 'active')->get();
+@endphp
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>Tablet Operation Terminal | MORE Hair Studio</title>
+
+    <!-- PWA Primary Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#c9512d">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MORE Terminal">
+
+    <!-- PWA Icons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png?v=3">
+    <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png?v=3">
+    <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96.png?v=3">
+    <link rel="shortcut icon" href="/icons/icon-192.png?v=3">
+
+    <!-- Local Fonts Preload (Suisse Intl) -->
+    <link rel="preload" href="/fonts/SuisseIntlTrial-Regular.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="/fonts/SuisseIntlTrial-Medium.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="/fonts/SuisseIntlTrial-Bold.otf" as="font" type="font/otf" crossorigin>
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/tablet.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+    <!-- ═══ FONT PRELOAD — Static Weights ═══ -->
+    <link rel="preload" href="/fonts/StackSansNotch-Bold.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/fonts/StackSansNotch-Light.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/fonts/SuisseIntlTrial-Regular.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="/fonts/SuisseIntlTrial-Light.otf" as="font" type="font/otf" crossorigin>
+
+    <!-- ═══ INLINE FONT-FACE (STATIC WEIGHTS) ═══ -->
     <style>
-        [x-cloak] {
-            display: none !important;
+        /* Stack Sans Notch */
+        @font-face {
+            font-family: 'Stack Sans Notch';
+            src: url('/fonts/StackSansNotch-Light.ttf') format('truetype');
+            font-weight: 300; font-style: normal; font-display: swap;
         }
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+        @font-face {
+            font-family: 'Stack Sans Notch';
+            src: url('/fonts/StackSansNotch-Regular.ttf') format('truetype');
+            font-weight: 400; font-style: normal; font-display: swap;
         }
-        .font-mono {
-            font-family: 'JetBrains Mono', monospace;
+        @font-face {
+            font-family: 'Stack Sans Notch';
+            src: url('/fonts/StackSansNotch-Medium.ttf') format('truetype');
+            font-weight: 500; font-style: normal; font-display: swap;
         }
+        @font-face {
+            font-family: 'Stack Sans Notch';
+            src: url('/fonts/StackSansNotch-SemiBold.ttf') format('truetype');
+            font-weight: 600; font-style: normal; font-display: swap;
+        }
+        @font-face {
+            font-family: 'Stack Sans Notch';
+            src: url('/fonts/StackSansNotch-Bold.ttf') format('truetype');
+            font-weight: 700; font-style: normal; font-display: swap;
+        }
+        @font-face {
+            font-family: 'Stack Sans Notch';
+            src: url('/fonts/StackSansNotch-Bold.ttf') format('truetype');
+            font-weight: 800; font-style: normal; font-display: swap;
+        }
+
+        /* Suisse Intl */
+        @font-face {
+            font-family: 'Suisse Intl';
+            src: url('/fonts/SuisseIntlTrial-Light.otf') format('opentype');
+            font-weight: 300; font-style: normal; font-display: swap;
+        }
+        @font-face {
+            font-family: 'Suisse Intl';
+            src: url('/fonts/SuisseIntlTrial-Regular.otf') format('opentype');
+            font-weight: 400; font-style: normal; font-display: swap;
+        }
+        @font-face {
+            font-family: 'Suisse Intl';
+            src: url('/fonts/SuisseIntlTrial-Medium.otf') format('opentype');
+            font-weight: 500; font-style: normal; font-display: swap;
+        }
+        @font-face {
+            font-family: 'Suisse Intl';
+            src: url('/fonts/SuisseIntlTrial-Bold.otf') format('opentype');
+            font-weight: 700; font-style: normal; font-display: swap;
+        }
+
+        /* Suisse Intl Mono */
+        @font-face {
+            font-family: 'SuisseIntlMono';
+            src: url('/fonts/SuisseIntlMonoTrial-Regular.otf') format('opentype');
+            font-weight: 400; font-style: normal; font-display: swap;
+        }
+        @font-face {
+            font-family: 'SuisseIntlMono';
+            src: url('/fonts/SuisseIntlMonoTrial-Bold.otf') format('opentype');
+            font-weight: 700; font-style: normal; font-display: swap;
+        }
+        html, body, p, span, div, li, td, th, label, a, input, button, select, textarea { font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
+        h1, h2, h3, h4, h5, h6, .font-display, .font-headline, [class*="text-2xl"], [class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"], [class*="text-6xl"], [class*="text-7xl"], [class*="text-8xl"], [class*="text-9xl"] { font-family: 'Stack Sans Notch', -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: -0.02em; }
+        .font-mono, code, kbd, pre, samp { font-family: 'SuisseIntlMono', 'Courier New', monospace !important; letter-spacing: 0; }
+    <style>
+        [x-cloak] { display: none !important; }
+
+        /* ── Loading Progress Bar ── */
+        #page-loader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, #c9512d, #f97316, #c9512d);
+            background-size: 200% 100%;
+            z-index: 9999;
+            transform-origin: left;
+            transform: scaleX(0);
+            transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+            animation: shimmer 1.5s infinite linear;
+        }
+        #page-loader.loading  { transform: scaleX(0.7); }
+        #page-loader.complete { transform: scaleX(1); opacity: 0; transition: transform 0.2s ease, opacity 0.3s ease 0.1s; }
+
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ── Page Fade-In on Load ── */
+        #page-content {
+            opacity: 0;
+            transform: translateY(6px);
+            transition: opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1);
+        }
+        #page-content.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ── Page Exit Transition (on link click) ── */
+        body.page-leaving #page-content {
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        /* ── Smooth ALL interactive elements ── */
+        a, button, [role="button"] {
+            transition: background-color 0.2s cubic-bezier(0.4,0,0.2,1),
+                        color 0.2s cubic-bezier(0.4,0,0.2,1),
+                        border-color 0.2s cubic-bezier(0.4,0,0.2,1),
+                        box-shadow 0.2s cubic-bezier(0.4,0,0.2,1),
+                        transform 0.15s cubic-bezier(0.4,0,0.2,1),
+                        opacity 0.2s ease;
+        }
+
+        /* ── Touch/Active Feedback ── */
+        a:active, button:active {
+            transform: scale(0.97);
+        }
+
+        /* ── Card Hover Lift ── */
+        .tablet-card {
+            transition: transform 0.25s cubic-bezier(0.16,1,0.3,1),
+                        box-shadow 0.25s cubic-bezier(0.16,1,0.3,1),
+                        border-color 0.2s ease !important;
+        }
+        .tablet-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 32px -8px rgba(201,81,45,0.12);
+        }
+        .tablet-card:active {
+            transform: scale(0.97) translateY(0) !important;
+        }
+
+        /* ── Smooth Scroll ── */
+        html { scroll-behavior: smooth; }
+
+        /* ── Skeleton Pulse ── */
+        .skeleton {
+            background: linear-gradient(90deg, #f5f5f4 25%, #ece9e6 50%, #f5f5f4 75%);
+            background-size: 400% 100%;
+            animation: skeleton-pulse 1.6s ease infinite;
+            border-radius: 0.5rem;
+        }
+        @keyframes skeleton-pulse {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ── Dropdown smooth ── */
+        [x-transition] { transition-timing-function: cubic-bezier(0.16,1,0.3,1) !important; }
     </style>
 </head>
 <body class="bg-[#fafaf9] text-stone-900 min-h-screen flex flex-col antialiased select-none pb-24 sm:pb-28"
       x-data="tabletMaster()"
       x-init="initMaster()">
 
+    <!-- Loading Progress Bar -->
+    <div id="page-loader"></div>
+
 
     <!-- Top Tablet Navigation Header -->
-    <header class="bg-white/95 backdrop-blur-md border-b border-stone-200 py-3.5 px-4 sm:px-8 flex items-center justify-between sticky top-0 z-40 shadow-xs">
+    <header class="bg-white/95 backdrop-blur-md border-b border-stone-200 py-5 px-5 sm:px-10 flex items-center justify-between sticky top-0 z-40 shadow-xs">
         
         <!-- Left: Logo & Device Status -->
-        <div class="flex items-center space-x-3 sm:space-x-4">
-            <a href="{{ route('tablet.dashboard') }}" class="flex items-center space-x-3 group">
-                <img src="/logo/logo.png?v=3" alt="MORE Hair Studio" class="h-8 sm:h-9 w-auto object-contain">
-                <div class="flex flex-col border-l border-stone-200 pl-3">
-                    <div class="flex items-center space-x-1.5">
-                        <span class="text-[9px] uppercase tracking-wider bg-[#faede7] text-[#c9512d] font-extrabold px-2 py-0.5 rounded">Terminal</span>
+        <div class="flex items-center space-x-4 sm:space-x-5">
+            <a href="{{ route('tablet.dashboard') }}" class="flex items-center space-x-4 group">
+                <img src="/logo/logo.png?v=3" alt="MORE Hair Studio" class="h-12 sm:h-14 w-auto object-contain">
+                <div class="flex flex-col border-l border-stone-200 pl-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[11px] uppercase tracking-wider bg-[#faede7] text-[#c9512d] font-extrabold px-2.5 py-1 rounded">Terminal</span>
                     </div>
-                    <div class="flex items-center space-x-1.5 mt-0.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span class="text-[10px] text-stone-400 font-mono font-medium">TABLET-01 &bull; Ready</span>
+                    <div class="flex items-center space-x-2 mt-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="text-xs text-stone-400 font-mono font-medium">TABLET-01 &bull; Ready</span>
                     </div>
                 </div>
             </a>
         </div>
 
         <!-- Center: Live Clock & Date (Tablet Kiosk Feature) -->
-        <div class="hidden md:flex items-center space-x-3 bg-stone-100/70 border border-stone-200/80 px-3.5 py-1.5 rounded-xl font-mono text-xs text-stone-700">
-            <svg class="w-3.5 h-3.5 text-[#c9512d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-            <span x-text="liveTime" class="font-bold text-stone-900"></span>
+        <div class="hidden md:flex items-center space-x-3 bg-stone-100/70 border border-stone-200/80 px-5 py-2.5 rounded-xl font-mono text-sm text-stone-700">
+            <svg class="w-5 h-5 text-[#c9512d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span x-text="liveTime" class="font-bold text-stone-900 text-base"></span>
             <span class="text-stone-300">|</span>
             <span x-text="liveDate" class="text-stone-500 font-medium"></span>
         </div>
@@ -90,10 +280,10 @@
             <div class="relative" x-data="{ open: false }">
                 <button type="button" 
                         @click="open = !open" 
-                        class="flex items-center space-x-2 px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-xs font-bold hover:bg-stone-100 hover:border-stone-300 transition">
-                    <svg class="w-3.5 h-3.5 text-[#c9512d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    <span class="truncate max-w-[120px] sm:max-w-[180px]">{{ $tabletOutletName }}</span>
-                    <svg class="w-3.5 h-3.5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                        class="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-sm font-bold hover:bg-stone-100 hover:border-stone-300 transition">
+                    <svg class="w-4 h-4 text-[#c9512d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span class="truncate max-w-[140px] sm:max-w-[200px]">{{ $tabletOutletName }}</span>
+                    <svg class="w-4 h-4 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
 
                 <!-- Switcher Dropdown Modal -->
@@ -123,8 +313,8 @@
             <!-- Install PWA Button -->
             <button type="button"
                     @click="triggerPwaInstall()"
-                    class="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold transition shadow-xs">
-                <svg class="w-3.5 h-3.5 text-[#c9512d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    class="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-sm font-bold transition shadow-xs">
+                <svg class="w-4 h-4 text-[#c9512d]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                 <span class="hidden sm:inline">Install PWA</span>
                 <span class="sm:hidden">Install</span>
             </button>
@@ -133,12 +323,12 @@
             <button type="button"
                     @click="toggleFullscreen()"
                     title="Layar Penuh (Kiosk Mode)"
-                    class="p-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition">
+                    class="p-3 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 transition">
                 <template x-if="!isFullscreen">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0 0l-5-5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0 0l-5-5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                 </template>
                 <template x-if="isFullscreen">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                 </template>
             </button>
 
@@ -154,51 +344,53 @@
     </header>
 
     <!-- Main Tablet Viewport -->
-    <main class="flex-grow flex flex-col p-4 sm:p-8 max-w-7xl mx-auto w-full">
-        @yield('content')
-    </main>
+    <div id="page-content">
+        <main class="flex-grow flex flex-col p-4 sm:p-8 max-w-7xl mx-auto w-full">
+            @yield('content')
+        </main>
+    </div>
 
     <!-- Floating Bottom Navigation Dock for Tablet / iPad -->
     <div class="fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-xl">
         <nav class="tablet-dock rounded-2xl p-1.5 sm:p-2 flex items-center justify-between shadow-2xl backdrop-blur-xl border border-white/10">
             
             <!-- Terminal Home -->
-            <a href="{{ route('tablet.dashboard') }}" 
+            <a href="{{ route('tablet.dashboard') }}" data-spa-link
                class="flex flex-col items-center justify-center py-1.5 px-2.5 sm:px-3 rounded-xl transition {{ request()->routeIs('tablet.dashboard') ? 'bg-[#c9512d] text-white font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-white/10' }}">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                 <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Terminal</span>
             </a>
 
             <!-- Walk-In -->
-            <a href="{{ route('tablet.walk-in') }}" 
+            <a href="{{ route('tablet.walk-in') }}" data-spa-link
                class="flex flex-col items-center justify-center py-1.5 px-2.5 sm:px-3 rounded-xl transition {{ request()->routeIs('tablet.walk-in') ? 'bg-[#c9512d] text-white font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-white/10' }}">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
                 <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Walk-In</span>
             </a>
 
             <!-- Check-In Scanner -->
-            <a href="{{ route('tablet.check-in') }}" 
+            <a href="{{ route('tablet.check-in') }}" data-spa-link
                class="flex flex-col items-center justify-center py-1.5 px-2.5 sm:px-3 rounded-xl transition {{ request()->routeIs('tablet.check-in') ? 'bg-[#c9512d] text-white font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-white/10' }}">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
                 <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Scan QR</span>
             </a>
 
             <!-- Visual Queue -->
-            <a href="{{ route('tablet.queue') }}" 
+            <a href="{{ route('tablet.queue') }}" data-spa-link
                class="flex flex-col items-center justify-center py-1.5 px-2.5 sm:px-3 rounded-xl transition {{ request()->routeIs('tablet.queue') ? 'bg-[#c9512d] text-white font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-white/10' }}">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
                 <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Antrean</span>
             </a>
 
             <!-- Cashier Monitor -->
-            <a href="{{ route('tablet.styscreen') }}" 
+            <a href="{{ route('tablet.styscreen') }}" data-spa-link
                class="flex flex-col items-center justify-center py-1.5 px-2.5 sm:px-3 rounded-xl transition {{ request()->routeIs('tablet.styscreen') ? 'bg-[#c9512d] text-white font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-white/10' }}">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
                 <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Kasir</span>
             </a>
 
             <!-- Stylist Attendance -->
-            <a href="{{ route('tablet.attendance') }}" 
+            <a href="{{ route('tablet.attendance') }}" data-spa-link
                class="flex flex-col items-center justify-center py-1.5 px-2.5 sm:px-3 rounded-xl transition {{ request()->routeIs('tablet.attendance') ? 'bg-[#c9512d] text-white font-bold shadow-xs' : 'text-stone-300 hover:text-white hover:bg-white/10' }}">
                 <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 <span class="text-[9px] sm:text-[10px] tracking-tight mt-0.5">Absen</span>
@@ -232,7 +424,7 @@
             </div>
 
             <div class="space-y-1">
-                <h3 class="text-lg font-black text-stone-900 tracking-tight">Pasang MORE Terminal</h3>
+                <h3 class="text-lg font-black text-stone-900 tracking-tight font-display">Pasang MORE Terminal</h3>
                 <p class="text-xs text-stone-500 font-medium">Jadikan aplikasi layar penuh di iPad, Tablet, atau Ponsel untuk performa kiosk optimal.</p>
             </div>
 
@@ -334,6 +526,182 @@
             }
         };
     }
+    </script>
+
+    <!-- ── SPA Navigation — Silky Crossfade (No blank flash) ── -->
+    <script>
+    (function() {
+        const loader = document.getElementById('page-loader');
+        let isNavigating = false;
+
+        /* ── Loader bar ── */
+        function loaderStart() {
+            if (!loader) return;
+            loader.style.opacity = '1';
+            loader.classList.remove('complete');
+            loader.classList.add('loading');
+        }
+        function loaderDone() {
+            if (!loader) return;
+            loader.classList.remove('loading');
+            loader.classList.add('complete');
+            setTimeout(() => { loader.classList.remove('complete'); }, 500);
+        }
+
+        /* ── Extract helpers ── */
+        function extractContent(doc) { return doc.getElementById('page-content'); }
+        function extractTitle(doc)   { return doc.title || document.title; }
+
+        /* ── Re-run inline scripts in new content ── */
+        function reinitScripts(el) {
+            el.querySelectorAll('script').forEach(old => {
+                const s = document.createElement('script');
+                Array.from(old.attributes).forEach(a => s.setAttribute(a.name, a.value));
+                s.textContent = old.textContent;
+                old.parentNode.replaceChild(s, old);
+            });
+        }
+
+        /* ── Re-init AlpineJS for new content ── */
+        function reinitAlpine(el) {
+            if (window.Alpine) {
+                el.querySelectorAll('[x-data]').forEach(node => {
+                    try { window.Alpine.initTree(node); } catch(e) {}
+                });
+            }
+        }
+
+        /* ── Update dock active state ── */
+        function updateDock(url) {
+            const path = new URL(url, location.origin).pathname;
+            document.querySelectorAll('[data-spa-link]').forEach(link => {
+                const lp = new URL(link.getAttribute('href'), location.origin).pathname;
+                if (lp === path) {
+                    link.classList.add('bg-[#c9512d]', 'text-white', 'font-bold', 'shadow-xs');
+                    link.classList.remove('text-stone-300', 'hover:text-white', 'hover:bg-white/10');
+                } else {
+                    link.classList.remove('bg-[#c9512d]', 'text-white', 'font-bold', 'shadow-xs');
+                    link.classList.add('text-stone-300', 'hover:text-white', 'hover:bg-white/10');
+                }
+            });
+        }
+
+        /* ── Core: crossfade navigate ── */
+        async function navigate(url, pushState = true) {
+            if (isNavigating) return;
+            const wrapper = document.getElementById('page-content');
+            if (!wrapper) { window.location.href = url; return; }
+
+            isNavigating = true;
+            loaderStart();
+
+            try {
+                /* Fetch new page */
+                const res = await fetch(url, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' },
+                    credentials: 'same-origin'
+                });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+
+                const html  = await res.text();
+                const doc   = new DOMParser().parseFromString(html, 'text/html');
+                const newEl = extractContent(doc);
+                if (!newEl) throw new Error('no #page-content');
+
+                /* Build incoming layer on top, opacity 0 */
+                const incoming = document.createElement('div');
+                incoming.innerHTML = newEl.innerHTML;
+                incoming.style.cssText = `
+                    position: absolute; inset: 0;
+                    opacity: 0;
+                    transition: opacity 220ms ease;
+                    pointer-events: none;
+                `;
+
+                /* Make wrapper relative so incoming can overlay */
+                const prevPosition = wrapper.style.position;
+                wrapper.style.position = 'relative';
+                wrapper.style.overflow = 'hidden';
+                wrapper.appendChild(incoming);
+
+                /* Crossfade: fade in incoming */
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    incoming.style.opacity = '1';
+                    incoming.style.pointerEvents = 'auto';
+                    wrapper.style.opacity = '0.4';
+                    wrapper.style.transition = 'opacity 220ms ease';
+                }));
+
+                /* After dissolve completes, swap content */
+                await new Promise(r => setTimeout(r, 230));
+
+                wrapper.innerHTML = newEl.innerHTML;
+                wrapper.style.opacity   = '1';
+                wrapper.style.transition = '';
+                wrapper.style.position  = prevPosition || '';
+                wrapper.style.overflow  = '';
+
+                /* Update URL, title, dock */
+                if (pushState) history.pushState({ url }, '', url);
+                document.title = extractTitle(doc);
+                updateDock(url);
+
+                /* Re-init content */
+                reinitScripts(wrapper);
+                reinitAlpine(wrapper);
+
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                loaderDone();
+
+            } catch (err) {
+                console.warn('[SPA] Fallback:', err);
+                window.location.href = url;
+            } finally {
+                isNavigating = false;
+            }
+        }
+
+        /* ── Intercept link clicks ── */
+        document.addEventListener('click', function(e) {
+            const link = e.target.closest('a[href]');
+            if (!link) return;
+            const href = link.getAttribute('href');
+            if (!href ||
+                href.startsWith('#') || href.startsWith('javascript') ||
+                href.startsWith('mailto') || href.startsWith('tel') ||
+                link.target === '_blank' ||
+                e.ctrlKey || e.metaKey || e.shiftKey ||
+                link.hasAttribute('data-no-spa')) return;
+            try {
+                if (new URL(href, location.origin).origin !== location.origin) return;
+            } catch { return; }
+            e.preventDefault();
+            navigate(href);
+        });
+
+        /* ── Browser back/forward ── */
+        window.addEventListener('popstate', () => navigate(location.href, false));
+
+        /* ── Initial fade-in (gentle, no translateY) ── */
+        function revealInitial() {
+            const c = document.getElementById('page-content');
+            if (!c) return;
+            c.style.opacity = '0';
+            c.style.transition = 'none';
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+                c.style.transition = 'opacity 300ms ease';
+                c.style.opacity = '1';
+            }));
+            loaderDone();
+        }
+
+        loaderStart();
+        if (document.readyState === 'complete') revealInitial();
+        else {
+            window.addEventListener('load', revealInitial);
+            document.addEventListener('DOMContentLoaded', revealInitial);
+        }
+    })();
     </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <h2 class="text-2xl font-extrabold text-stone-900 tracking-tight">Daftar Akun</h2>
+        <h2 class="text-2xl font-display font-extrabold text-stone-900 tracking-tight">Daftar Akun</h2>
         <p class="mt-2 text-sm text-stone-500">Silakan daftarkan akun baru Anda</p>
     </div>
 

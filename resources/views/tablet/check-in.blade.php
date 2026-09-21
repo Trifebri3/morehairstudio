@@ -1,11 +1,21 @@
 @extends('layouts.tablet')
 
 @section('content')
+<style>
+/* ── CHECK-IN PAGE FONTS ── */
+.font-display { font-family: 'Stack Sans Notch', sans-serif !important; font-weight: 800 !important; letter-spacing: -0.01em; }
+h1.font-display, h2.font-display, h3.font-display, h4.font-display { font-family: 'Stack Sans Notch', sans-serif !important; font-weight: 800 !important; }
+.font-mono { font-family: 'SuisseIntlMono', monospace !important; }
+body, p, span, div, input, button, a { font-family: 'Suisse Intl', sans-serif; }
+h1, h2, h3, h4, h5, h6, .text-xl, .text-lg, .text-2xl, .text-3xl, .text-4xl, .text-5xl, .text-6xl { font-family: 'Stack Sans Notch', sans-serif !important; font-weight: 700; }
+.text-xs, .text-sm, .text-base { font-family: 'Suisse Intl', sans-serif !important; }
+.font-mono, .tracking-widest { font-family: 'SuisseIntlMono', monospace !important; }
+</style>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch h-full py-4 relative">
     <!-- Left Column: Camera Scanner -->
     <div class="glass-panel p-8 rounded-3xl flex flex-col justify-between items-center text-center border-stone-200 bg-white shadow-2xs">
         <div>
-            <h3 class="text-xl font-bold text-stone-900 mb-2">Kamera Scanner QR Code</h3>
+            <h3 class="text-xl font-bold text-stone-900 mb-2 font-display">Kamera Scanner QR Code</h3>
             <p class="text-stone-500 text-xs leading-relaxed max-w-xs mx-auto">
                 Arahkan QR Code tiket customer atau barcode stylist ke arah kamera tablet.
             </p>
@@ -44,7 +54,7 @@
     <div class="glass-panel p-8 rounded-3xl flex flex-col justify-between border-stone-200 bg-white">
         <div class="space-y-6">
             <div>
-                <h3 class="text-xl font-bold text-stone-900 mb-1">Input Manual Kode Booking</h3>
+                <h3 class="text-xl font-bold text-stone-900 mb-1 font-display">Input Manual Kode Booking</h3>
                 <p class="text-stone-500 text-xs">Prefix tanggal otomatis terisi per hari ini. Cukup ketik <strong>5 digit kode unik</strong> customer.</p>
             </div>
 
@@ -151,7 +161,7 @@
             <!-- Booking details if found -->
             @if($booking)
                 <div class="border border-[#faede7] bg-stone-50 rounded-2xl p-6 space-y-4">
-                    <h4 class="font-bold text-xs uppercase tracking-wider text-[#c9512d] border-b border-stone-200 pb-2">
+                    <h4 class="font-bold text-xs uppercase tracking-wider text-[#c9512d] border-b border-stone-200 pb-2 font-display">
                         Data Booking Ditemukan
                     </h4>
                     
@@ -256,7 +266,7 @@
                 
                 <div class="space-y-4">
                     <span class="text-sm font-black uppercase tracking-widest text-emerald-400 block">{{ $isAbsen ? 'ATTENDANCE CONFIRMED' : 'CHECK-IN CONFIRMED' }}</span>
-                    <h1 class="text-5xl sm:text-6xl font-black uppercase tracking-tighter leading-none bg-gradient-to-r from-white via-emerald-100 to-emerald-300 bg-clip-text text-transparent">
+                    <h1 class="text-5xl font-display sm:text-6xl font-display font-black uppercase tracking-tighter leading-none bg-gradient-to-r from-white via-emerald-100 to-emerald-300 bg-clip-text text-transparent">
                         {{ $isAbsen ? 'ABSENSI BERHASIL!' : 'CHECK-IN BERHASIL!' }}
                     </h1>
                     <p class="text-lg sm:text-xl text-emerald-100 max-w-xl mx-auto font-light leading-relaxed">{{ $overlay['message'] }}</p>

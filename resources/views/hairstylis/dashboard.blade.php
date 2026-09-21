@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     Dasbor Hairstylist
@@ -11,7 +11,7 @@
             <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
             </div>
-            <h3 class="font-extrabold text-stone-900 text-lg uppercase tracking-tight">Akun Belum Terhubung</h3>
+            <h3 class="font-extrabold text-stone-900 text-lg uppercase tracking-tight font-display">Akun Belum Terhubung</h3>
             <p class="text-stone-500 text-sm">Akun user Anda belum terhubung dengan data Stylist di Outlet manapun. Silakan hubungi Administrator atau Outlet Manager Anda untuk mengaitkan akun ini.</p>
         </div>
     @else
@@ -51,7 +51,7 @@
                                     <img src="{{ $stylist->display_photo }}" alt="{{ $stylist->name }}" class="w-14 h-14 rounded-2xl object-cover border-2 border-white/30 shadow-md flex-shrink-0">
                                     <div>
                                         <span class="text-[9px] uppercase tracking-widest font-extrabold text-blue-200">Official Stylist ID</span>
-                                        <h3 class="text-base font-extrabold tracking-tight uppercase leading-tight mt-0.5">{{ $stylist->name }}</h3>
+                                        <h3 class="text-base font-extrabold tracking-tight uppercase leading-tight mt-0.5 font-display">{{ $stylist->name }}</h3>
                                         <p class="text-[10px] text-blue-200 uppercase font-semibold tracking-wider mt-0.5">{{ $stylist->specialization ?: 'Stylist' }}</p>
                                     </div>
                                 </div>
@@ -106,7 +106,7 @@
 
                     <!-- Leave and Activation Status Control -->
                     <div class="glass-panel p-6 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-4">
-                        <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider border-b border-stone-100 pb-3">Status Kehadiran & Cuti</h4>
+                        <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider border-b border-stone-100 pb-3 font-display">Status Kehadiran & Cuti</h4>
                         
                         <div class="flex items-center justify-between py-2">
                             <span class="text-xs text-stone-500">Status Akun Saat Ini:</span>
@@ -156,7 +156,7 @@
                     <div class="glass-panel p-6 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-6">
                         <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center border-b border-stone-100 pb-4 gap-4">
                             <div>
-                                <h4 class="font-extrabold text-stone-900 text-sm uppercase tracking-wider">Jadwal Potong Rambut</h4>
+                                <h4 class="font-extrabold text-stone-900 text-sm uppercase tracking-wider font-display">Jadwal Potong Rambut</h4>
                                 <p class="text-stone-400 text-[10px] mt-0.5">Daftar booking pelanggan teralokasi ke Anda.</p>
                             </div>
                             <div class="flex items-center space-x-2 w-full sm:max-w-xs">
@@ -202,7 +202,7 @@
                                         </div>
                                         <div>
                                             <div class="flex items-center space-x-2">
-                                                <h5 class="font-bold text-stone-950 text-sm tracking-tight">{{ $booking->customer->name }}</h5>
+                                                <h5 class="font-bold text-stone-950 text-sm tracking-tight font-display">{{ $booking->customer->name }}</h5>
                                                 <span class="text-[9px] font-mono bg-stone-200/80 text-stone-600 px-1.5 py-0.5 rounded font-bold uppercase">{{ $booking->booking_code }}</span>
                                             </div>
                                             <p class="text-stone-500 text-xs font-semibold mt-0.5">{{ $booking->items->first()?->service->name ?? 'Service Haircut' }}</p>
@@ -284,7 +284,7 @@
                         
                         <!-- Performance statistics (Productivity metrics, no financial fields) -->
                         <div class="glass-panel p-6 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-4">
-                            <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider border-b border-stone-100 pb-3">Ringkasan Kinerja & Produktivitas</h4>
+                            <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider border-b border-stone-100 pb-3 font-display">Ringkasan Kinerja & Produktivitas</h4>
                             
                             <div class="space-y-4">
                                 <div class="grid grid-cols-2 gap-4">
@@ -316,7 +316,7 @@
                         <!-- Profile Form -->
                         <div class="glass-panel p-6 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-5">
                             <div class="flex justify-between items-center border-b border-stone-100 pb-3">
-                                <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider">Pengaturan Profil & Akun Anda</h4>
+                                <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider font-display">Pengaturan Profil & Akun Anda</h4>
                                 <span class="text-[10px] text-stone-400 font-mono">Foto, Bio, Sosmed, Kredensial</span>
                             </div>
                             
@@ -431,7 +431,7 @@
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                             </div>
                             <div>
-                                <h4 class="font-extrabold text-rose-900 text-sm uppercase tracking-tight">Zona Bahaya: Hapus Akun Stylist</h4>
+                                <h4 class="font-extrabold text-rose-900 text-sm uppercase tracking-tight font-display">Zona Bahaya: Hapus Akun Stylist</h4>
                                 <p class="text-stone-500 text-xs">Penghapusan akun bersifat permanen dan tidak dapat dibatalkan.</p>
                             </div>
                         </div>
@@ -466,7 +466,7 @@
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                                             </div>
                                             <div>
-                                                <h3 class="text-base font-extrabold text-stone-900" id="modal-title">Konfirmasi Hapus Akun Stylist</h3>
+                                                <h3 class="text-base font-extrabold text-stone-900 font-display" id="modal-title">Konfirmasi Hapus Akun Stylist</h3>
                                                 <p class="text-xs text-stone-500">Tindakan ini permanen dan tidak dapat dipulihkan.</p>
                                             </div>
                                         </div>

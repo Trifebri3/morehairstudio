@@ -11,8 +11,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                 </svg>
             </div>
-            <h1 class="text-2xl font-black text-stone-900 uppercase tracking-tight font-primary">Booking Confirmed</h1>
-            <p class="text-stone-500 text-xs max-w-xs mx-auto leading-relaxed font-light font-secondary">
+            <h1 class="text-2xl font-display font-black text-stone-900 uppercase tracking-tight font-display">Booking Confirmed</h1>
+            <p class="text-stone-500 text-xs max-w-xs mx-auto leading-relaxed font-light font-sans">
                 Sesi perawatan Anda telah dijadwalkan. Tunjukkan Grooming Pass ini saat kedatangan.
             </p>
         </div>
@@ -51,7 +51,7 @@
                 <!-- Booking code badge -->
                 <div class="bg-[#faede7]/40 border border-[#c9512d]/25 rounded-2xl p-5 text-center relative overflow-hidden">
                     <span class="text-[9px] uppercase tracking-widest text-[#c9512d] font-bold font-mono block mb-1">Grooming Pass Code</span>
-                    <span class="text-2xl font-mono font-black text-[#c9512d] tracking-widest block">{{ $booking->booking_code }}</span>
+                    <span class="text-2xl font-display font-mono font-black text-[#c9512d] tracking-widest block">{{ $booking->booking_code }}</span>
                     <p class="text-[10px] text-stone-500 mt-2 font-light">Scan kode QR di bawah pada kiosk kiosk studio saat tiba</p>
 
                     <!-- Dynamic QR Code -->
@@ -72,7 +72,7 @@
                 </div>
 
                 <!-- Details list -->
-                <div class="space-y-4 text-xs font-secondary">
+                <div class="space-y-4 text-xs font-sans">
                     <div class="flex justify-between items-center border-b border-stone-100 pb-3">
                         <span class="text-stone-400 font-bold uppercase tracking-wider text-[9px] font-mono">Treatment</span>
                         <span class="text-stone-900 font-bold text-right">{{ $booking->items->first()?->service?->name ?? 'Custom Service' }}</span>

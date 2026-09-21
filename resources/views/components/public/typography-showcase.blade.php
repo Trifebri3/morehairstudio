@@ -7,7 +7,7 @@
                 <span class="text-xs font-mono font-bold uppercase tracking-widest text-[#c9512d] block">
                     (05) Brand Typography
                 </span>
-                <h2 class="text-3xl sm:text-4xl font-black text-stone-900 uppercase tracking-tight font-primary">
+                <h2 class="text-3xl font-display sm:text-4xl font-display font-black text-stone-900 uppercase tracking-tight font-display">
                     Visual Voice &amp; Typefaces
                 </h2>
             </div>
@@ -27,14 +27,14 @@
 
                     <div>
                         <span class="text-[10px] font-mono uppercase text-stone-400 block tracking-wider">Typeface</span>
-                        <h3 class="text-2xl sm:text-3xl font-black text-stone-900 font-primary uppercase tracking-tight">
+                        <h3 class="text-2xl font-display sm:text-3xl font-display font-black text-stone-900 font-display uppercase tracking-tight">
                             Stack Sans Notch
                         </h3>
                         <p class="text-xs text-stone-500 font-mono mt-1">Designed by Koto</p>
                     </div>
 
                     <!-- Weights preview -->
-                    <div class="border-y border-stone-100 py-4 space-y-1.5 text-xs text-stone-600 font-primary">
+                    <div class="border-y border-stone-100 py-4 space-y-1.5 text-xs text-stone-600 font-display">
                         <div class="font-light">Extra Light / Light</div>
                         <div class="font-normal">Regular (AaBbCc1230)</div>
                         <div class="font-semibold">SemiBold (AaBbCc1230)</div>
@@ -62,14 +62,14 @@
 
                     <div>
                         <span class="text-[10px] font-mono uppercase text-stone-400 block tracking-wider">Typeface</span>
-                        <h3 class="text-2xl sm:text-3xl font-black text-stone-900 font-secondary tracking-tight">
+                        <h3 class="text-2xl font-display sm:text-3xl font-display font-black text-stone-900 font-sans tracking-tight">
                             Suisse Int&rsquo;l
                         </h3>
                         <p class="text-xs text-stone-500 font-mono mt-1">Designed by Ian Party</p>
                     </div>
 
                     <!-- Weights preview -->
-                    <div class="border-y border-stone-100 py-4 space-y-1.5 text-xs text-stone-600 font-secondary">
+                    <div class="border-y border-stone-100 py-4 space-y-1.5 text-xs text-stone-600 font-sans">
                         <div class="font-light">Light / Regular (AaBbCc1230)</div>
                         <div class="font-medium">Medium / Book</div>
                         <div class="font-bold text-stone-900">Semibold / Bold (AaBbCc1230)</div>
@@ -97,7 +97,7 @@
 
                     <div>
                         <span class="text-[10px] font-mono uppercase text-stone-400 block tracking-wider">Typeface</span>
-                        <h3 class="text-2xl sm:text-3xl font-serif font-bold text-stone-900 italic">
+                        <h3 class="text-2xl font-display sm:text-3xl font-display font-serif font-bold text-stone-900 italic">
                             Adobe Caslon Pro
                         </h3>
                         <p class="text-xs text-stone-500 font-mono mt-1">Designed by Carol Twombly</p>
@@ -130,14 +130,14 @@
 
                     <div>
                         <span class="text-[10px] font-mono uppercase text-stone-400 block tracking-wider">Typeface</span>
-                        <h3 class="text-2xl sm:text-3xl font-bold text-stone-900 font-alverata tracking-tight">
+                        <h3 class="text-2xl font-display sm:text-3xl font-display font-bold text-stone-900 font-display tracking-tight">
                             Alverata
                         </h3>
                         <p class="text-xs text-stone-500 font-mono mt-1">Designed by Gerard Unger</p>
                     </div>
 
                     <!-- Weights preview -->
-                    <div class="border-y border-stone-100 py-4 space-y-1.5 text-xs text-stone-600 font-alverata">
+                    <div class="border-y border-stone-100 py-4 space-y-1.5 text-xs text-stone-600 font-display">
                         <div>Light / Regular (AaBbCc1230)</div>
                         <div class="font-semibold">SemiBold / Bold</div>
                         <div class="font-bold text-stone-900">Black / Italic Forms</div>
@@ -164,14 +164,14 @@
 
                     <div>
                         <span class="text-[10px] font-mono uppercase text-stone-400 block tracking-wider">Typeface</span>
-                        <h3 class="text-2xl sm:text-3xl font-bold text-stone-900 font-josefa tracking-tight">
+                        <h3 class="text-2xl font-display sm:text-3xl font-display font-bold text-stone-900 font-display tracking-tight">
                             Josefa Rounded
                         </h3>
                         <p class="text-xs text-stone-500 font-mono mt-1">Designed by Ingo Zimmermann</p>
                     </div>
 
                     <!-- Weights preview -->
-                    <div class="border-y border-stone-100 py-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-stone-600 font-josefa">
+                    <div class="border-y border-stone-100 py-4 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-stone-600 font-display">
                         <div>Extra Light / Thin / Light</div>
                         <div>Book / Medium (AaBbCc1230)</div>
                         <div class="font-bold text-stone-900">Bold / Black (AaBbCc1230)</div>

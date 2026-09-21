@@ -17,7 +17,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .font-primary { font-family: 'Syne', sans-serif; }
+        .font-display { font-family: 'Syne', sans-serif; }
     </style>
 </head>
 <body class="bg-white min-h-screen flex items-center justify-center p-4 sm:p-6 text-stone-900">

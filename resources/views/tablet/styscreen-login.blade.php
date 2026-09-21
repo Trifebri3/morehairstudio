@@ -1,4 +1,4 @@
-@extends('layouts.tablet-blank')
+﻿@extends('layouts.tablet-blank')
 
 @section('content')
 <div class="min-h-screen flex items-center justify-center bg-stone-50 p-4">
@@ -7,7 +7,7 @@
             <a href="/" class="inline-block">
                 <img src="/logo/logo.png?v=3" alt="MORE Hair Studio" class="h-10 mx-auto object-contain">
             </a>
-            <h2 class="text-xl font-bold text-stone-900 uppercase tracking-tight">STYSCREEN LOGIN</h2>
+            <h2 class="text-xl font-bold text-stone-900 uppercase tracking-tight font-display">STYSCREEN LOGIN</h2>
             <p class="text-xs text-stone-500">Masukkan email dan password admin outlet untuk membuka layar monitor kasir.</p>
         </div>
 

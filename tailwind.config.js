@@ -12,16 +12,20 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['"Plus Jakarta Sans"', '"Suisse Int\'l"', 'Inter', ...defaultTheme.fontFamily.sans],
-                primary: ['"Plus Jakarta Sans"', '"Stack Sans Notch"', 'Inter', 'sans-serif'],
-                display: ['"Plus Jakarta Sans"', '"Stack Sans Notch"', 'Inter', 'sans-serif'],
-                headline: ['"Plus Jakarta Sans"', '"Stack Sans Notch"', 'Inter', 'sans-serif'],
-                secondary: ['"Plus Jakarta Sans"', '"Suisse Int\'l"', 'Inter', 'sans-serif'],
-                serif: ['"EB Garamond"', '"Adobe Caslon Pro"', 'Georgia', 'serif'],
-                caslon: ['"EB Garamond"', '"Adobe Caslon Pro"', 'Georgia', 'serif'],
-                alverata: ['"Plus Jakarta Sans"', 'sans-serif'],
-                josefa: ['"Plus Jakarta Sans"', 'sans-serif'],
-                mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'monospace'],
+                // Body / UI — Suisse Intl (default font-sans)
+                sans:      ['"Suisse Intl"', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+                body:      ['"Suisse Intl"', 'sans-serif'],
+                secondary: ['"Suisse Intl"', 'sans-serif'],
+                serif:     ['"Suisse Intl"', 'Georgia', 'serif'],
+                caslon:    ['"Suisse Intl"', 'sans-serif'],
+                // Headings / Display — Stack Sans Notch
+                display:   ['"Stack Sans Notch"', 'sans-serif'],
+                headline:  ['"Stack Sans Notch"', 'sans-serif'],
+                primary:   ['"Stack Sans Notch"', 'sans-serif'],
+                alverata:  ['"Stack Sans Notch"', 'sans-serif'],
+                josefa:    ['"Stack Sans Notch"', 'sans-serif'],
+                // Mono
+                mono:      ['"SuisseIntlMono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
             },
             colors: {
                 brand: {
@@ -54,4 +58,5 @@ export default {
 
     plugins: [forms],
 };
+
 

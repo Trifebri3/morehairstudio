@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     Riwayat Transaksi POS
@@ -22,7 +22,7 @@
         <form method="GET" action="{{ route('admin.transactions') }}" id="transactions-filter-form" class="bg-white border border-stone-200 p-6 rounded-3xl shadow-sm space-y-4">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
-                    <h2 class="text-xl font-black text-stone-900 uppercase tracking-tight">Riwayat Transaksi POS</h2>
+                    <h2 class="text-xl font-black text-stone-900 uppercase tracking-tight font-display">Riwayat Transaksi POS</h2>
                     <p class="text-xs text-stone-500 font-medium">Lacak semua pembayaran kasir, cetak ulang struk, dan kelola otorisasi pengembalian dana (refund).</p>
                 </div>
             </div>
@@ -149,7 +149,7 @@
                 <!-- Struk Area (Printable) -->
                 <div id="receipt-reprint" class="receipt-thermal p-4 border-dashed border-2 border-stone-300 font-mono text-xxs text-stone-850 space-y-4">
                     <div class="text-center space-y-1">
-                        <h2 class="text-base font-black uppercase text-stone-900">MORE HAIR STUDIO</h2>
+                        <h2 class="text-base font-black uppercase text-stone-900 font-display">MORE HAIR STUDIO</h2>
                         <p class="text-[10px]">{{ $selectedTransaction->outlet->name }}</p>
                         <p class="text-[9px] text-stone-500">Invoice: {{ $selectedTransaction->transaction_number }}</p>
                     </div>

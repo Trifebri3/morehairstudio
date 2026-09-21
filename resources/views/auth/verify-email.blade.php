@@ -1,6 +1,6 @@
 <x-guest-layout>
     <div class="mb-6 text-center">
-        <h2 class="text-2xl font-extrabold text-stone-900 tracking-tight">Verifikasi Email</h2>
+        <h2 class="text-2xl font-display font-extrabold text-stone-900 tracking-tight">Verifikasi Email</h2>
         <p class="mt-2 text-sm text-stone-500">Terima kasih telah mendaftar! Sebelum memulai, silakan verifikasi alamat email Anda dengan mengeklik link yang baru saja kami kirimkan ke email Anda. Jika tidak menerima email, kami akan mengirimkan ulang.</p>
     </div>
 

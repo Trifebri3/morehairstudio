@@ -1,4 +1,4 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', $stylist->name . ' - ' . ($stylist->specialization ?? 'Hair Artist') . ' | MORE Hair Studio')
 @section('meta_description', 'Profil resmi Hair Artist ' . $stylist->name . ' di MORE Hair Studio Bandung. Lihat portofolio, jadwal kerja, daftar tarif, dan pesan jadwal langsung tanpa antre.')
@@ -55,7 +55,7 @@
                                 Verified Artist
                             </span>
                         </div>
-                        <h1 class="text-3xl sm:text-4xl font-extrabold text-stone-900 tracking-tight pt-2">
+                        <h1 class="text-3xl font-display sm:text-4xl font-display font-extrabold text-stone-900 tracking-tight pt-2">
                             {{ $stylist->name }}
                         </h1>
                         <p class="text-xs sm:text-sm text-stone-500 font-normal">
@@ -141,7 +141,7 @@
                     <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#c9512d] block">
                         Tentang &amp; Filosofi Artist
                     </span>
-                    <h2 class="text-xl sm:text-2xl font-extrabold text-stone-900 tracking-tight">
+                    <h2 class="text-xl sm:text-2xl font-display font-extrabold text-stone-900 tracking-tight">
                         Dedikasi Presisi &amp; Karakter Rambut Personal
                     </h2>
                     <p class="text-stone-600 text-xs sm:text-sm leading-relaxed font-normal">
@@ -170,7 +170,7 @@
                             <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#c9512d] block">
                                 Pilihan Layanan
                             </span>
-                            <h3 class="text-xl font-extrabold text-stone-900 tracking-tight">
+                            <h3 class="text-xl font-extrabold text-stone-900 tracking-tight font-display">
                                 Pesan Langsung Bersama {{ $stylist->name }}
                             </h3>
                             <p class="text-xs text-stone-500 mt-1">
@@ -183,14 +183,14 @@
                     <div class="space-y-6">
                         @forelse($servicesByCategory as $catName => $items)
                             <div class="space-y-3">
-                                <h4 class="text-xs font-extrabold uppercase tracking-wider text-stone-400 pb-1 border-b border-stone-150">
+                                <h4 class="text-xs font-extrabold uppercase tracking-wider text-stone-400 pb-1 border-b border-stone-150 font-display">
                                     {{ $catName }}
                                 </h4>
                                 <div class="grid grid-cols-1 gap-3">
                                     @foreach($items as $svc)
                                         <div class="p-4 rounded-2xl border border-stone-200 hover:border-[#c9512d] bg-white hover:bg-[#fafaf9] transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
                                             <div class="space-y-1">
-                                                <h5 class="font-bold text-stone-900 text-xs uppercase tracking-tight group-hover:text-[#c9512d] transition-colors">
+                                                <h5 class="font-bold text-stone-900 text-xs uppercase tracking-tight group-hover:text-[#c9512d] transition-colors font-display">
                                                     {{ $svc['name'] }}
                                                 </h5>
                                                 <div class="flex items-center gap-2 text-[11px] text-stone-500">
@@ -229,7 +229,7 @@
                     <span class="text-[10px] font-extrabold uppercase tracking-widest text-[#c9512d] block">
                         Jadwal &amp; Jam Bertugas
                     </span>
-                    <h3 class="text-base font-extrabold text-stone-900 tracking-tight">
+                    <h3 class="text-base font-extrabold text-stone-900 tracking-tight font-display">
                         Waktu Praktik Studio
                     </h3>
 
@@ -275,7 +275,7 @@
                             Lokasi Studio Bertugas
                         </span>
                         <div>
-                            <h4 class="text-base font-extrabold text-stone-900">{{ $outlet->name }}</h4>
+                            <h4 class="text-base font-extrabold text-stone-900 font-display">{{ $outlet->name }}</h4>
                             <p class="text-xs text-stone-500 mt-1 leading-relaxed">{{ $outlet->address }}</p>
                         </div>
 
@@ -293,7 +293,7 @@
                     <span class="text-[10px] uppercase font-bold tracking-widest text-[#c9512d] block">
                         Bagikan Profil Ini
                     </span>
-                    <h4 class="text-sm font-bold text-white">
+                    <h4 class="text-sm font-bold text-white font-display">
                         Link Booking Pribadi {{ $stylist->name }}
                     </h4>
                     <p class="text-xs text-stone-300 font-light leading-relaxed">
@@ -319,7 +319,7 @@
         <div class="flex items-center gap-2.5 overflow-hidden">
             <img src="{{ $stylist->display_photo }}" alt="{{ $stylist->name }}" class="w-10 h-10 rounded-xl object-cover border border-stone-200 flex-shrink-0">
             <div class="truncate">
-                <h5 class="text-xs font-extrabold text-stone-900 truncate">{{ $stylist->name }}</h5>
+                <h5 class="text-xs font-extrabold text-stone-900 truncate font-display">{{ $stylist->name }}</h5>
                 <span class="text-[10px] text-[#c9512d] font-bold block truncate">{{ $stylist->specialization ?: 'Hair Artist' }}</span>
             </div>
         </div>

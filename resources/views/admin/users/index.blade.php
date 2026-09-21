@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title', 'Manage System Users')
 
@@ -6,7 +6,7 @@
     <div class="glass-panel p-8 rounded-3xl border border-stone-200 bg-white">
         <div class="flex justify-between items-center mb-6">
             <div>
-                <h3 class="text-lg font-bold text-stone-900">System Users</h3>
+                <h3 class="text-lg font-bold text-stone-900 font-display">System Users</h3>
                 <span class="text-xxs uppercase tracking-widest font-mono text-stone-400">Manage admins and stylists</span>
             </div>
             <a href="{{ route('admin.users.create') }}" class="inline-flex items-center justify-center px-4 py-2 bg-[#0A3D91] hover:bg-[#062e70] text-white font-bold rounded-xl text-xs uppercase tracking-wider shadow-sm transition">

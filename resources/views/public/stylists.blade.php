@@ -1,4 +1,4 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', 'Hair Artists & Stylists | MORE Hair Studio Bandung')
 @section('meta_description', 'Temui para Hair Artist di MORE Hair Studio Bandung. Berpengalaman dalam teknik potong presisi dan chemical texture treatment. Lihat profil dan pesan jadwal langsung.')
@@ -13,7 +13,7 @@
                 <span class="text-xs uppercase tracking-wider text-[#c9512d] font-semibold block">
                     Hair Artists &amp; Stylists Collective
                 </span>
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold text-stone-900 tracking-tight">
+                <h1 class="text-3xl font-display sm:text-4xl font-display md:text-5xl font-display font-extrabold text-stone-900 tracking-tight">
                     Seniman Rambut Kami
                 </h1>
                 <p class="text-stone-600 text-xs sm:text-sm max-w-xl font-normal leading-relaxed">
@@ -60,7 +60,7 @@
                             <!-- Bottom Photo Details: Name & Rating -->
                             <div class="absolute bottom-3 left-4 right-4 text-white">
                                 <div class="flex items-center justify-between">
-                                    <h3 class="text-xl font-bold tracking-tight text-white group-hover:text-[#faede7] transition-colors">
+                                    <h3 class="text-xl font-bold tracking-tight text-white group-hover:text-[#faede7] transition-colors font-display">
                                         {{ $stylist->name }}
                                     </h3>
                                     <div class="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/20 backdrop-blur-md text-xs font-bold text-amber-300">

@@ -7,15 +7,15 @@
                     (09) Tentang Kami &bull; Brand Story
                 </span>
                 
-                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-stone-900 leading-none uppercase font-primary">
+                <h2 class="text-3xl font-display sm:text-4xl font-display md:text-5xl font-display font-black tracking-tight text-stone-900 leading-none uppercase font-display">
                     {{ \App\Domains\CMS\Services\CmsService::get('about_tagline') }}
                 </h2>
                 
-                <p class="text-stone-600 text-xs sm:text-sm leading-relaxed font-light font-secondary">
+                <p class="text-stone-600 text-xs sm:text-sm leading-relaxed font-light font-sans">
                     {{ \App\Domains\CMS\Services\CmsService::get('about_description_1') }}
                 </p>
                 
-                <p class="text-stone-600 text-xs sm:text-sm leading-relaxed font-light font-secondary">
+                <p class="text-stone-600 text-xs sm:text-sm leading-relaxed font-light font-sans">
                     {{ \App\Domains\CMS\Services\CmsService::get('about_description_2') }}
                 </p>
 

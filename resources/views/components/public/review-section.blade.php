@@ -6,7 +6,7 @@
             <span class="text-xs font-mono uppercase tracking-widest text-[#c9512d] font-bold block mb-2">
                 (11) Authentic Voice
             </span>
-            <h2 class="text-3xl sm:text-4xl md:text-5xl font-black font-primary text-stone-900 mb-3 uppercase tracking-tight">
+            <h2 class="text-3xl font-display sm:text-4xl font-display md:text-5xl font-display font-black font-display text-stone-900 mb-3 uppercase tracking-tight">
                 Guest <span class="text-[#c9512d]">Experiences</span>
             </h2>
             <p class="text-xs text-stone-500 uppercase tracking-widest font-mono">Real Reviews from Verified Studio Bookings</p>
@@ -28,7 +28,7 @@
                     </div>
                     <div class="border-t border-stone-100 pt-4 flex items-center justify-between">
                         <div>
-                            <span class="block text-xs font-bold text-stone-900 uppercase font-primary">{{ $review->customer->name }}</span>
+                            <span class="block text-xs font-bold text-stone-900 uppercase font-display">{{ $review->customer->name }}</span>
                             <span class="block text-xxs text-stone-400 font-mono mt-0.5">{{ $review->outlet->name }}</span>
                         </div>
                         <span class="text-[9px] uppercase tracking-widest text-[#c9512d] bg-[#faede7] px-2.5 py-1 rounded-md border border-[#c9512d]/25 font-bold font-mono">

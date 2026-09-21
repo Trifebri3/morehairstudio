@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     WhatsApp Cloud API Simulator Logs
@@ -30,7 +30,7 @@
 
     <!-- Message logs table -->
     <div class="glass-panel p-6 rounded-2xl bg-white border border-stone-200 shadow-sm">
-        <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider mb-4">Simulated Message Logs</h3>
+        <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider mb-4 font-display">Simulated Message Logs</h3>
         <div class="overflow-x-auto rounded-xl border border-stone-200">
             <table class="w-full text-left text-xs border-collapse">
                 <thead>

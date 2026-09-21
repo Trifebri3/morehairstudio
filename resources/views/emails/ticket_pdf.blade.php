@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
@@ -123,7 +123,7 @@
             @if($logoData)
                 <img src="{{ $logoData }}" alt="MORE Hair Studio" style="height: 38px; margin: 0 auto 8px auto; display: block;" />
             @else
-                <h1>MORE HAIR STUDIO</h1>
+                <h1 class="font-display">MORE HAIR STUDIO</h1>
             @endif
             <p>Digital Booking & Verification Pass</p>
         </div>

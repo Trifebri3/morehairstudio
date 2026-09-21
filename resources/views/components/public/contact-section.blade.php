@@ -6,10 +6,10 @@
                 <span class="text-[10px] uppercase tracking-widest text-[#c9512d] bg-[#faede7] px-4 py-2 rounded-xl border border-[#c9512d]/25 inline-block font-bold font-mono">
                     (10) Get In Touch
                 </span>
-                <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-stone-900 leading-tight uppercase font-primary tracking-tight">
+                <h2 class="text-3xl font-display sm:text-4xl font-display md:text-5xl font-display font-black text-stone-900 leading-tight uppercase font-display tracking-tight">
                     Visit Our <br><span class="text-[#c9512d]">Studio Lounge</span>
                 </h2>
-                <p class="text-stone-600 text-xs sm:text-sm leading-relaxed font-light font-secondary">
+                <p class="text-stone-600 text-xs sm:text-sm leading-relaxed font-light font-sans">
                     Punya pertanyaan seputar konsultasi sesi Define Session, signature coloring treatments, atau reservasi studio khusus? Hubungi tim kami atau langsung berkunjung ke studio.
                 </p>
                 <div class="space-y-3 pt-2">
@@ -26,7 +26,7 @@
 
             <!-- Simple Contact Mockup Form -->
             <div class="border border-stone-200 p-8 rounded-3xl bg-white space-y-4 hover:border-[#c9512d]/40 transition duration-300 shadow-xs">
-                <h4 class="text-lg font-bold text-stone-900 font-primary uppercase tracking-tight">Send Inquiries</h4>
+                <h4 class="text-lg font-bold text-stone-900 font-display uppercase tracking-tight">Send Inquiries</h4>
                 <div class="space-y-1">
                     <label class="block text-[10px] uppercase tracking-widest text-stone-500 font-bold font-mono">Name</label>
                     <input type="text" placeholder="Your full name" class="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-[#c9512d] transition duration-200">
@@ -37,7 +37,7 @@
                 </div>
                 <div class="space-y-1">
                     <label class="block text-[10px] uppercase tracking-widest text-stone-500 font-bold font-mono">Message</label>
-                    <textarea class="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-[#c9512d] transition duration-200 font-secondary" rows="4" placeholder="Tuliskan pertanyaan atau preferensi Anda..."></textarea>
+                    <textarea class="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-[#c9512d] transition duration-200 font-sans" rows="4" placeholder="Tuliskan pertanyaan atau preferensi Anda..."></textarea>
                 </div>
                 <button type="button" class="w-full py-3.5 px-6 rounded-xl font-mono text-xs font-bold uppercase tracking-widest bg-[#c9512d] hover:bg-[#b74423] text-white transition duration-200 shadow-sm">
                     Send Message &rarr;

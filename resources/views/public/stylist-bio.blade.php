@@ -1,4 +1,4 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', $stylist->name . ' • Hair Artist Profile & Direct Booking | MORE Hair Studio')
 @section('meta_description', 'Profil resmi ' . $stylist->name . ' di MORE Hair Studio Bandung. Spesialisasi ' . $stylist->specialization . '. Reservasi jadwal langsung tanpa antre.')
@@ -7,7 +7,7 @@
 @php
     $outlet = $stylist->outlet;
     $outletName = $outlet?->name ?? 'MORE Hair Studio';
-    $outletAddress = $outlet?->address ?? 'Jl. Mangga No. 37A, Cihapit, Bandung';
+    $outletAddress = $outlet?->address ?? 'Jl. Sastimatmaja No.6, Paledang, Kec. Lengkong, Kota Bandung';
     $outletWa = $outlet?->whatsapp ?? '6282298347730';
     $instagramHandle = $stylist->instagram ? ltrim($stylist->instagram, '@') : null;
     $instagramUrl = $instagramHandle ? 'https://instagram.com/' . $instagramHandle : null;
@@ -58,7 +58,7 @@
                              x-on:error="$el.style.display='none'; $el.nextElementSibling.classList.remove('hidden')"
                              class="w-full h-full object-cover transition duration-300 group-hover:scale-105">
                     @endif
-                    <div class="{{ $stylist->photo ? 'hidden' : '' }} w-full h-full flex items-center justify-center font-bold text-stone-700 bg-stone-100 font-mono text-3xl uppercase">
+                    <div class="{{ $stylist->photo ? 'hidden' : '' }} w-full h-full flex items-center justify-center font-bold text-stone-700 bg-stone-100 font-mono text-3xl font-display uppercase">
                         {{ substr($stylist->name, 0, 1) }}
                     </div>
                 </div>
@@ -66,7 +66,7 @@
                 <!-- Info Stylist -->
                 <div class="flex-grow space-y-3">
                     <div>
-                        <h1 class="text-2xl sm:text-4xl font-black text-[#171615] tracking-tight uppercase font-headline">
+                        <h1 class="text-2xl font-display sm:text-4xl font-display font-black text-[#171615] tracking-tight uppercase font-headline">
                             {{ $stylist->name }}
                         </h1>
                         <span class="inline-block mt-1 text-xs font-mono uppercase tracking-widest text-[#c9512d] font-black">
@@ -114,7 +114,7 @@
                     <span class="text-[10px] font-mono uppercase tracking-widest text-[#c9512d] font-bold block">
                         Direct Booking Tanpa Antre
                     </span>
-                    <h2 class="text-xl sm:text-2xl font-black uppercase tracking-tight">
+                    <h2 class="text-xl sm:text-2xl font-display font-black uppercase tracking-tight">
                         Booking Sesi dengan {{ $stylist->name }}
                     </h2>
                     <p class="text-xs text-stone-300 font-light">
@@ -136,7 +136,7 @@
                 <div class="flex items-center justify-between border-b border-stone-200/80 pb-3">
                     <div class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-[#c9512d] animate-pulse"></span>
-                        <h3 class="text-xs font-mono uppercase tracking-widest text-[#171615] font-black">
+                        <h3 class="text-xs font-mono uppercase tracking-widest text-[#171615] font-black font-display">
                             Jadwal Booking Hari Ini ({{ \Carbon\Carbon::today()->translatedFormat('l, d M Y') }})
                         </h3>
                     </div>
@@ -178,7 +178,7 @@
             <div class="space-y-4 pt-2">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-sm font-black uppercase tracking-widest text-[#171615]">
+                        <h3 class="text-sm font-black uppercase tracking-widest text-[#171615] font-display">
                             Pilihan Treatment &amp; Layanan
                         </h3>
                         <p class="text-xs text-stone-500 font-light mt-0.5">
@@ -192,7 +192,7 @@
                         <div class="border border-stone-200 rounded-2xl p-5 bg-white hover:border-[#c9512d] hover:shadow-sm transition duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 group">
                             <div class="space-y-1">
                                 <div class="flex items-center gap-2">
-                                    <h4 class="font-bold text-sm text-[#171615] uppercase tracking-tight group-hover:text-[#c9512d] transition">
+                                    <h4 class="font-bold text-sm text-[#171615] uppercase tracking-tight group-hover:text-[#c9512d] transition font-display">
                                         {{ $service->name }}
                                     </h4>
                                     <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 font-semibold uppercase">

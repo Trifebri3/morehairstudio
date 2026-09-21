@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
 <div class="space-y-6 pb-12" x-data="{ restoreModalOpen: false, selectedFile: '' }">
@@ -10,7 +10,7 @@
                     Disaster Recovery & Data Safety
                 </span>
             </div>
-            <h1 class="text-2xl font-black text-stone-900 tracking-tight mt-1">Backup & Restore Database</h1>
+            <h1 class="text-2xl font-display font-black text-stone-900 tracking-tight mt-1">Backup & Restore Database</h1>
             <p class="text-xs text-stone-500 mt-1">
                 Pencadangan database sistem MORE Hair Studio secara otomatis dan manual dengan proteksi pemulihan data menyeluruh.
             </p>
@@ -68,7 +68,7 @@
                 <span class="text-[11px] font-bold text-stone-500 uppercase tracking-wider">Total File Tersimpan</span>
                 <span class="w-8 h-8 rounded-lg bg-stone-100 text-stone-600 flex items-center justify-center font-bold text-xs">SQL</span>
             </div>
-            <p class="text-2xl font-black text-stone-900 mt-2">{{ $totalFiles }} <span class="text-xs font-normal text-stone-500">File</span></p>
+            <p class="text-2xl font-display font-black text-stone-900 mt-2">{{ $totalFiles }} <span class="text-xs font-normal text-stone-500">File</span></p>
             <p class="text-[11px] text-stone-500 mt-1">Retensi otomatis: <span class="font-bold text-stone-700">7 Hari</span></p>
         </div>
 
@@ -77,7 +77,7 @@
                 <span class="text-[11px] font-bold text-stone-500 uppercase tracking-wider">Penggunaan Disk</span>
                 <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">MB</span>
             </div>
-            <p class="text-2xl font-black text-stone-900 mt-2">{{ $totalSizeFormatted }}</p>
+            <p class="text-2xl font-display font-black text-stone-900 mt-2">{{ $totalSizeFormatted }}</p>
             <p class="text-[11px] text-stone-500 mt-1">Lokasi: <span class="font-mono text-stone-700 text-[10px]">storage/app/backups</span></p>
         </div>
 
@@ -99,7 +99,7 @@
     <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-2xs">
         <div class="p-4 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-                <h3 class="text-sm font-bold text-stone-900">Riwayat File Backup Database</h3>
+                <h3 class="text-sm font-bold text-stone-900 font-display">Riwayat File Backup Database</h3>
                 <p class="text-xs text-stone-500">File dump database lengkap (struktur DDL tabel + data DML baris).</p>
             </div>
             <span class="text-xs font-mono font-bold bg-stone-100 px-3 py-1 rounded-lg text-stone-600">
@@ -185,7 +185,7 @@
                 i
             </div>
             <div>
-                <h4 class="text-xs font-bold text-stone-900 uppercase tracking-wider">Prosedur Keamanan & Retensi Data</h4>
+                <h4 class="text-xs font-bold text-stone-900 uppercase tracking-wider font-display">Prosedur Keamanan & Retensi Data</h4>
                 <p class="text-xs text-stone-600 mt-0.5">
                     Cadangan database dijalankan otomatis setiap hari pukul 02:00 WIB melalui background scheduler Laravel. File disimpan terisolasi di server dan di-prune otomatis setelah 7 hari. Unduh cadangan secara berkala ke harddisk eksternal untuk pemulihan bencana maksimal.
                 </p>
@@ -201,7 +201,7 @@
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                 </div>
                 <div>
-                    <h3 class="text-base font-black text-stone-900">Konfirmasi Pemulihan Database</h3>
+                    <h3 class="text-base font-black text-stone-900 font-display">Konfirmasi Pemulihan Database</h3>
                     <p class="text-xs text-stone-500">Tindakan ini akan menimpa seluruh database dengan isi file backup.</p>
                 </div>
             </div>

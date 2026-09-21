@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     Email Communication Center
@@ -9,7 +9,7 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between pb-5 border-b border-stone-200">
         <div>
-            <h1 class="text-xl font-black text-stone-900 tracking-tight uppercase">Email Communication Center</h1>
+            <h1 class="text-xl font-black text-stone-900 tracking-tight uppercase font-display">Email Communication Center</h1>
             <p class="text-xxs text-stone-500 font-bold uppercase tracking-wide mt-1">Kelola integrasi SMTP, template email, dan riwayat pesan email transaksional.</p>
         </div>
         <div class="mt-4 md:mt-0 flex items-center gap-4 bg-white p-3.5 rounded-2xl border border-stone-150">
@@ -76,7 +76,7 @@
     @elseif($activeTab === 'settings')
         <form method="POST" action="{{ route('admin.email.config') }}" class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4 max-w-xl">
             @csrf
-            <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Konfigurasi Server SMTP</h3>
+            <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Konfigurasi Server SMTP</h3>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -133,7 +133,7 @@
         <!-- Test Email Box -->
         <form method="POST" action="{{ route('admin.email.test') }}" class="bg-white p-5 rounded-2xl border border-stone-150 space-y-3 max-w-xl">
             @csrf
-            <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Uji Coba Kirim Email (Test Email)</h3>
+            <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Uji Coba Kirim Email (Test Email)</h3>
             <p class="text-[11px] text-stone-500">Kirim email percobaan untuk memverifikasi apakah server SMTP aktif dan berhasil mengirimkan pesan.</p>
             <div class="flex gap-2">
                 <input type="email" name="test_email" value="{{ auth()->user()->email ?? '' }}" placeholder="email.anda@domain.com" required class="flex-1 text-xs rounded-xl border-stone-200 bg-stone-50/50 h-8 px-3 text-stone-750 focus:border-[#0A3D91] transition" />
@@ -148,7 +148,7 @@
             <!-- Create Template -->
             <form method="POST" action="{{ route('admin.email.template') }}" class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4 h-fit">
                 @csrf
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Tambah Template Email</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Tambah Template Email</h3>
                 
                 <div class="space-y-3">
                     <div>
@@ -180,7 +180,7 @@
 
             <!-- List Templates -->
             <div class="md:col-span-2 bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Template Email Tersimpan</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Template Email Tersimpan</h3>
                 
                 <div class="space-y-3 max-h-96 overflow-y-auto pr-1">
                     @forelse($templates as $t)
@@ -206,7 +206,7 @@
     @elseif($activeTab === 'logs')
         <!-- Logs Table -->
         <div class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
-            <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Riwayat Pengiriman Email</h3>
+            <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Riwayat Pengiriman Email</h3>
             
             <div class="overflow-x-auto rounded-xl border border-stone-200">
                 <table class="w-full text-left text-xxs font-bold text-stone-600 border-collapse">

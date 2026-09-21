@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('content')
 <div class="space-y-6 pb-12" x-data="databaseResearchApp()">
@@ -10,7 +10,7 @@
                     Data Intelligence & Analytics
                 </span>
             </div>
-            <h1 class="text-2xl font-black text-stone-900 tracking-tight mt-1">Riset & Analisis Database</h1>
+            <h1 class="text-2xl font-display font-black text-stone-900 tracking-tight mt-1">Riset & Analisis Database</h1>
             <p class="text-xs text-stone-500 mt-1">
                 Eksplorasi tabel-tabel kunci, tren perilaku pelanggan, utilisasi kapster, dan performa finansial MORE Hair Studio.
             </p>
@@ -35,7 +35,7 @@
                 <span class="text-[11px] font-bold text-stone-500 uppercase tracking-wider">Kapasitas Database</span>
                 <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xs">DB</span>
             </div>
-            <p class="text-2xl font-black text-stone-900 mt-2">{{ $overview['size_mb'] }} <span class="text-xs font-normal text-stone-500">MB</span></p>
+            <p class="text-2xl font-display font-black text-stone-900 mt-2">{{ $overview['size_mb'] }} <span class="text-xs font-normal text-stone-500">MB</span></p>
             <p class="text-[11px] text-stone-500 mt-1">{{ $overview['total_tables'] }} Tabel &bull; Database: <span class="font-mono text-stone-700 font-semibold">{{ $overview['database_name'] }}</span></p>
         </div>
 
@@ -44,7 +44,7 @@
                 <span class="text-[11px] font-bold text-stone-500 uppercase tracking-wider">Retensi Pelanggan</span>
                 <span class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-xs">%</span>
             </div>
-            <p class="text-2xl font-black text-stone-900 mt-2">{{ $customerAnalytics['retention_rate'] }}%</p>
+            <p class="text-2xl font-display font-black text-stone-900 mt-2">{{ $customerAnalytics['retention_rate'] }}%</p>
             <p class="text-[11px] text-stone-500 mt-1">{{ $customerAnalytics['repeat_customers'] }} Pelanggan Berulang dari {{ $customerAnalytics['total_customers'] }} Total</p>
         </div>
 
@@ -53,7 +53,7 @@
                 <span class="text-[11px] font-bold text-stone-500 uppercase tracking-wider">Total Reservasi</span>
                 <span class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs">BK</span>
             </div>
-            <p class="text-2xl font-black text-stone-900 mt-2">{{ number_format($bookingAnalytics['total_bookings'], 0, ',', '.') }}</p>
+            <p class="text-2xl font-display font-black text-stone-900 mt-2">{{ number_format($bookingAnalytics['total_bookings'], 0, ',', '.') }}</p>
             <p class="text-[11px] text-stone-500 mt-1">Pembatalan / Expired: <span class="font-bold text-rose-600">{{ $bookingAnalytics['cancellation_rate'] }}%</span></p>
         </div>
 
@@ -62,7 +62,7 @@
                 <span class="text-[11px] font-bold text-stone-500 uppercase tracking-wider">Rata-rata Order (AOV)</span>
                 <span class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs">Rp</span>
             </div>
-            <p class="text-2xl font-black text-stone-900 mt-2">Rp {{ number_format($financialAnalytics['average_order_value'], 0, ',', '.') }}</p>
+            <p class="text-2xl font-display font-black text-stone-900 mt-2">Rp {{ number_format($financialAnalytics['average_order_value'], 0, ',', '.') }}</p>
             <p class="text-[11px] text-stone-500 mt-1">Total Omzet Bersih: <span class="font-bold text-emerald-600">Rp {{ number_format($financialAnalytics['total_revenue'], 0, ',', '.') }}</span></p>
         </div>
     </div>
@@ -99,7 +99,7 @@
         <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-2xs">
             <div class="p-4 border-b border-stone-100 flex items-center justify-between">
                 <div>
-                    <h3 class="text-sm font-bold text-stone-900">Identifikasi Tabel-Tabel Kunci Database MORE</h3>
+                    <h3 class="text-sm font-bold text-stone-900 font-display">Identifikasi Tabel-Tabel Kunci Database MORE</h3>
                     <p class="text-xs text-stone-500">Tabel inti yang menjadi fondasi data transaksi, kapster, pemesanan, dan pelanggan.</p>
                 </div>
                 <span class="text-xs font-mono font-bold bg-stone-100 px-3 py-1 rounded-lg text-stone-600">
@@ -143,7 +143,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Segmentasi Gender & Tipe -->
             <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-2xs space-y-4">
-                <h3 class="text-sm font-bold text-stone-900">Segmentasi Pelanggan</h3>
+                <h3 class="text-sm font-bold text-stone-900 font-display">Segmentasi Pelanggan</h3>
                 
                 <div class="space-y-3">
                     <div>
@@ -186,7 +186,7 @@
             <div class="lg:col-span-2 bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-2xs">
                 <div class="p-4 border-b border-stone-100 flex items-center justify-between">
                     <div>
-                        <h3 class="text-sm font-bold text-stone-900">Top 10 Pelanggan VIP (Customer Lifetime Value)</h3>
+                        <h3 class="text-sm font-bold text-stone-900 font-display">Top 10 Pelanggan VIP (Customer Lifetime Value)</h3>
                         <p class="text-xs text-stone-500">Pelanggan dengan akumulasi kontribusi omzet tertinggi di MORE Hair Studio.</p>
                     </div>
                 </div>
@@ -237,7 +237,7 @@
             <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-2xs space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-sm font-bold text-stone-900">Distribusi Jam Kedatangan Paling Ramai (Peak Hours)</h3>
+                        <h3 class="text-sm font-bold text-stone-900 font-display">Distribusi Jam Kedatangan Paling Ramai (Peak Hours)</h3>
                         <p class="text-xs text-stone-500">Membantu pengaturan shift kapster dan kapasitas kursi barber.</p>
                     </div>
                 </div>
@@ -266,7 +266,7 @@
             <div class="space-y-6">
                 <!-- Peak Days of Week -->
                 <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-2xs space-y-3">
-                    <h3 class="text-sm font-bold text-stone-900">Hari Kedatangan Terpadat (Peak Days)</h3>
+                    <h3 class="text-sm font-bold text-stone-900 font-display">Hari Kedatangan Terpadat (Peak Days)</h3>
                     <div class="space-y-2">
                         @php
                             $maxDayVal = !empty($bookingAnalytics['peak_days']) ? max($bookingAnalytics['peak_days']) : 1;
@@ -286,7 +286,7 @@
 
                 <!-- Sumber Booking: Web vs Walk-In -->
                 <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-2xs space-y-3">
-                    <h3 class="text-sm font-bold text-stone-900">Kanal Pemesanan (Website vs Walk-In)</h3>
+                    <h3 class="text-sm font-bold text-stone-900 font-display">Kanal Pemesanan (Website vs Walk-In)</h3>
                     <div class="grid grid-cols-2 gap-3 text-center">
                         <div class="p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl">
                             <span class="text-[10px] uppercase font-bold text-indigo-700 block">Reservasi Online (Website)</span>
@@ -311,7 +311,7 @@
         <!-- Kapster Performance Table -->
         <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-2xs">
             <div class="p-4 border-b border-stone-100">
-                <h3 class="text-sm font-bold text-stone-900">Performa & Kontribusi Kapster / Barber</h3>
+                <h3 class="text-sm font-bold text-stone-900 font-display">Performa & Kontribusi Kapster / Barber</h3>
                 <p class="text-xs text-stone-500">Evaluasi total klien yang dilayani, omzet yang digenerate, dan rating kepuasan pelanggan.</p>
             </div>
 
@@ -356,7 +356,7 @@
         <!-- Top Services -->
         <div class="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-2xs">
             <div class="p-4 border-b border-stone-100">
-                <h3 class="text-sm font-bold text-stone-900">10 Layanan Paling Banyak Dipesan (Service Popularity)</h3>
+                <h3 class="text-sm font-bold text-stone-900 font-display">10 Layanan Paling Banyak Dipesan (Service Popularity)</h3>
                 <p class="text-xs text-stone-500">Layanan haircut & treatment paling berkontribusi pada pendapatan MORE Hair Studio.</p>
             </div>
 
@@ -396,7 +396,7 @@
         <div class="bg-white p-5 rounded-2xl border border-stone-200 shadow-2xs space-y-4">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-stone-100 pb-3">
                 <div>
-                    <h3 class="text-sm font-bold text-stone-900">Eksplorasi SQL Langsung (Read-Only Data Intelligence)</h3>
+                    <h3 class="text-sm font-bold text-stone-900 font-display">Eksplorasi SQL Langsung (Read-Only Data Intelligence)</h3>
                     <p class="text-xs text-stone-500">Pilih kueri analitik preset atau tuliskan kueri kustom SELECT untuk penelitian data lanjutan.</p>
                 </div>
                 <span class="px-2.5 py-1 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800 self-start sm:self-auto">

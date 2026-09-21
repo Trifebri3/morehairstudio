@@ -1,4 +1,4 @@
-<section class="py-16 md:py-24 bg-white border-b border-stone-200 font-sans select-none">
+﻿<section class="py-16 md:py-24 bg-white border-b border-stone-200 font-sans select-none">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         
         <!-- Big Brand Editorial Showcase Block (Matching image: Top Burnt Orange Banner) -->
@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="py-8">
-                    <h2 class="text-5xl sm:text-6xl md:text-8xl font-black tracking-tight uppercase leading-none font-primary">
+                    <h2 class="text-5xl font-display sm:text-6xl font-display md:text-8xl font-display font-black tracking-tight uppercase leading-none font-display">
                         Brand
                     </h2>
                     <p class="text-xs sm:text-sm font-mono tracking-widest uppercase mt-4 text-white/90">
@@ -47,7 +47,7 @@
 
             <!-- Title: (2.1) Elevator Pitch in Burnt Orange -->
             <div>
-                <h3 class="text-2xl sm:text-3xl md:text-4xl font-black text-[#c9512d] uppercase tracking-tight font-primary">
+                <h3 class="text-2xl font-display sm:text-3xl font-display md:text-4xl font-display font-black text-[#c9512d] uppercase tracking-tight font-display">
                     (2.1) Elevator Pitch
                 </h3>
             </div>
@@ -88,7 +88,7 @@
                 <div class="lg:col-span-4 space-y-4 text-xs text-stone-700 leading-relaxed border-t lg:border-t-0 border-stone-200 pt-6 lg:pt-0">
                     
                     <div class="space-y-1">
-                        <h4 class="font-bold text-stone-900 flex items-center gap-1.5 font-sans uppercase text-xs">
+                        <h4 class="font-bold text-stone-900 flex items-center gap-1.5 font-sans uppercase text-xs font-display">
                             <span class="w-1.5 h-1.5 rounded-full bg-[#c9512d]"></span>
                             What You Are
                         </h4>
@@ -98,7 +98,7 @@
                     </div>
 
                     <div class="space-y-1">
-                        <h4 class="font-bold text-stone-900 flex items-center gap-1.5 font-sans uppercase text-xs">
+                        <h4 class="font-bold text-stone-900 flex items-center gap-1.5 font-sans uppercase text-xs font-display">
                             <span class="w-1.5 h-1.5 rounded-full bg-[#c9512d]"></span>
                             What You Do
                         </h4>
@@ -108,7 +108,7 @@
                     </div>
 
                     <div class="space-y-1">
-                        <h4 class="font-bold text-stone-900 flex items-center gap-1.5 font-sans uppercase text-xs">
+                        <h4 class="font-bold text-stone-900 flex items-center gap-1.5 font-sans uppercase text-xs font-display">
                             <span class="w-1.5 h-1.5 rounded-full bg-[#c9512d]"></span>
                             What You Do It For
                         </h4>
@@ -118,7 +118,7 @@
                     </div>
 
                     <div class="space-y-1">
-                        <h4 class="font-bold text-stone-900 flex items-center gap-1.5 font-sans uppercase text-xs">
+                        <h4 class="font-bold text-stone-900 flex items-center gap-1.5 font-sans uppercase text-xs font-display">
                             <span class="w-1.5 h-1.5 rounded-full bg-[#c9512d]"></span>
                             How You Are Different
                         </h4>
@@ -128,7 +128,7 @@
                     </div>
 
                     <div class="space-y-1 bg-[#faede7] p-3 rounded-xl border border-[#c9512d]/20">
-                        <h4 class="font-bold text-[#c9512d] flex items-center gap-1.5 font-sans uppercase text-xs">
+                        <h4 class="font-bold text-[#c9512d] flex items-center gap-1.5 font-sans uppercase text-xs font-display">
                             <span class="w-1.5 h-1.5 rounded-full bg-[#c9512d]"></span>
                             Call to Action
                         </h4>

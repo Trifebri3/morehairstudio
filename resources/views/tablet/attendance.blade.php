@@ -1,10 +1,10 @@
-@extends('layouts.tablet')
+﻿@extends('layouts.tablet')
 
 @section('content')
 <div class="h-full flex flex-col justify-between py-4">
     <div class="space-y-6">
         <div>
-            <h3 class="text-xl font-bold text-stone-900 mb-2">Stylist Attendance</h3>
+            <h3 class="text-xl font-bold text-stone-900 mb-2 font-display">Stylist Attendance</h3>
             <p class="text-stone-500 text-xs">Ketuk tombol Clock In atau Clock Out sesuai nama Anda untuk merekam kehadiran hari ini.</p>
         </div>
 
@@ -33,7 +33,7 @@
                             {{ substr($stylist->name, 0, 1) }}
                         </div>
                         <div>
-                            <h4 class="font-bold text-sm text-stone-900">{{ $stylist->name }}</h4>
+                            <h4 class="font-bold text-sm text-stone-900 font-display">{{ $stylist->name }}</h4>
                             <span class="text-xxs text-stone-400 uppercase tracking-wide block mb-1">
                                 {{ $stylist->specialization }}
                             </span>

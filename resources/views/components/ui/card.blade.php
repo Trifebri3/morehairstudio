@@ -1,4 +1,4 @@
-@props([
+﻿@props([
     'title' => null,
     'subtitle' => null
 ])
@@ -7,7 +7,7 @@
     @if($title || $subtitle)
         <div class="mb-5 border-b border-stone-100 pb-3">
             @if($title)
-                <h3 class="text-base font-bold text-stone-900 font-sans tracking-wide uppercase">{{ $title }}</h3>
+                <h3 class="text-base font-bold text-stone-900 font-sans tracking-wide uppercase font-display">{{ $title }}</h3>
             @endif
             @if($subtitle)
                 <p class="text-xxs text-[#c9512d] mt-1 uppercase tracking-widest font-mono">{{ $subtitle }}</p>

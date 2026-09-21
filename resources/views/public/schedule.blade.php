@@ -1,4 +1,4 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', 'Cek Kalender & Jadwal Stylist | MORE Hair Studio')
 @section('meta_description', 'Periksa ketersediaan jam booking seluruh hairstylist MORE Hair Studio secara transparan per tanggal.')
@@ -18,7 +18,7 @@
         
         <!-- Header Section -->
         <div class="max-w-2xl mx-auto text-center space-y-3 mb-10">
-            <h1 class="text-2xl sm:text-4xl font-black text-stone-900 tracking-tight uppercase">
+            <h1 class="text-2xl font-display sm:text-4xl font-display font-black text-stone-900 tracking-tight uppercase">
                 Kalender &amp; <span class="text-[#c9512d]">Jadwal Stylist</span>
             </h1>
             <p class="text-xs sm:text-sm text-stone-500 font-normal">
@@ -143,7 +143,7 @@
                         <span class="text-[10px] font-mono uppercase tracking-widest text-[#c9512d] font-extrabold block">
                             Ketersediaan Tanggal
                         </span>
-                        <h2 class="text-base sm:text-lg font-black text-stone-900 uppercase tracking-tight mt-0.5" x-text="formattedDateLabel"></h2>
+                        <h2 class="text-base sm:text-lg font-black text-stone-900 uppercase tracking-tight mt-0.5 font-display" x-text="formattedDateLabel"></h2>
                     </div>
 
                     <div class="flex items-center gap-2">
@@ -182,7 +182,7 @@
                                     </div>
                                     <div>
                                         <div class="flex items-center space-x-2">
-                                            <h3 class="font-bold text-stone-900 text-sm uppercase tracking-tight" x-text="stylist.name"></h3>
+                                            <h3 class="font-bold text-stone-900 text-sm uppercase tracking-tight font-display" x-text="stylist.name"></h3>
                                             <span class="text-[9px] uppercase tracking-wider bg-stone-100 text-stone-600 px-2 py-0.5 rounded font-extrabold" x-text="stylist.specialization"></span>
                                         </div>
                                         <span class="text-xs text-stone-400 font-mono block mt-0.5" x-text="getWorkingHoursText(stylist.id)"></span>

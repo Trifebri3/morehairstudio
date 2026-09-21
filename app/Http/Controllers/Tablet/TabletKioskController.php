@@ -326,6 +326,47 @@ class TabletKioskController extends Controller
         return view('tablet.queue', compact('bookings'));
     }
 
+    /**
+     * JSON API endpoint — returns live queue data for realtime polling (no page reload)
+     */
+    public function queueData(Request $request)
+    {
+        $tabletOutletId = session('tablet_outlet_id', 2);
+        Booking::autoCompleteDueBookings($tabletOutletId);
+        Booking::autoExpireNoShows($tabletOutletId);
+
+        $today    = Carbon::today()->toDateString();
+        $bookings = Booking::where('outlet_id', $tabletOutletId)
+            ->where('booking_date', $today)
+            ->whereIn('status', ['pending', 'confirmed', 'checked_in', 'in_progress', 'completed'])
+            ->with(['customer', 'stylist', 'items.service'])
+            ->get();
+
+        $map = fn($b) => [
+            'id'            => $b->id,
+            'booking_code'  => $b->booking_code,
+            'status'        => $b->status,
+            'customer_name' => $b->customer->name ?? '-',
+            'stylist_name'  => $b->stylist?->name ?? 'Any Stylist',
+            'service_name'  => $b->items->first()?->service?->name ?? '-',
+            'duration'      => $b->service_duration_minutes ?? $b->calculateServiceDuration(),
+            'start_time'    => substr($b->items->first()?->start_time ?? '00:00', 0, 5),
+            'service_start' => $b->service_start_at?->format('H:i'),
+            'service_end'   => $b->service_end_at?->format('H:i'),
+            'progress'      => (int) ($b->service_progress_percentage ?? 0),
+            'remaining'     => (int) ($b->remaining_service_minutes ?? 0),
+            'complete_url'  => route('tablet.queue.complete', $b->id),
+            'checkin_url'   => route('tablet.check-in', ['searchQuery' => $b->booking_code]),
+        ];
+
+        return response()->json([
+            'waiting'   => $bookings->whereIn('status', ['pending', 'confirmed'])->values()->map($map),
+            'on_chair'  => $bookings->whereIn('status', ['checked_in', 'in_progress'])->values()->map($map),
+            'done'      => $bookings->where('status', 'completed')->values()->map($map),
+            'ts'        => now()->format('H:i:s'),
+        ]);
+    }
+
     public function startService(Request $request, $id)
     {
         $booking = Booking::findOrFail($id);

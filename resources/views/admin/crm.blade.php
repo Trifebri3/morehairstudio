@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     CRM Customer Intelligence
@@ -12,7 +12,7 @@
         <div class="bg-white border border-stone-200 p-5 rounded-2xl shadow-sm">
             <span class="text-xxs text-stone-400 font-bold uppercase tracking-wider block">Total Customer</span>
             <div class="flex items-baseline gap-2 mt-2">
-                <span class="text-2xl font-black text-stone-900">{{ $totalCustomers }}</span>
+                <span class="text-2xl font-display font-black text-stone-900">{{ $totalCustomers }}</span>
                 <span class="text-xxs font-bold text-emerald-600">Aktif</span>
             </div>
             <p class="text-[10px] text-stone-500 mt-1">Total customer terekam dalam segmen terpilih.</p>
@@ -22,7 +22,7 @@
         <div class="bg-white border border-stone-200 p-5 rounded-2xl shadow-sm">
             <span class="text-xxs text-stone-400 font-bold uppercase tracking-wider block">Customer Baru (30 Hari)</span>
             <div class="flex items-baseline gap-2 mt-2">
-                <span class="text-2xl font-black text-stone-950">{{ $newCustomers }}</span>
+                <span class="text-2xl font-display font-black text-stone-950">{{ $newCustomers }}</span>
                 <span class="text-xxs font-bold text-blue-600">Registrasi</span>
             </div>
             <p class="text-[10px] text-stone-500 mt-1">Registrasi customer baru 30 hari terakhir.</p>
@@ -32,7 +32,7 @@
         <div class="bg-white border border-stone-200 p-5 rounded-2xl shadow-sm">
             <span class="text-xxs text-stone-400 font-bold uppercase tracking-wider block">Repeat Order Rate</span>
             <div class="flex items-baseline gap-2 mt-2">
-                <span class="text-2xl font-black text-stone-900">{{ $repeatRate }}%</span>
+                <span class="text-2xl font-display font-black text-stone-900">{{ $repeatRate }}%</span>
                 <span class="text-xxs font-bold text-indigo-600">Kunjungan</span>
             </div>
             <p class="text-[10px] text-stone-500 mt-1">Customer dengan minimal 2 kali kunjungan/transaksi.</p>
@@ -72,7 +72,7 @@
     <form method="GET" action="{{ route('admin.crm') }}" id="crm-filter-form" class="bg-white border border-stone-200 p-6 rounded-3xl shadow-sm mb-8 space-y-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-                <h3 class="font-black text-stone-900 text-sm uppercase tracking-wider">CRM Intelligence Filters</h3>
+                <h3 class="font-black text-stone-900 text-sm uppercase tracking-wider font-display">CRM Intelligence Filters</h3>
                 <p class="text-xxs text-stone-500 mt-0.5">Saring segmentasi database customer untuk kampanye pemasaran atau ekspor laporan.</p>
             </div>
             <a href="{{ route('admin.crm.export', request()->query()) }}" class="h-9 px-5 text-xxs font-bold uppercase tracking-wider bg-[#0A3D91] text-white hover:bg-blue-800 transition shadow-sm rounded-xl flex items-center justify-center gap-1.5">
@@ -145,7 +145,7 @@
                         <a href="?{{ http_build_query(array_merge(request()->query(), ['customer_id' => $cust->id])) }}" class="block p-4 rounded-2xl border transition {{ $selectedCustomerId == $cust->id ? 'border-[#0A3D91] bg-blue-50/30' : 'border-stone-150 hover:border-stone-300 bg-stone-50/20' }}">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h4 class="font-bold text-xs text-stone-900">{{ $cust->name }}</h4>
+                                    <h4 class="font-bold text-xs text-stone-900 font-display">{{ $cust->name }}</h4>
                                     <span class="text-[10px] text-stone-400 font-mono mt-0.5 block">{{ $cust->customer_code }}</span>
                                 </div>
                                 <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-[9px] font-black uppercase font-mono">{{ $cust->rfm_segment }}</span>
@@ -172,7 +172,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
                     </div>
-                    <h3 class="text-lg font-black text-stone-900 uppercase tracking-tight">Customer Profiler & Timeline</h3>
+                    <h3 class="text-lg font-black text-stone-900 uppercase tracking-tight font-display">Customer Profiler & Timeline</h3>
                     <p class="text-xs text-stone-500 mt-2 max-w-sm">
                         Silakan ketuk salah satu nama di daftar sebelah kiri untuk memuat detail biodata lengkap, segmen nilai RFM, riwayat pengeluaran, serta audit timeline aktivitas digital.
                     </p>
@@ -183,7 +183,7 @@
                     <div class="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-stone-150 pb-6">
                         <div>
                             <span class="text-[10px] text-amber-600 font-black uppercase tracking-wider block font-mono">{{ $selectedCustomer->customer_code }}</span>
-                            <h2 class="text-2xl font-black text-stone-900 mt-0.5">{{ $selectedCustomer->name }}</h2>
+                            <h2 class="text-2xl font-display font-black text-stone-900 mt-0.5">{{ $selectedCustomer->name }}</h2>
                             <div class="flex flex-wrap gap-x-4 gap-y-2 mt-2.5 text-xxs font-mono text-stone-500">
                                 <span>TELP: {{ $selectedCustomer->phone }}</span>
                                 @if($selectedCustomer->email)
@@ -203,7 +203,7 @@
 
                     <!-- Derived Behavior Analytics -->
                     <div class="space-y-4">
-                        <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold">Derived Behavior Analytics</h4>
+                        <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold font-display">Derived Behavior Analytics</h4>
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                             <div class="bg-stone-50 p-4 rounded-2xl border">
                                 <span class="text-[10px] text-stone-400 font-bold block">Total Kunjungan</span>
@@ -249,7 +249,7 @@
 
                     <!-- Customer Timeline -->
                     <div class="space-y-6 pt-4 border-t">
-                        <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1">
+                        <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1 font-display">
                             <span class="w-1.5 h-1.5 bg-[#0A3D91] rounded-full"></span>
                             Customer Timeline & Action Logs
                         </h4>

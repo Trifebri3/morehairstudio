@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     Konfigurasi Sistem
@@ -37,7 +37,7 @@
                 
                 <!-- Group Header -->
                 <div class="border-b border-stone-150 pb-4">
-                    <h2 class="text-base font-bold text-stone-900 uppercase tracking-wider">
+                    <h2 class="text-base font-bold text-stone-900 uppercase tracking-wider font-display">
                         @if($activeTab === 'general')
                             General System Config
                         @elseif($activeTab === 'whatsapp')

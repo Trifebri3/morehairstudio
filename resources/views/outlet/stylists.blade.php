@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     Outlet Stylists Directory
@@ -23,7 +23,7 @@
                     <div class="flex items-start space-x-4">
                         <img src="{{ $stylist->display_photo }}" alt="{{ $stylist->name }}" class="h-12 w-12 rounded-xl object-cover border border-stone-200 shadow-sm flex-shrink-0">
                         <div>
-                            <h4 class="font-bold text-stone-900 text-sm uppercase tracking-tight">{{ $stylist->name }}</h4>
+                            <h4 class="font-bold text-stone-900 text-sm uppercase tracking-tight font-display">{{ $stylist->name }}</h4>
                             <span class="text-[9px] text-[#0A3D91] uppercase font-extrabold tracking-wider block mt-0.5">{{ $stylist->specialization ?? 'General Stylist' }}</span>
                             <span class="text-[10px] text-amber-600 font-bold block mt-1">★ {{ number_format($stylist->rating, 1) }} / 5.0</span>
                         </div>

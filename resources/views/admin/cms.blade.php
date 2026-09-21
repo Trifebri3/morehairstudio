@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     Konfigurasi Public (Bilingual Editor)
@@ -14,7 +14,7 @@
 
     <div class="glass-panel p-8 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-8">
         <div>
-            <h3 class="text-lg font-bold text-stone-900 font-sans uppercase">Bilingual Content Editor</h3>
+            <h3 class="text-lg font-bold text-stone-900 font-sans uppercase font-display">Bilingual Content Editor</h3>
             <p class="text-xs text-stone-500 mt-1">Configure marketing titles and descriptions displayed on public marketing pages.</p>
         </div>
 
@@ -23,7 +23,7 @@
             
             <!-- 1. Hero Section Configurations -->
             <div class="space-y-6 border-b border-stone-100 pb-8">
-                <h4 class="font-extrabold text-xs uppercase tracking-wider text-[#0A3D91]">01. Hero Section</h4>
+                <h4 class="font-extrabold text-xs uppercase tracking-wider text-[#0A3D91] font-display">01. Hero Section</h4>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <x-ui.input label="Hero Tagline (ID)" name="hero_tagline_id" placeholder="e.g. Lebih Dari Sekadar Potong Rambut." value="{{ old('hero_tagline_id', $fields['hero_tagline_id']) }}" />
@@ -44,7 +44,7 @@
 
             <!-- 2. About Section Configurations -->
             <div class="space-y-6 border-b border-stone-100 pb-8">
-                <h4 class="font-extrabold text-xs uppercase tracking-wider text-[#0A3D91]">02. About Section</h4>
+                <h4 class="font-extrabold text-xs uppercase tracking-wider text-[#0A3D91] font-display">02. About Section</h4>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <x-ui.input label="About Tagline (ID)" name="about_tagline_id" placeholder="e.g. Mendefinisikan Ulang Pengalaman Potong Rambut Anda" value="{{ old('about_tagline_id', $fields['about_tagline_id']) }}" />
@@ -76,7 +76,7 @@
 
             <!-- 3. Why Section Configurations -->
             <div class="space-y-6 border-b border-stone-100 pb-8">
-                <h4 class="font-extrabold text-xs uppercase tracking-wider text-[#0A3D91]">03. Estetika Maksimal (Why MORE)</h4>
+                <h4 class="font-extrabold text-xs uppercase tracking-wider text-[#0A3D91] font-display">03. Estetika Maksimal (Why MORE)</h4>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <x-ui.input label="Title (ID)" name="why_title_id" placeholder="e.g. Estetika Maksimal" value="{{ old('why_title_id', $fields['why_title_id']) }}" />
@@ -91,7 +91,7 @@
 
             <!-- 4. Payment Gateway Configurations -->
             <div class="space-y-6 border-b border-stone-100 pb-8">
-                <h4 class="font-extrabold text-xs uppercase tracking-wider text-[#0A3D91]">04. Integrasi Payment Gateway</h4>
+                <h4 class="font-extrabold text-xs uppercase tracking-wider text-[#0A3D91] font-display">04. Integrasi Payment Gateway</h4>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <x-ui.select label="Status Payment Gateway (Midtrans)" name="payment_gateway_active">

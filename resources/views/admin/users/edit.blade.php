@@ -1,11 +1,11 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title', 'Edit User')
 
 @section('content')
     <div class="glass-panel p-8 rounded-3xl border border-stone-200 bg-white max-w-2xl mx-auto">
         <div class="mb-6">
-            <h3 class="text-lg font-bold text-stone-900">Edit System User</h3>
+            <h3 class="text-lg font-bold text-stone-900 font-display">Edit System User</h3>
             <span class="text-xxs uppercase tracking-widest font-mono text-stone-400">Update account information</span>
         </div>
 

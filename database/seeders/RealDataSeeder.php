@@ -33,7 +33,7 @@ class RealDataSeeder extends Seeder
             [
                 'name' => 'MORE Hair Studio',
                 'description' => 'Urban barbershop & creative ecosystem di jantung Kota Bandung dengan filosofi Human-Hair Centered Design. Ruang tanpa batas bagi setiap individu untuk mengekspresikan identitas diri melampaui tren.',
-                'address' => 'Jl. Mangga No. 37A, Cihapit, Bandung, Jawa Barat 40114',
+                'address' => 'Jl. Sastimatmaja No.6, Paledang, Kec. Lengkong, Kota Bandung, Jawa Barat 40261',
                 'phone' => '082298347730',
                 'whatsapp' => '6282298347730',
                 'opening_hours' => $schedule,

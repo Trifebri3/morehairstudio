@@ -1,11 +1,11 @@
-@extends('layouts.tablet')
+﻿@extends('layouts.tablet')
 
 @section('content')
 <div class="h-full flex flex-col space-y-6">
     <!-- Page Header & Action Bar -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-stone-200 pb-5">
         <div>
-            <h2 class="text-2xl font-extrabold text-stone-900 tracking-tight uppercase">STYSCREEN - MONITOR KASIR</h2>
+            <h2 class="text-2xl font-display font-extrabold text-stone-900 tracking-tight uppercase">STYSCREEN - MONITOR KASIR</h2>
             <p class="text-xs text-stone-500 font-medium mt-1">
                 Outlet: <strong class="text-[#0A3D91]">{{ $outlet->name }}</strong> | Kelola pembayaran EDC/Tunai, pantau status pengerjaan, dan cetak invoice.
             </p>
@@ -64,7 +64,7 @@
         <!-- Lane 1: BELUM BAYAR (Pending Payment) -->
         <div class="glass-panel p-6 rounded-3xl bg-white border border-stone-200 flex flex-col space-y-4 shadow-sm">
             <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="text-sm font-black uppercase tracking-wider text-red-600 flex items-center gap-2">
+                <h3 class="text-sm font-black uppercase tracking-wider text-red-600 flex items-center gap-2 font-display">
                     <span class="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
                     Belum Bayar (EDC/Tunai)
                 </h3>
@@ -110,7 +110,7 @@
         <!-- Lane 2: PROSES / SEDANG TREATMENT (Paid & Serving) -->
         <div class="glass-panel p-6 rounded-3xl bg-white border border-stone-200 flex flex-col space-y-4 shadow-sm">
             <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="text-sm font-black uppercase tracking-wider text-stone-900 flex items-center gap-2">
+                <h3 class="text-sm font-black uppercase tracking-wider text-stone-900 flex items-center gap-2 font-display">
                     <span class="w-2.5 h-2.5 bg-[#c9512d] rounded-full animate-pulse"></span>
                     Sedang Pengerjaan / Lunas Online
                 </h3>
@@ -156,7 +156,7 @@
         <!-- Lane 3: SELESAI & LUNAS (History Today) -->
         <div class="glass-panel p-6 rounded-3xl bg-white border border-stone-200 flex flex-col space-y-4 shadow-sm">
             <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="text-sm font-black uppercase tracking-wider text-emerald-600 flex items-center gap-2">
+                <h3 class="text-sm font-black uppercase tracking-wider text-emerald-600 flex items-center gap-2 font-display">
                     <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full"></span>
                     Selesai & Lunas Hari Ini
                 </h3>
@@ -224,7 +224,7 @@
                     <div class="space-y-4">
                         <div class="border-b pb-3">
                             <span class="text-[10px] font-black uppercase tracking-widest text-[#0A3D91]">Billing Desk</span>
-                            <h3 class="text-lg font-bold text-stone-900">Proses Pelunasan Tagihan</h3>
+                            <h3 class="text-lg font-bold text-stone-900 font-display">Proses Pelunasan Tagihan</h3>
                         </div>
 
                         <div class="bg-stone-50 p-4 rounded-2xl border border-stone-200/50 space-y-2 text-xs text-stone-700">
@@ -257,13 +257,13 @@
                     <div class="space-y-6">
                         <div class="border-b pb-3">
                             <span class="text-[10px] font-black uppercase tracking-widest text-emerald-600">Payment Settled</span>
-                            <h3 class="text-lg font-bold text-stone-900">Cetak Resi Pembayaran</h3>
+                            <h3 class="text-lg font-bold text-stone-900 font-display">Cetak Resi Pembayaran</h3>
                         </div>
 
                         <!-- Thermal Receipt View Container (Class print:block makes it active during print) -->
                         <div class="border border-stone-200 rounded-2xl p-6 bg-stone-50 font-mono text-xs space-y-4 max-w-sm mx-auto shadow-inner bg-white" id="invoice-receipt">
                             <div class="text-center space-y-1">
-                                <h4 class="font-extrabold text-sm uppercase tracking-wider">MORE HAIR STUDIO</h4>
+                                <h4 class="font-extrabold text-sm uppercase tracking-wider font-display">MORE HAIR STUDIO</h4>
                                 <p class="text-[10px] text-stone-500 uppercase">{{ $outlet->name }}</p>
                                 <p class="text-[9px] text-stone-500">{{ $outlet->address }}</p>
                                 <p class="text-[9px] text-stone-500">Telp: {{ $outlet->phone }}</p>

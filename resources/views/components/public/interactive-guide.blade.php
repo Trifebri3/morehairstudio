@@ -1,4 +1,4 @@
-{{-- Interactive Guide & Live Demo Walkthrough Component --}}
+﻿{{-- Interactive Guide & Live Demo Walkthrough Component --}}
 <div x-data="moreInteractiveGuide()" 
      x-init="initGuide()" 
      @open-interactive-guide.window="openMenu = true"
@@ -40,7 +40,7 @@
                         <span class="w-1.5 h-1.5 rounded-full bg-[#c9512d] animate-pulse"></span>
                         <span>Interactive Live Demo</span>
                     </div>
-                    <h3 class="text-xl font-black font-headline tracking-tight text-white uppercase">
+                    <h3 class="text-xl font-black font-headline tracking-tight text-white uppercase font-display">
                         Panduan Interaktif Pengguna
                     </h3>
                     <p class="text-xs text-stone-400 font-light leading-relaxed">
@@ -64,7 +64,7 @@
                         </div>
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
-                                <h4 class="font-bold text-sm text-white group-hover:text-[#c9512d] transition">
+                                <h4 class="font-bold text-sm text-white group-hover:text-[#c9512d] transition font-display">
                                     Cara Booking Pengalaman MORE
                                 </h4>
                                 <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-[#c9512d] text-white">4 Tahap</span>
@@ -89,7 +89,7 @@
                         </div>
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
-                                <h4 class="font-bold text-sm text-white group-hover:text-[#c9512d] transition">
+                                <h4 class="font-bold text-sm text-white group-hover:text-[#c9512d] transition font-display">
                                     Cara Check-In di Tablet Kiosk
                                 </h4>
                                 <span class="px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-stone-800 text-stone-300">Cepat</span>
@@ -208,7 +208,7 @@
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <h4 class="font-bold text-base text-stone-900">Signature Cut &amp; Scalp Wash</h4>
+                                        <h4 class="font-bold text-base text-stone-900 font-display">Signature Cut &amp; Scalp Wash</h4>
                                         <p class="text-xs text-stone-500">Konsultasi bentuk wajah, precision cutting, dan hair massage.</p>
                                     </div>
                                     <span class="text-sm font-mono font-black text-[#c9512d]">Rp 150.000</span>
@@ -231,7 +231,7 @@
                                         H
                                     </div>
                                     <div class="flex-1">
-                                        <h4 class="font-bold text-base text-stone-900">HeyDud</h4>
+                                        <h4 class="font-bold text-base text-stone-900 font-display">HeyDud</h4>
                                         <p class="text-xs text-stone-500">Creative Senior Hair Artist • Rating ★ 5.0</p>
                                     </div>
                                     <span id="sim-btn-stylist" class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-bold transition"
@@ -262,7 +262,7 @@
                                 <span class="text-[10px] font-mono uppercase font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full inline-block">
                                     Booking Berhasil Terkonfirmasi
                                 </span>
-                                <h4 class="text-xl font-mono font-black text-stone-900 tracking-wider">MORE-{{ date('ymd') }}-ZYULB</h4>
+                                <h4 class="text-xl font-mono font-black text-stone-900 tracking-wider font-display">MORE-{{ date('ymd') }}-ZYULB</h4>
                                 <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#c9512d]/10 text-[#c9512d] text-xs font-mono font-bold">
                                     <span>Kode Unik Tablet:</span>
                                     <span class="font-black underline tracking-widest text-sm">ZYULB</span>
@@ -281,7 +281,7 @@
                             <!-- Tablet Top Title -->
                             <div class="text-center space-y-1">
                                 <span class="text-[10px] font-mono uppercase font-bold text-[#c9512d] tracking-widest">Kiosk Kedatangan Concierge</span>
-                                <h4 class="text-xl font-black font-headline text-stone-900 uppercase">Self Check-In Customer</h4>
+                                <h4 class="text-xl font-black font-headline text-stone-900 uppercase font-display">Self Check-In Customer</h4>
                             </div>
 
                             <!-- Mode Selector Tabs -->
@@ -345,7 +345,7 @@
                             <div class="p-6 rounded-2xl bg-[#171615] text-white text-center space-y-2 border border-stone-800"
                                  x-show="currentStep === 4">
                                 <div class="w-8 h-8 rounded-full bg-[#c9512d]/20 text-[#c9512d] border border-[#c9512d]/30 flex items-center justify-center mx-auto mb-1 font-serif italic text-xs font-bold">i</div>
-                                <h4 class="font-black text-lg text-[#c9512d] font-headline uppercase">Selamat Datang di MORE!</h4>
+                                <h4 class="font-black text-lg text-[#c9512d] font-headline uppercase font-display">Selamat Datang di MORE!</h4>
                                 <p class="text-xs text-stone-300">Check-in berhasil. Silakan duduk santai di lounge, Hair Artist HeyDud akan segera melayani Anda.</p>
                             </div>
                         </div>
@@ -392,7 +392,7 @@
                             <span>•</span>
                             <span x-text="currentStepData.badge"></span>
                         </div>
-                        <h4 class="text-base font-bold text-white font-headline" x-text="currentStepData.title"></h4>
+                        <h4 class="text-base font-bold text-white font-headline font-display" x-text="currentStepData.title"></h4>
                         <p class="text-xs text-stone-300 font-light leading-relaxed" x-text="currentStepData.desc"></p>
                     </div>
 
@@ -473,7 +473,7 @@ function moreInteractiveGuide() {
                         step: 1,
                         badge: 'Kiosk Concierge',
                         title: '01. Tiba di Studio & Dekati Tablet',
-                        desc: 'Saat Anda tiba di Jl. Mangga No. 37A Bandung, terdapat tablet kiosk concierge di meja resepsionis untuk verifikasi kedatangan.',
+                        desc: 'Saat Anda tiba di Jl. Sastimatmaja No.6 Bandung, terdapat tablet kiosk concierge di meja resepsionis untuk verifikasi kedatangan.',
                         cursorTarget: 'sim-tablet-tabs'
                     },
                     {

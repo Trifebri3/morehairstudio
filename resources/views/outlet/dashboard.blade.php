@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     Outlet Admin Panel - {{ auth()->user()->outlet ? auth()->user()->outlet->name : 'Studio' }}
@@ -9,7 +9,7 @@
     <!-- Scoped Hero Banner -->
     <div class="glass-panel p-8 rounded-3xl mb-10 flex flex-col md:flex-row justify-between items-start md:items-center bg-white border border-stone-200 relative overflow-hidden">
         <div class="space-y-2">
-            <h2 class="text-2xl font-bold tracking-wide text-stone-900">{{ auth()->user()->outlet ? auth()->user()->outlet->name : 'Studio' }} Panel</h2>
+            <h2 class="text-2xl font-display font-bold tracking-wide text-stone-900">{{ auth()->user()->outlet ? auth()->user()->outlet->name : 'Studio' }} Panel</h2>
             <p class="text-xs text-stone-500 max-w-xl leading-relaxed">
                 Kelola pesanan booking customer, alokasi stylist aktif, kehadiran tim, dan monitor grafik pengerjaan real-time di studio Anda.
             </p>
@@ -67,7 +67,7 @@
         <!-- Configuration Panel 1: Attendance Configuration -->
         <div class="glass-panel p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-6">
             <div>
-                <h3 class="text-lg font-bold text-stone-900 mb-1">Pengaturan Absensi Karyawan / Hairstylist (Tablet Kiosk)</h3>
+                <h3 class="text-lg font-bold text-stone-900 mb-1 font-display">Pengaturan Absensi Karyawan / Hairstylist (Tablet Kiosk)</h3>
                 <p class="text-xs text-stone-500">Kelola batas rentang waktu absensi masuk (pagi) dan absensi pulang (sore) untuk karyawan di tablet.</p>
             </div>
             
@@ -94,7 +94,7 @@
         <!-- Configuration Panel 2: Booking and Tolerance Settings -->
         <div class="glass-panel p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-6">
             <div>
-                <h3 class="text-lg font-bold text-stone-900 mb-1">Pengaturan Toleransi & Pemesanan Online</h3>
+                <h3 class="text-lg font-bold text-stone-900 mb-1 font-display">Pengaturan Toleransi & Pemesanan Online</h3>
                 <p class="text-xs text-stone-500">Kelola batas waktu pemesanan online serta toleransi keterlambatan check-in (booking otomatis hangus dan slot kembali kosong jika pelanggan telat).</p>
             </div>
             
@@ -123,7 +123,7 @@
         <!-- Configuration Panel 3: Outlet Profile Details -->
         <div class="glass-panel p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-6">
             <div>
-                <h3 class="text-lg font-bold text-stone-900 mb-1">Pengaturan Profil Khusus Outlet</h3>
+                <h3 class="text-lg font-bold text-stone-900 mb-1 font-display">Pengaturan Profil Khusus Outlet</h3>
                 <p class="text-xs text-stone-500">Kelola deskripsi profil, tautan Google Maps iframe, dan tautan foto galeri untuk halaman profil publik studio Anda.</p>
             </div>
             
@@ -189,7 +189,7 @@
         <!-- Configuration Panel 4: Active Services Checklist -->
         <div class="glass-panel p-8 rounded-3xl bg-white border border-stone-200 shadow-sm space-y-6">
             <div>
-                <h3 class="text-lg font-bold text-stone-900 mb-1">Layanan Aktif & Tarif Custom</h3>
+                <h3 class="text-lg font-bold text-stone-900 mb-1 font-display">Layanan Aktif & Tarif Custom</h3>
                 <p class="text-xs text-stone-500">Pilih layanan apa saja yang ditawarkan di studio ini. Anda juga dapat menentukan harga dan durasi khusus yang berbeda dari tarif default pusat.</p>
             </div>
             
@@ -261,7 +261,7 @@
     <!-- Scoped Recent Bookings Table -->
     <div class="glass-panel p-8 rounded-3xl border border-stone-200 bg-white">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-bold text-stone-900">Studio Bookings</h3>
+            <h3 class="text-lg font-bold text-stone-900 font-display">Studio Bookings</h3>
             <span class="text-xxs uppercase tracking-widest font-mono text-stone-400">Live studio activity feed</span>
         </div>
 

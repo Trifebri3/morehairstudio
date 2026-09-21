@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     Super Admin Control Panel
@@ -8,7 +8,7 @@
     <!-- Clean Hero Banner -->
     <div class="glass-panel p-8 rounded-3xl mb-10 flex flex-col md:flex-row justify-between items-start md:items-center bg-white border border-stone-200 relative overflow-hidden">
         <div class="space-y-2">
-            <h2 class="text-2xl font-bold tracking-wide text-stone-900">Selamat Datang di Portal Super Admin</h2>
+            <h2 class="text-2xl font-display font-bold tracking-wide text-stone-900">Selamat Datang di Portal Super Admin</h2>
             <p class="text-xs text-stone-500 max-w-xl leading-relaxed">
                 Kelola seluruh performa salon, konfigurasi sistem dinamis, integrasi WhatsApp, dan sinkronisasi data outlet real-time di bawah satu kontrol panel terpusat.
             </p>
@@ -52,7 +52,7 @@
     <!-- Recent Bookings Table -->
     <div class="glass-panel p-8 rounded-3xl border border-stone-200 bg-white">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-bold text-stone-900">Recent Bookings</h3>
+            <h3 class="text-lg font-bold text-stone-900 font-display">Recent Bookings</h3>
             <span class="text-xxs uppercase tracking-widest font-mono text-stone-400">Live booking activity feed</span>
         </div>
         
@@ -93,7 +93,7 @@
     <!-- System Users Impersonation Section -->
     <div class="glass-panel p-8 rounded-3xl border border-stone-200 bg-white mt-10">
         <div class="flex justify-between items-center mb-6">
-            <h3 class="text-lg font-bold text-stone-900">System Users (Impersonation)</h3>
+            <h3 class="text-lg font-bold text-stone-900 font-display">System Users (Impersonation)</h3>
             <span class="text-xxs uppercase tracking-widest font-mono text-stone-400">Impersonate shop admins or stylists</span>
         </div>
         

@@ -3,10 +3,10 @@
         <span class="text-xs font-mono font-bold uppercase tracking-widest text-[#c9512d] block">
             Feedback &bull; Community
         </span>
-        <h2 class="text-3xl sm:text-4xl md:text-5xl font-black font-primary text-stone-900 uppercase tracking-tight">
+        <h2 class="text-3xl font-display sm:text-4xl font-display md:text-5xl font-display font-black font-display text-stone-900 uppercase tracking-tight">
             Loved Your <span class="text-[#c9512d]">Experience?</span>
         </h2>
-        <p class="text-stone-600 text-xs sm:text-sm max-w-lg mx-auto font-light font-secondary leading-relaxed">
+        <p class="text-stone-600 text-xs sm:text-sm max-w-lg mx-auto font-light font-sans leading-relaxed">
             Beri tahu kami pengalaman sesi konsultasi dan hasil potongan rambut Anda! Ulasan Anda menggerakkan ekosistem kami untuk terus berinovasi.
         </p>
         <div class="pt-2">

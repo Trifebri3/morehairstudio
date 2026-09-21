@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     WhatsApp Center
@@ -9,7 +9,7 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center justify-between pb-5 border-b border-stone-200">
         <div>
-            <h1 class="text-xl font-black text-stone-900 tracking-tight uppercase">WhatsApp Communication Center</h1>
+            <h1 class="text-xl font-black text-stone-900 tracking-tight uppercase font-display">WhatsApp Communication Center</h1>
             <p class="text-xxs text-stone-500 font-bold uppercase tracking-wide mt-1">Kelola integrasi, otomasi event, dan riwayat pesan WhatsApp.</p>
         </div>
         <div class="mt-4 md:mt-0 flex items-center gap-4 bg-white p-3.5 rounded-2xl border border-stone-150">
@@ -83,7 +83,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Active Provider info -->
             <div class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider">Provider WhatsApp Aktif</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider font-display">Provider WhatsApp Aktif</h3>
                 
                 <div class="flex items-center justify-between p-4 bg-stone-50/50 rounded-xl border">
                     <div>
@@ -114,7 +114,7 @@
 
             <!-- Automation status -->
             <div class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider">Otomasi & Broadcast Stats</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider font-display">Otomasi & Broadcast Stats</h3>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="p-4 rounded-xl border bg-stone-50/30">
                         <span class="text-[9px] font-bold text-stone-400 uppercase tracking-wider block">Otomasi Aktif</span>
@@ -133,7 +133,7 @@
             <!-- Cloud API Form -->
             <div class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
                 <div class="flex justify-between items-center pb-2 border-b">
-                    <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider">WhatsApp Business Cloud API</h3>
+                    <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider font-display">WhatsApp Business Cloud API</h3>
                     <form method="POST" action="{{ route('admin.whatsapp.test', 'cloud_api') }}" class="inline">
                         @csrf
                         <input type="hidden" name="token" id="test_cloud_token">
@@ -171,7 +171,7 @@
             <!-- Fonnte Configuration Form -->
             <div class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
                 <div class="flex justify-between items-center pb-2 border-b">
-                    <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider">Fonnte API Adapter</h3>
+                    <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider font-display">Fonnte API Adapter</h3>
                     <form method="POST" action="{{ route('admin.whatsapp.test', 'fonnte') }}" class="inline">
                         @csrf
                         <input type="hidden" name="token" id="test_fonnte_token">
@@ -201,7 +201,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Create template form -->
             <div class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4 h-fit">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Tambah Template Baru</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Tambah Template Baru</h3>
                 
                 <form method="POST" action="{{ route('admin.whatsapp.template.create') }}" enctype="multipart/form-data" class="space-y-4">
                     @csrf
@@ -240,7 +240,7 @@
 
             <!-- Templates List -->
             <div class="md:col-span-2 bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Daftar Template Tersimpan</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Daftar Template Tersimpan</h3>
                 
                 <div class="space-y-3 max-h-96 overflow-y-auto pr-1">
                     @forelse($templates as $t)
@@ -277,7 +277,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Create Automation form -->
             <div class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4 h-fit">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Tambah Otomasi Event</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Tambah Otomasi Event</h3>
                 
                 <form method="POST" action="{{ route('admin.whatsapp.automation.create') }}" class="space-y-4">
                     @csrf
@@ -324,7 +324,7 @@
 
             <!-- Automations List -->
             <div class="md:col-span-2 bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Aturan Otomasi Terjadwal</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Aturan Otomasi Terjadwal</h3>
                 
                 <div class="space-y-3 max-h-96 overflow-y-auto pr-1">
                     @forelse($automations as $a)
@@ -354,7 +354,7 @@
     @elseif($activeTab === 'logs')
         <!-- Logs Table -->
         <div class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
-            <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Riwayat Pengiriman Pesan</h3>
+            <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Riwayat Pengiriman Pesan</h3>
             
             <div class="overflow-x-auto">
                 <table class="w-full text-left text-xxs font-bold text-stone-600">
@@ -398,7 +398,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Left Sidebar: Import Contacts -->
             <div class="bg-white p-5 rounded-2xl border border-stone-150 space-y-4 h-fit">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b">Impor Kontak CSV</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider pb-2 border-b font-display">Impor Kontak CSV</h3>
                 
                 <form method="POST" action="{{ route('admin.whatsapp.import') }}" enctype="multipart/form-data" class="space-y-4">
                     @csrf
@@ -420,7 +420,7 @@
             <!-- Right Panel: CRM Contacts List -->
             <div class="md:col-span-2 bg-white p-5 rounded-2xl border border-stone-150 space-y-4">
                 <div class="flex justify-between items-center pb-2 border-b">
-                    <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider">Kontak Pelanggan (CRM)</h3>
+                    <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider font-display">Kontak Pelanggan (CRM)</h3>
                     
                     <!-- Search & Filter fields -->
                     <form method="GET" action="{{ route('admin.whatsapp') }}" class="flex gap-2">
@@ -506,7 +506,7 @@
     <div id="singleModal" class="hidden fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl border border-stone-150 shadow-2xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center pb-2 border-b">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider">Kirim Pesan WhatsApp</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider font-display">Kirim Pesan WhatsApp</h3>
                 <button type="button" onclick="closeSingleModal()" class="text-stone-400 hover:text-stone-700 text-sm font-bold">&times;</button>
             </div>
 
@@ -552,7 +552,7 @@
     <div id="bulkModal" class="hidden fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl border border-stone-150 shadow-2xl max-w-md w-full p-6 space-y-4">
             <div class="flex justify-between items-center pb-2 border-b">
-                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider">Kirim Pesan Massal (Broadcast)</h3>
+                <h3 class="text-xs font-black uppercase text-stone-900 tracking-wider font-display">Kirim Pesan Massal (Broadcast)</h3>
                 <button type="button" onclick="closeBulkModal()" class="text-stone-400 hover:text-stone-700 text-sm font-bold">&times;</button>
             </div>
 

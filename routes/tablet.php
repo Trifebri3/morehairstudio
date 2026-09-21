@@ -22,6 +22,7 @@ Route::prefix('tablet')->name('tablet.')->group(function () {
     Route::post('/attendance/{id}/clock-out', [TabletKioskController::class, 'clockOut'])->name('attendance.clock-out');
 
     Route::get('/queue', [TabletKioskController::class, 'queue'])->name('queue');
+    Route::get('/queue/data', [TabletKioskController::class, 'queueData'])->name('queue.data'); // JSON API
     Route::post('/queue/{id}/start', [TabletKioskController::class, 'startService'])->name('queue.start');
     Route::post('/queue/{id}/complete', [TabletKioskController::class, 'completeService'])->name('queue.complete');
 

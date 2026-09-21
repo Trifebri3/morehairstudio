@@ -1,4 +1,4 @@
-@extends('layouts.public')
+﻿@extends('layouts.public')
 
 @section('title', 'Cek Jadwal & Status Booking | MORE Hair Studio')
 @section('meta_description', 'Lihat ketersediaan jam booking hair artist secara transparan per tanggal, atau cek status reservasi Anda (AKTIF, SUDAH CEKIN, atau TIDAK ADA) di MORE Hair Studio.')
@@ -14,7 +14,7 @@
     $dayAfterLabel = \Carbon\Carbon::today()->addDays(2)->translatedFormat('l, d M');
 
     $selectedOutlet = $outlets->firstWhere('id', $selectedOutletId) ?? $defaultOutlet;
-    $outletAddress = $selectedOutlet?->address ?? 'Jl. Mangga No. 37A, Cihapit, Bandung';
+    $outletAddress = $selectedOutlet?->address ?? 'Jl. Sastimatmaja No.6, Paledang, Kec. Lengkong, Kota Bandung';
     $outletWa = $selectedOutlet?->whatsapp ?? '6282298347730';
 @endphp
 
@@ -31,7 +31,7 @@
                 <span>Transparansi Jadwal &amp; Status Reservasi</span>
             </div>
 
-            <h1 class="text-3xl sm:text-5xl font-black text-[#171615] tracking-tight uppercase font-headline leading-tight">
+            <h1 class="text-3xl font-display sm:text-5xl font-display font-black text-[#171615] tracking-tight uppercase font-headline leading-tight">
                 Cek Jadwal Booking <br class="hidden sm:inline">
                 <span class="text-[#c9512d] font-serif italic font-normal lowercase">&amp;</span> Status Kunjungan
             </h1>
@@ -172,7 +172,7 @@
                                 </div>
                                 <div class="flex-grow">
                                     <div class="flex items-center justify-between">
-                                        <h3 class="font-black text-base text-[#171615] uppercase tracking-tight" x-text="stylist.name"></h3>
+                                        <h3 class="font-black text-base text-[#171615] uppercase tracking-tight font-display" x-text="stylist.name"></h3>
                                         <span class="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-600 font-bold uppercase tracking-wider" x-text="stylist.specialization || 'Hair Specialist'"></span>
                                     </div>
                                     <span class="text-xs text-stone-500 font-light block mt-0.5">Jam Kerja: 10:00 &ndash; 20:00 WIB</span>
@@ -270,7 +270,7 @@
                 <div class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-stone-200 text-stone-700 font-mono font-black text-sm uppercase tracking-wider">
                     TIDAK ADA
                 </div>
-                <h4 class="text-base font-bold text-[#171615]">Data Booking Tidak Ditemukan</h4>
+                <h4 class="text-base font-bold text-[#171615] font-display">Data Booking Tidak Ditemukan</h4>
                 <p class="text-xs text-stone-500 font-light max-w-sm mx-auto">
                     Tidak ditemukan data reservasi yang sesuai dengan nomor atau kode tersebut. Pastikan nomor yang dimasukkan benar.
                 </p>
@@ -284,7 +284,7 @@
             <!-- HASIL KONDISI: ADA DATA (TAMPILKAN STATUS: AKTIF, SUDAH CEKIN, ATAU SELESAI) -->
             <div x-show="searchResults && searchResults.length > 0" class="max-w-2xl mx-auto space-y-6">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-xs font-mono uppercase tracking-widest font-black text-[#171615]">
+                    <h3 class="text-xs font-mono uppercase tracking-widest font-black text-[#171615] font-display">
                         Hasil Pengecekan Booking (<span x-text="searchResults.length"></span>)
                     </h3>
                     <button type="button" @click="searchResults = []; searchQuery = ''" class="text-xs text-stone-400 hover:text-[#c9512d] transition font-mono">
@@ -404,7 +404,7 @@ function publicBookingCheck() {
         },
 
         get currentOutletAddress() {
-            return this.currentOutlet ? this.currentOutlet.address : 'Jl. Mangga No. 37A, Cihapit, Bandung';
+            return this.currentOutlet ? this.currentOutlet.address : 'Jl. Sastimatmaja No.6, Paledang, Kec. Lengkong, Kota Bandung';
         },
 
         get currentStylists() {

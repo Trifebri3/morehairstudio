@@ -1,4 +1,4 @@
-@props([
+﻿@props([
     'variant' => 'info', // success, danger, warning, info
     'title' => null
 ])
@@ -18,7 +18,7 @@
 
 <div {{ $attributes->merge(['class' => $classes]) }} role="alert">
     @if($title)
-        <h4 class="font-bold uppercase tracking-wider text-xs mb-1">{{ $title }}</h4>
+        <h4 class="font-bold uppercase tracking-wider text-xs mb-1 font-display">{{ $title }}</h4>
     @endif
     <div>{{ $slot }}</div>
 </div>

@@ -11,29 +11,29 @@
                         (05) Member Privileges &bull; Loyalty Program
                     </span>
 
-                    <h2 class="text-3xl sm:text-4xl font-black text-stone-900 uppercase tracking-tight font-primary">
+                    <h2 class="text-3xl font-display sm:text-4xl font-display font-black text-stone-900 uppercase tracking-tight font-display">
                         MORE <span class="text-[#c9512d]">INSIDER</span> PROGRAM
                     </h2>
 
-                    <p class="text-xs sm:text-sm text-stone-600 font-secondary leading-relaxed max-w-lg">
+                    <p class="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed max-w-lg">
                         Setiap kunjungan Anda di MORE Hair Studio bernilai lebih. Bergabunglah dengan program loyalitas <strong class="text-stone-900 font-semibold">INSIDER</strong> secara otomatis saat Anda melakukan reservasi pertama.
                     </p>
 
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                         <div class="p-4 rounded-2xl bg-white border border-stone-200 space-y-1">
                             <span class="text-[#c9512d] font-mono font-bold text-sm block">01</span>
-                            <span class="font-bold text-stone-900 uppercase block font-primary">Poin Kunjungan</span>
-                            <p class="text-[11px] text-stone-500 font-secondary leading-tight">Dapatkan reward poin setiap selesai potong rambut atau chemical package.</p>
+                            <span class="font-bold text-stone-900 uppercase block font-display">Poin Kunjungan</span>
+                            <p class="text-[11px] text-stone-500 font-sans leading-tight">Dapatkan reward poin setiap selesai potong rambut atau chemical package.</p>
                         </div>
                         <div class="p-4 rounded-2xl bg-white border border-stone-200 space-y-1">
                             <span class="text-[#c9512d] font-mono font-bold text-sm block">02</span>
-                            <span class="font-bold text-stone-900 uppercase block font-primary">Diskon Eksklusif</span>
-                            <p class="text-[11px] text-stone-500 font-secondary leading-tight">Potongan harga spesial untuk bundling Down Perm, Keratin, dan treatment.</p>
+                            <span class="font-bold text-stone-900 uppercase block font-display">Diskon Eksklusif</span>
+                            <p class="text-[11px] text-stone-500 font-sans leading-tight">Potongan harga spesial untuk bundling Down Perm, Keratin, dan treatment.</p>
                         </div>
                         <div class="p-4 rounded-2xl bg-white border border-stone-200 space-y-1">
                             <span class="text-[#c9512d] font-mono font-bold text-sm block">03</span>
-                            <span class="font-bold text-stone-900 uppercase block font-primary">Prioritas Slot</span>
-                            <p class="text-[11px] text-stone-500 font-secondary leading-tight">Akses awal reservasi jam sibuk weekend untuk member aktif.</p>
+                            <span class="font-bold text-stone-900 uppercase block font-display">Prioritas Slot</span>
+                            <p class="text-[11px] text-stone-500 font-sans leading-tight">Akses awal reservasi jam sibuk weekend untuk member aktif.</p>
                         </div>
                     </div>
 
@@ -62,7 +62,7 @@
                             </div>
 
                             <div class="space-y-1">
-                                <div class="text-lg font-black uppercase text-stone-900 font-primary">Angga Pujangga</div>
+                                <div class="text-lg font-black uppercase text-stone-900 font-display">Angga Pujangga</div>
                                 <div class="text-[11px] font-mono text-stone-500 tracking-wider">ID: 777-05-0000-0001</div>
                             </div>
 

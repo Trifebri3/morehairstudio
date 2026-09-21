@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     System Analytics & Performance
@@ -8,7 +8,7 @@
 <div>
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 border-b border-stone-200 pb-5 font-sans">
         <div>
-            <h2 class="text-2xl font-black text-stone-900 uppercase tracking-tight">System Analytics & Performance</h2>
+            <h2 class="text-2xl font-display font-black text-stone-900 uppercase tracking-tight">System Analytics & Performance</h2>
             <p class="text-xs text-stone-500 font-medium mt-1">Pantau lalu lintas kunjungan, data demografi target, dan saluran rujukan pemasaran real-time.</p>
         </div>
         <a href="{{ route('admin.analytics.export') }}" class="h-[42px] px-6 rounded-xl text-xs font-bold uppercase tracking-wider shadow-md bg-[#0A3D91] text-white hover:bg-blue-800 transition flex items-center justify-center">
@@ -25,28 +25,28 @@
             <!-- Revenue Card -->
             <div class="bg-white border border-stone-200 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
                 <span class="text-[10px] uppercase font-extrabold tracking-widest text-stone-400">Total Revenue</span>
-                <span class="text-2xl font-black text-stone-900 mt-2 font-mono">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</span>
+                <span class="text-2xl font-display font-black text-stone-900 mt-2 font-mono">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</span>
                 <span class="text-[10px] text-green-600 font-bold mt-1">Confirmed & Paid Sesi</span>
             </div>
 
             <!-- Bookings Card -->
             <div class="bg-white border border-stone-200 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
                 <span class="text-[10px] uppercase font-extrabold tracking-widest text-stone-400">Total Bookings</span>
-                <span class="text-2xl font-black text-stone-900 mt-2 font-mono">{{ $totalBookings }}</span>
+                <span class="text-2xl font-display font-black text-stone-900 mt-2 font-mono">{{ $totalBookings }}</span>
                 <span class="text-[10px] text-stone-500 font-medium mt-1">{{ $completedBookings }} Completed</span>
             </div>
 
             <!-- Customers Card -->
             <div class="bg-white border border-stone-200 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
                 <span class="text-[10px] uppercase font-extrabold tracking-widest text-stone-400">CRM Clients</span>
-                <span class="text-2xl font-black text-stone-900 mt-2 font-mono">{{ $totalCustomers }}</span>
+                <span class="text-2xl font-display font-black text-stone-900 mt-2 font-mono">{{ $totalCustomers }}</span>
                 <span class="text-[10px] text-stone-550 font-medium mt-1">Registered profiles</span>
             </div>
 
             <!-- Ratings Card -->
             <div class="bg-white border border-stone-200 p-6 rounded-2xl shadow-sm flex flex-col justify-between">
                 <span class="text-[10px] uppercase font-extrabold tracking-widest text-stone-400">Average Rating</span>
-                <span class="text-2xl font-black text-stone-900 mt-2 font-mono">{{ number_format($averageRating, 1) }} / 5.0</span>
+                <span class="text-2xl font-display font-black text-stone-900 mt-2 font-mono">{{ number_format($averageRating, 1) }} / 5.0</span>
                 <span class="text-[10px] text-blue-600 font-bold mt-1">From client reviews</span>
             </div>
         </div>
@@ -54,7 +54,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Outlet Comparison Card -->
             <div class="lg:col-span-2 bg-white border border-stone-200 p-6 rounded-2xl shadow-sm space-y-4">
-                <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider">Outlet Performance</h3>
+                <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider font-display">Outlet Performance</h3>
                 <div class="overflow-x-auto rounded-xl border border-stone-150">
                     <table class="w-full text-left text-xs border-collapse">
                         <thead>
@@ -79,7 +79,7 @@
 
             <!-- Booking Statuses Card -->
             <div class="bg-white border border-stone-200 p-6 rounded-2xl shadow-sm space-y-4">
-                <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider">Booking Status Distribution</h3>
+                <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider font-display">Booking Status Distribution</h3>
                 <div class="space-y-3">
                     @foreach(['pending' => 'bg-stone-100 text-stone-600', 'confirmed' => 'bg-blue-50 text-blue-600', 'checked_in' => 'bg-amber-50 text-amber-600', 'in_progress' => 'bg-indigo-50 text-indigo-600', 'completed' => 'bg-green-50 text-green-700', 'cancelled' => 'bg-red-50 text-red-700'] as $status => $color)
                         <div class="flex justify-between items-center text-xs">
@@ -97,7 +97,7 @@
 
         <!-- Stylist Leaderboard Card -->
         <div class="bg-white border border-stone-200 p-6 rounded-2xl shadow-sm space-y-4">
-            <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider">Top Stylists Leaderboard</h3>
+            <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider font-display">Top Stylists Leaderboard</h3>
             <div class="overflow-x-auto rounded-xl border border-stone-150">
                 <table class="w-full text-left text-xs border-collapse">
                     <thead>
@@ -127,7 +127,7 @@
             <!-- Left Card: Web Traffic & Search Insights -->
             <div class="bg-white border border-stone-200 p-8 rounded-3xl shadow-sm space-y-6">
                 <div class="flex items-center justify-between border-b border-stone-150 pb-4">
-                    <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider flex items-center gap-2">
+                    <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider flex items-center gap-2 font-display">
                         <svg class="w-4 h-4 text-[#0A3D91]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                         </svg>
@@ -138,7 +138,7 @@
 
                 <!-- Popular Pages -->
                 <div class="space-y-3">
-                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1.5">
+                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1.5 font-display">
                         <span class="w-1.5 h-1.5 bg-[#0A3D91] rounded-full"></span>
                         Halaman Populer (Page Views)
                     </h4>
@@ -156,7 +156,7 @@
 
                 <!-- Popular Searches -->
                 <div class="space-y-3 pt-2">
-                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1.5">
+                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1.5 font-display">
                         <span class="w-1.5 h-1.5 bg-[#0A3D91] rounded-full"></span>
                         Kata Kunci Sering Dicari
                     </h4>
@@ -176,7 +176,7 @@
             <!-- Right Card: Service Category Popularity (Grafik Kategori Layanan) -->
             <div class="bg-white border border-stone-200 p-8 rounded-3xl shadow-sm space-y-6">
                 <div class="border-b border-stone-150 pb-4">
-                    <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider flex items-center gap-2">
+                    <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider flex items-center gap-2 font-display">
                         <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                         </svg>
@@ -220,7 +220,7 @@
         <!-- Demographics & Target Segments Redesign -->
         <div class="bg-white border border-stone-200 p-8 rounded-3xl shadow-sm space-y-6">
             <div class="border-b border-stone-150 pb-4">
-                <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider flex items-center gap-2">
+                <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider flex items-center gap-2 font-display">
                     <svg class="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
@@ -231,7 +231,7 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <!-- Col 1: Marketing Referral Channels -->
                 <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1.5">
+                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1.5 font-display">
                         <span class="w-1.5 h-1.5 bg-[#0A3D91] rounded-full animate-ping"></span>
                         Saluran Rujukan (Referral)
                     </h4>
@@ -257,7 +257,7 @@
 
                 <!-- Col 2: Devices -->
                 <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold">Devices Used</h4>
+                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold font-display">Devices Used</h4>
                     <div class="space-y-3">
                         @foreach(['Desktop', 'Mobile', 'Tablet'] as $d)
                             @php
@@ -280,7 +280,7 @@
 
                 <!-- Col 3: Locations -->
                 <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold">Geografis Pengakses</h4>
+                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold font-display">Geografis Pengakses</h4>
                     <div class="space-y-3">
                         @forelse($locationStats as $loc => $count)
                             @php
@@ -306,7 +306,7 @@
                 <div class="space-y-6">
                     <!-- Gender nested -->
                     <div class="space-y-3">
-                        <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold">Gender Split</h4>
+                        <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold font-display">Gender Split</h4>
                         <div class="space-y-3 text-xxs">
                             @php
                                 $maleCount = $genderStats['male'] ?? 0;
@@ -340,7 +340,7 @@
 
                     <!-- Age brackets nested -->
                     <div class="space-y-3 pt-2">
-                        <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold">Usia Pengunjung</h4>
+                        <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold font-display">Usia Pengunjung</h4>
                         <div class="space-y-2.5 text-xxs font-mono text-stone-700">
                             @foreach($ageStats as $bracket => $count)
                                 <div class="flex justify-between items-center border-b border-stone-100 pb-1">
@@ -357,7 +357,7 @@
         <!-- System Access Logs & Audit Trail -->
         <div class="bg-white border border-stone-200 p-6 rounded-2xl shadow-sm space-y-4">
             <div class="flex items-center justify-between border-b pb-3">
-                <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider">Log Akses Keamanan & Kebijakan Privasi</h3>
+                <h3 class="font-bold text-stone-900 text-sm uppercase tracking-wider font-display">Log Akses Keamanan & Kebijakan Privasi</h3>
                 <span class="text-xxs uppercase tracking-widest font-mono text-stone-400">Audit trail compliance log</span>
             </div>
 

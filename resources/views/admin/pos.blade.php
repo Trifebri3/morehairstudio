@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title')
     POS Cashier System
@@ -22,7 +22,7 @@
         <div class="lg:col-span-4 space-y-6">
             <!-- Active Checked-In Bookings -->
             <div class="bg-white border border-stone-200 p-5 rounded-3xl shadow-sm">
-                <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider mb-4 flex items-center gap-1.5">
+                <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider mb-4 flex items-center gap-1.5 font-display">
                     <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-ping"></span>
                     Antrean Kasir (Checked-In)
                 </h3>
@@ -31,7 +31,7 @@
                         <div onclick="selectBooking({{ $pBook->id }})" id="booking-item-{{ $pBook->id }}" class="booking-queue-item p-3.5 rounded-2xl cursor-pointer border transition border-stone-150 hover:border-stone-300 bg-stone-50/20">
                             <div class="flex justify-between items-start">
                                 <div>
-                                    <h4 class="font-bold text-xs text-stone-900">{{ $pBook->customer->name }}</h4>
+                                    <h4 class="font-bold text-xs text-stone-900 font-display">{{ $pBook->customer->name }}</h4>
                                     <span class="text-[10px] text-stone-400 font-mono mt-0.5 block">{{ $pBook->booking_code }}</span>
                                 </div>
                                 <span class="px-2 py-0.5 bg-blue-55 text-blue-700 rounded text-[9px] font-black uppercase font-mono">{{ $pBook->status }}</span>
@@ -49,7 +49,7 @@
             <!-- Product & Service Catalogue -->
             <div class="bg-white border border-stone-200 p-5 rounded-3xl shadow-sm space-y-4">
                 <div class="border-b pb-2 flex justify-between items-center">
-                    <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider">Katalog Jasa & Produk</h3>
+                    <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider font-display">Katalog Jasa & Produk</h3>
                 </div>
 
                 <!-- Services Tab -->
@@ -101,7 +101,7 @@
                 <input type="hidden" name="booking_id" id="checkout_booking_id">
                 <input type="hidden" name="cart_json" id="cart_json">
 
-                <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider border-b pb-2 flex justify-between items-center">
+                <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider border-b pb-2 flex justify-between items-center font-display">
                     <span>Keranjang Belanja POS</span>
                     <span class="font-mono text-stone-400" id="cart-count-label">Total Items: 0</span>
                 </h3>
@@ -128,7 +128,7 @@
         <!-- Col 3 (3 cols): Payment and Checkout parameter Details -->
         <div class="lg:col-span-3 space-y-6">
             <div class="bg-white border border-stone-200 p-6 rounded-3xl shadow-sm space-y-6">
-                <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider border-b pb-2">Checkout & Pembayaran</h3>
+                <h3 class="font-black text-stone-900 text-xs uppercase tracking-wider border-b pb-2 font-display">Checkout & Pembayaran</h3>
 
                 <!-- Select Customer -->
                 <div>
@@ -218,7 +218,7 @@
                 <!-- Struk Area (Printable) -->
                 <div id="receipt-print" class="receipt-thermal p-4 border-dashed border-2 border-stone-300 font-mono text-xxs text-stone-850 space-y-4">
                     <div class="text-center space-y-1">
-                        <h2 class="text-base font-black uppercase text-stone-900">MORE HAIR STUDIO</h2>
+                        <h2 class="text-base font-black uppercase text-stone-900 font-display">MORE HAIR STUDIO</h2>
                         <p class="text-[10px]">{{ $lastTransaction->outlet->name }}</p>
                         <p class="text-[9px] text-stone-500">Invoice: {{ $lastTransaction->transaction_number }}</p>
                     </div>
@@ -361,7 +361,7 @@
                     <div class="flex justify-between items-start">
                         <div>
                             <span class="px-2 py-0.5 rounded text-[8px] font-black uppercase font-mono \${item.type === 'service' ? 'bg-indigo-50 text-indigo-700' : 'bg-amber-50 text-amber-700'\}">\${item.type\}</span>
-                            <h4 class="font-bold text-xs text-stone-900 mt-1">\${item.name\}</h4>
+                            <h4 class="font-bold text-xs text-stone-900 mt-1 font-display">\${item.name\}</h4>
                         </div>
                         <button type="button" onclick="removeFromCart(\${index\})" class="text-red-550 hover:text-red-700 text-xs">Hapus</button>
                     </div>

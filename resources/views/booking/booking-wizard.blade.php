@@ -1,4 +1,4 @@
-@extends('layouts.booking')
+﻿@extends('layouts.booking')
 
 @section('content')
 <style>[x-cloak] { display: none !important; }</style>
@@ -59,7 +59,7 @@
                 </div>
 
                 <!-- Title -->
-                <h3 class="text-base font-extrabold text-stone-900 uppercase tracking-wider mb-2 font-sans" 
+                <h3 class="text-base font-extrabold text-stone-900 uppercase tracking-wider mb-2 font-sans font-display" 
                     x-text="submittingTitle || (isWalkIn ? 'Mendaftarkan Sesi Walk-In' : 'Mengamankan Jadwal Anda')">
                 </h3>
                 
@@ -143,7 +143,7 @@
             <!-- Step 1: Choose Experience -->
             <div x-show="step === 1" x-transition>
                 <div class="mb-8 border-b pb-4">
-                    <h2 class="text-xl font-extrabold text-stone-900 uppercase tracking-tight">
+                    <h2 class="text-xl font-extrabold text-stone-900 uppercase tracking-tight font-display">
                         {{ $isId ? 'Bagaimana Anda ingin menikmati More?' : 'How would you like to experience More?' }}
                     </h2>
                     <p class="text-xs text-stone-500 mt-1">
@@ -162,7 +162,7 @@
                                 <span class="text-[9px] uppercase font-extrabold tracking-widest text-[#c9512d] bg-[#c9512d]/15 px-2 py-0.5 rounded border border-[#c9512d]/30">Direct Artist Booking</span>
                                 <span class="text-[10px] text-amber-400 font-bold" x-text="'★ ' + Number(selectedStylist?.rating || 5).toFixed(1)"></span>
                             </div>
-                            <h3 class="text-sm sm:text-base font-extrabold text-white mt-0.5" x-text="selectedStylist?.name"></h3>
+                            <h3 class="text-sm sm:text-base font-extrabold text-white mt-0.5 font-display" x-text="selectedStylist?.name"></h3>
                             <p class="text-[11px] text-stone-400 font-normal">
                                 <span x-text="selectedStylist?.specialization || 'Hair Artist'"></span> • 
                                 <span x-text="selectedOutlet?.name || 'Studio MORE'"></span>
@@ -195,7 +195,7 @@
                                         <img :src="'/images/outlet_' + outlet.id + '.jpg'" onerror="this.src='https://images.unsplash.com/photo-1503951914875-452162b0f3f1?w=500'" :alt="outlet.name" class="w-full h-full object-cover">
                                     </div>
                                     <div class="p-5 flex-grow">
-                                        <h4 class="font-bold text-stone-800 text-xs uppercase tracking-wider" x-text="outlet.name"></h4>
+                                        <h4 class="font-bold text-stone-800 text-xs uppercase tracking-wider font-display" x-text="outlet.name"></h4>
                                         <span class="text-[10px] text-stone-400 block mt-1 leading-relaxed font-light">Address: <span x-text="outlet.address"></span></span>
                                     </div>
                                     <div x-show="selectedOutletId == outlet.id" class="bg-[#c9512d] text-white text-[9px] uppercase font-extrabold tracking-widest text-center py-2">
@@ -217,7 +217,7 @@
                                 <div class="space-y-3">
                                     <div class="flex justify-between items-center border-b border-stone-150 pb-2 cursor-pointer"
                                          @click="openCat = (openCat === category.id ? 0 : category.id)">
-                                        <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-stone-450" x-text="category.name"></h4>
+                                        <h4 class="text-[10px] font-extrabold uppercase tracking-widest text-stone-450 font-display" x-text="category.name"></h4>
                                         <span class="text-stone-400 text-[10px]" x-text="openCat === category.id ? '▲' : '▼'"></span>
                                     </div>
                                     
@@ -226,7 +226,7 @@
                                             <div class="border border-stone-200 rounded-xl p-5 bg-white hover:border-[#c9512d] hover:shadow-sm transition cursor-pointer flex justify-between items-center group"
                                                  @click="selectService(service.id)">
                                                 <div class="flex-grow pr-4">
-                                                    <h5 class="font-bold text-stone-900 text-xs uppercase tracking-tight group-hover:text-[#c9512d] transition-colors" x-text="service.name"></h5>
+                                                    <h5 class="font-bold text-stone-900 text-xs uppercase tracking-tight group-hover:text-[#c9512d] transition-colors font-display" x-text="service.name"></h5>
                                                     <div class="text-[10px] text-stone-500 mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
                                                         <span>{{ $isId ? 'Durasi' : 'Duration' }}: <span x-text="getServiceDuration(service)" class="font-bold text-stone-700"></span> Min</span>
                                                         <span>•</span>
@@ -261,7 +261,7 @@
             <!-- Step 2: Meet Your Barber -->
             <div x-show="step === 2" x-transition>
                 <div class="mb-8 border-b pb-4">
-                    <h2 class="text-xl font-extrabold text-stone-900 uppercase tracking-tight">
+                    <h2 class="text-xl font-extrabold text-stone-900 uppercase tracking-tight font-display">
                         {{ $isId ? 'Pilih Stylist Anda' : 'Meet your barber' }}
                     </h2>
                     <p class="text-xs text-stone-500 mt-1">
@@ -279,7 +279,7 @@
                             </div>
                             <div class="flex-grow min-w-0">
                                 <div class="flex items-center justify-between gap-2">
-                                    <h4 class="font-bold text-stone-900 text-sm uppercase tracking-tight group-hover:text-[#c9512d] transition-colors truncate" x-text="stylist.name"></h4>
+                                    <h4 class="font-bold text-stone-900 text-sm uppercase tracking-tight group-hover:text-[#c9512d] transition-colors truncate font-display" x-text="stylist.name"></h4>
                                     <a :href="'/' + stylist.slug" target="_blank" @click.stop class="text-[10px] text-stone-400 hover:text-[#c9512d] font-semibold underline underline-offset-2 flex-shrink-0">Profil &rarr;</a>
                                 </div>
                                 <span class="text-[9px] text-[#c9512d] uppercase font-extrabold tracking-wider block mt-0.5" x-text="stylist.specialization"></span>
@@ -302,7 +302,7 @@
             <!-- Step 3: Choose Date & Time -->
             <div x-show="step === 3" x-transition>
                 <div class="mb-8 border-b pb-4">
-                    <h2 class="text-xl font-extrabold text-stone-900 uppercase tracking-tight">
+                    <h2 class="text-xl font-extrabold text-stone-900 uppercase tracking-tight font-display">
                         <span x-text="isWalkIn ? '{{ $isId ? 'Waktu Sesi Walk-In (Hari Ini)' : 'Walk-In Session Time (Today)' }}' : '{{ $isId ? 'Pilih Tanggal & Jam Sesi' : 'Choose Date & Time' }}'"></span>
                     </h2>
                     <p class="text-xs text-stone-500 mt-1">
@@ -445,7 +445,7 @@
                                 </div>
                                 <div>
                                     <div class="flex items-center space-x-2">
-                                        <h4 class="font-bold text-stone-900 text-sm uppercase tracking-tight" x-text="selectedStylist ? selectedStylist.name : ''"></h4>
+                                        <h4 class="font-bold text-stone-900 text-sm uppercase tracking-tight font-display" x-text="selectedStylist ? selectedStylist.name : ''"></h4>
                                         <span class="text-[8px] uppercase tracking-wider bg-[#faede7] text-[#c9512d] px-2 py-0.5 rounded font-extrabold">{{ $isId ? 'Pilihan Utama' : 'Preferred' }}</span>
                                     </div>
                                     <span class="text-[10px] text-stone-400 uppercase font-extrabold tracking-wider block mt-0.5" x-text="selectedStylist ? selectedStylist.specialization : ''"></span>
@@ -475,8 +475,8 @@
                                                 <div class="flex items-center gap-2">
                                                     <span class="w-2.5 h-2.5 rounded-full"
                                                           :class="isStylistBusyNow(selectedStylistId) ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'"></span>
-                                                    <h4 class="font-black text-sm uppercase tracking-wider"
-                                                        :class="isStylistBusyNow(selectedStylistId) ? 'text-amber-900' : 'text-emerald-900'"
+                                                    <h4 class="font-display font-black text-sm uppercase tracking-wider"
+                                                        :class="isStylistBusyNow(selectedStylistId) ? 'text-amber-900' : 'text-emerald-900' font-display"
                                                         x-text="isStylistBusyNow(selectedStylistId) ? 'Sedang Melayani Customer' : 'Kursi Siap • Siap Melayani Langsung'"></h4>
                                                 </div>
                                                 <p class="text-xs mt-1 leading-relaxed"
@@ -651,7 +651,7 @@
                                                     <img :src="'https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(altStylist.slug)" :alt="altStylist.name" class="h-full w-full object-cover">
                                                 </div>
                                                 <div>
-                                                    <h4 class="font-bold text-stone-900 text-xs uppercase tracking-tight group-hover:text-[#c9512d] transition-colors" x-text="altStylist.name"></h4>
+                                                    <h4 class="font-bold text-stone-900 text-xs uppercase tracking-tight group-hover:text-[#c9512d] transition-colors font-display" x-text="altStylist.name"></h4>
                                                     <span class="text-[9px] text-stone-400 uppercase font-extrabold tracking-wider block mt-0.5" x-text="altStylist.specialization"></span>
                                                 </div>
                                             </div>
@@ -718,7 +718,7 @@
             <!-- Step 4: Confirm -->
             <div x-show="step === 4" x-transition>
                 <div class="mb-8 border-b pb-4">
-                    <h2 class="text-xl font-extrabold text-stone-900 uppercase tracking-tight">
+                    <h2 class="text-xl font-extrabold text-stone-900 uppercase tracking-tight font-display">
                         {{ $isId ? 'Pesan Pengalaman Anda' : 'Book your experience' }}
                     </h2>
                     <p class="text-xs text-stone-500 mt-1">
@@ -729,7 +729,7 @@
                 <div class="space-y-6">
                     <!-- Customer Details Form -->
                     <div class="border border-stone-200 rounded-xl p-6 bg-white space-y-4">
-                        <h3 class="font-extrabold text-[10px] uppercase tracking-wider text-stone-400 border-b pb-2">01. Data Diri</h3>
+                        <h3 class="font-extrabold text-[10px] uppercase tracking-wider text-stone-400 border-b pb-2 font-display">01. Data Diri</h3>
                         
                         <div x-show="autoFillSuccess" class="mb-4">
                             <x-ui.alert variant="info" title="Profil Ditemukan">
@@ -774,7 +774,7 @@
 
                     <!-- Promo Code / Voucher -->
                     <div class="border border-stone-200 rounded-xl p-6 bg-white space-y-4">
-                        <h3 class="font-extrabold text-[10px] uppercase tracking-wider text-stone-400 border-b pb-2">02. Kode Promo / Voucher</h3>
+                        <h3 class="font-extrabold text-[10px] uppercase tracking-wider text-stone-400 border-b pb-2 font-display">02. Kode Promo / Voucher</h3>
                         <div class="flex space-x-3 items-end">
                             <div class="flex-grow">
                                 <x-ui.input placeholder="e.g. WELCOME50" x-model="promoCode" />
@@ -802,7 +802,7 @@
                     @if($isGatewayActive)
                         <!-- Payment Selector -->
                         <div class="border border-stone-200 rounded-xl p-6 bg-white space-y-4">
-                            <h3 class="font-extrabold text-[10px] uppercase tracking-wider text-stone-400 border-b pb-2">03. Metode Pembayaran</h3>
+                            <h3 class="font-extrabold text-[10px] uppercase tracking-wider text-stone-400 border-b pb-2 font-display">03. Metode Pembayaran</h3>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="border rounded-lg p-4 cursor-pointer text-center"
                                      :class="paymentMethod === 'manual' ? 'border-[#c9512d] bg-[#faede7]/30 text-[#c9512d]' : 'border-stone-200'"
@@ -859,14 +859,14 @@
                 <img src="/logo/logo.png?v=3" alt="MORE" class="h-10 mx-auto object-contain">
             </div>
             
-            <h3 class="text-base font-bold font-sans text-stone-900 mt-2 uppercase tracking-wider" x-text="selectedOutlet ? selectedOutlet.name : 'More Hair Studio'"></h3>
+            <h3 class="text-base font-bold font-sans text-stone-900 mt-2 uppercase tracking-wider font-display" x-text="selectedOutlet ? selectedOutlet.name : 'More Hair Studio'"></h3>
 
             <p class="text-stone-550 text-xxs leading-relaxed mt-4 border-t border-stone-100 pt-4 px-2 font-light" x-text="selectedOutlet ? selectedOutlet.address : 'Pilih outlet terdekat untuk memuat informasi alamat lengkap.'"></p>
         </div>
 
         <!-- Ringkasan Pemesanan Card -->
         <div class="bg-white border border-stone-200 rounded-2xl p-6 shadow-sm space-y-4">
-            <h4 class="font-extrabold text-[10px] uppercase tracking-wider text-stone-400 border-b border-stone-100 pb-2">
+            <h4 class="font-extrabold text-[10px] uppercase tracking-wider text-stone-400 border-b border-stone-100 pb-2 font-display">
                 {{ $isId ? 'Ringkasan Pemesanan' : 'Booking Summary' }}
             </h4>
 
@@ -959,7 +959,7 @@
                             <div>
                                 <span class="text-[9px] uppercase tracking-widest text-[#c9512d] font-bold block"
                                       x-text="activeDetailService.category ? activeDetailService.category.name : 'MORE HAIR STUDIO'"></span>
-                                <h3 class="text-base sm:text-lg font-bold uppercase tracking-tight text-white mt-0.5" 
+                                <h3 class="text-base sm:text-lg font-bold uppercase tracking-tight text-white mt-0.5 font-display" 
                                     id="service-detail-modal-title" 
                                     x-text="activeDetailService.name"></h3>
                             </div>

@@ -11,12 +11,12 @@
                         (01) The Experience &bull; Human-Hair Centered Design
                     </span>
                     
-                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-black text-stone-900 uppercase tracking-tight font-primary leading-tight">
+                    <h2 class="text-3xl font-display sm:text-4xl font-display md:text-5xl font-display font-black text-stone-900 uppercase tracking-tight font-display leading-tight">
                         BUKAN SEKADAR POTONG RAMBUT, <br>
                         <span class="text-[#c9512d]">KAMI MEMAHAMI KARAKTER ANDA.</span>
                     </h2>
 
-                    <p class="text-xs sm:text-sm text-stone-600 font-secondary leading-relaxed max-w-xl">
+                    <p class="text-xs sm:text-sm text-stone-600 font-sans leading-relaxed max-w-xl">
                         Banyak tempat potong rambut terjebak pada cetakan template kaku dan tren seragam. Di MORE Hair Studio, kami mengawali setiap treatment dengan <strong class="text-stone-900 font-semibold">10-Min Define Session</strong>—sesi konsultasi tatap muka sebelum gunting pertama menyentuh rambut Anda.
                     </p>
 
@@ -24,20 +24,20 @@
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                         <div class="p-4 rounded-2xl bg-white border border-stone-200 space-y-1.5">
                             <span class="text-xs font-mono font-black text-[#c9512d]">01</span>
-                            <h4 class="text-xs font-bold uppercase text-stone-900 font-primary">Anatomi Wajah</h4>
-                            <p class="text-[11px] text-stone-500 font-secondary leading-normal">Menemukan siluet yang paling menonjolkan garis rahang dan bentuk kepala Anda.</p>
+                            <h4 class="text-xs font-bold uppercase text-stone-900 font-display">Anatomi Wajah</h4>
+                            <p class="text-[11px] text-stone-500 font-sans leading-normal">Menemukan siluet yang paling menonjolkan garis rahang dan bentuk kepala Anda.</p>
                         </div>
 
                         <div class="p-4 rounded-2xl bg-white border border-stone-200 space-y-1.5">
                             <span class="text-xs font-mono font-black text-[#c9512d]">02</span>
-                            <h4 class="text-xs font-bold uppercase text-stone-900 font-primary">Tekstur Alami</h4>
-                            <p class="text-[11px] text-stone-500 font-secondary leading-normal">Membaca arah pusaran dan ketebalan helai agar rambut tetap rapi saat tumbuh panjang.</p>
+                            <h4 class="text-xs font-bold uppercase text-stone-900 font-display">Tekstur Alami</h4>
+                            <p class="text-[11px] text-stone-500 font-sans leading-normal">Membaca arah pusaran dan ketebalan helai agar rambut tetap rapi saat tumbuh panjang.</p>
                         </div>
 
                         <div class="p-4 rounded-2xl bg-white border border-stone-200 space-y-1.5">
                             <span class="text-xs font-mono font-black text-[#c9512d]">03</span>
-                            <h4 class="text-xs font-bold uppercase text-stone-900 font-primary">Mudah Ditata</h4>
-                            <p class="text-[11px] text-stone-500 font-secondary leading-normal">Potongan presisi yang tetap terlihat effortless tanpa perlu banyak produk kimia setiap pagi.</p>
+                            <h4 class="text-xs font-bold uppercase text-stone-900 font-display">Mudah Ditata</h4>
+                            <p class="text-[11px] text-stone-500 font-sans leading-normal">Potongan presisi yang tetap terlihat effortless tanpa perlu banyak produk kimia setiap pagi.</p>
                         </div>
                     </div>
 
@@ -53,15 +53,15 @@
                 <!-- Right Column: Quote & Tagline Card (5 cols) -->
                 <div class="lg:col-span-5">
                     <div class="bg-white border-2 border-stone-200 rounded-3xl p-8 space-y-6 shadow-xs">
-                        <div class="text-[#c9512d] text-3xl font-primary">“</div>
+                        <div class="text-[#c9512d] text-3xl font-display font-display">“</div>
                         
-                        <blockquote class="text-stone-800 text-sm sm:text-base font-caslon italic leading-relaxed">
+                        <blockquote class="text-stone-800 text-sm sm:text-base font-sans italic leading-relaxed">
                             "Tren akan selalu berganti, tapi karaktermu tetap. Ambil tempatmu di studio kami, dan mari rancang gaya yang presisi untuk keseharianmu."
                         </blockquote>
 
                         <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
                             <div>
-                                <span class="text-xs font-bold uppercase tracking-wider text-stone-900 font-primary block">Define You, MORE.</span>
+                                <span class="text-xs font-bold uppercase tracking-wider text-stone-900 font-display block">Define You, MORE.</span>
                                 <span class="text-[10px] text-stone-400 font-mono uppercase">Urban Barbershop &bull; Bandung 2026</span>
                             </div>
                             <span class="font-mono text-xs font-bold text-[#c9512d] bg-[#faede7] px-2.5 py-1 rounded-lg">

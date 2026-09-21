@@ -1,11 +1,11 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('page_title', 'Create New User')
 
 @section('content')
     <div class="glass-panel p-8 rounded-3xl border border-stone-200 bg-white max-w-2xl mx-auto">
         <div class="mb-6">
-            <h3 class="text-lg font-bold text-stone-900">Create New System User</h3>
+            <h3 class="text-lg font-bold text-stone-900 font-display">Create New System User</h3>
             <span class="text-xxs uppercase tracking-widest font-mono text-stone-400">Add a new admin or stylist account</span>
         </div>
 
