@@ -24,6 +24,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('/stylists/import', [\App\Http\Controllers\Admin\AdminPanelController::class, 'importStylists'])->name('stylists.import');
     Route::post('/stylists', [\App\Http\Controllers\Admin\AdminPanelController::class, 'storeStylist'])->name('stylists.store');
     Route::put('/stylists/{id}', [\App\Http\Controllers\Admin\AdminPanelController::class, 'updateStylist'])->name('stylists.update');
+    Route::post('/stylists/{id}/toggle', [\App\Http\Controllers\Admin\AdminPanelController::class, 'toggleStylistStatus'])->name('stylists.toggle');
     Route::delete('/stylists/{id}', [\App\Http\Controllers\Admin\AdminPanelController::class, 'deleteStylist'])->name('stylists.delete');
 
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);

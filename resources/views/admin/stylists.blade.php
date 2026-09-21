@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('page_title')
     Stylists & Account Management
@@ -282,6 +282,12 @@
                                                 Masuk Akun
                                             </a>
                                         @endif
+                                        <form method="POST" action="{{ route('admin.stylists.toggle', $stylist->id) }}" class="inline">
+                                            @csrf
+                                            <button type="submit" class="inline-flex items-center justify-center px-3 py-1.5 {{ $stylist->status === 'active' ? 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200' }} border rounded-lg text-xs font-bold transition shadow-sm" title="{{ $stylist->status === 'active' ? 'Sembunyikan dari Publik' : 'Tampilkan ke Publik' }}">
+                                                {{ $stylist->status === 'active' ? 'Hide' : 'Show' }}
+                                            </button>
+                                        </form>
                                         <form method="POST" action="{{ route('admin.stylists.delete', $stylist->id) }}" onsubmit="return confirm('PERINGATAN: Apakah Anda yakin ingin menghapus akun login dan menonaktifkan profil stylist {{ addslashes($stylist->name) }}? Akun login user akan dihapus dan jadwal kerja akan dinonaktifkan secara permanen.');" class="inline">
                                             @csrf
                                             @method('DELETE')

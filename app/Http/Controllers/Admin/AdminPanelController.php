@@ -391,6 +391,17 @@ class AdminPanelController extends Controller
         }
     }
 
+    public function toggleStylistStatus($id)
+    {
+        if (auth()->user()->role !== 'super_admin') { return redirect()->route('dashboard'); }
+
+        $stylist = Stylist::findOrFail($id);
+        $stylist->status = $stylist->status === 'active' ? 'inactive' : 'active';
+        $stylist->save();
+        
+        return back()->with('message', "Status (visibilitas) stylist '{$stylist->name}' berhasil diubah menjadi " . strtoupper($stylist->status) . ".");
+    }
+
     public function downloadStylistTemplate(Request $request)
     {
         if (auth()->user()->role !== 'super_admin') { return redirect()->route('dashboard'); }
