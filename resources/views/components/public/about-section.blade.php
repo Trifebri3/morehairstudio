@@ -30,7 +30,7 @@
             <!-- Right Column Image -->
             <div class="flex justify-center">
                 <div class="w-full h-80 md:h-96 rounded-3xl overflow-hidden shadow-xs border border-stone-200 bg-stone-50 group">
-                    <img src="/images/about_tools.jpg" alt="Barber Tools" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <img src="/images/gallery-7.jpg" alt="Barber Tools" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                 </div>
             </div>
         </div>

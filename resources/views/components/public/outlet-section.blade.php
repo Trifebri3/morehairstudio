@@ -30,7 +30,7 @@
                 <div class="border border-stone-200 rounded-2xl overflow-hidden flex flex-col hover:border-[#c9512d]/40 hover:shadow-md transition duration-200 bg-white">
 
                     <div class="aspect-video bg-stone-100 relative overflow-hidden">
-                        <img src="/images/more_studio_interior.jpg" alt="{{ $outlet->name }}" class="w-full h-full object-cover">
+                        <img src="/images/gallery-{{ 3 + $loop->index }}.jpg" alt="{{ $outlet->name }}" class="w-full h-full object-cover">
                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                         <div class="absolute bottom-4 left-4">
                             <h3 class="os-h3 text-white text-xl">{{ $outlet->name }}</h3>

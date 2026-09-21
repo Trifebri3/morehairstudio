@@ -20,6 +20,15 @@
     <!-- 5. Dynamic Studio Locations (Schedules & details per outlet from database) -->
     <x-public.outlet-section :outlets="$outlets" />
 
+    @php
+        $galleryImages = [];
+        for ($i = 4; $i <= 17; $i++) {
+            $galleryImages[] = "/images/gallery-{$i}.jpg";
+        }
+    @endphp
+    <!-- Gallery -->
+    <x-public.gallery-section :images="$galleryImages" />
+
     <!-- 6. 3 Easy Steps to Book Online -->
     <x-public.easy-steps />
 

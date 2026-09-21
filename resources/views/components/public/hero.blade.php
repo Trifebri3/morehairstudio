@@ -2,7 +2,7 @@
 
     <!-- Background Image with Overlay -->
     <div class="absolute inset-0 z-0">
-        <img src="/images/more_studio_interior.jpg" alt="MORE Hair Studio Bandung Interior" class="w-full h-full object-cover object-center">
+        <img src="/images/gallery-0.jpg" alt="MORE Hair Studio Bandung Interior" class="w-full h-full object-cover object-center">
         <div class="absolute inset-0 bg-stone-900/80"></div>
     </div>
 

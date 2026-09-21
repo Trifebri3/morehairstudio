@@ -1,35 +1,53 @@
-﻿@extends('layouts.public')
+@extends('layouts.public')
 
 @section('title', $outlet->name . ' • Studio Lounge Profile | MORE Hair Studio')
 @section('meta_description', 'Profil lengkap studio lounge ' . $outlet->name . ' di Bandung. Alamat, fasilitas, master hair artist yang bertugas, dan daftar layanan reservasi.')
 @section('og_image', !empty($outlet->photo_url) ? url($outlet->photo_url) : asset('images/more_studio_interior.jpg'))
 
 @section('content')
+<style>
+/* ── OUTLET SHOW FONTS ── */
+.os-badge   { font-family: 'SuisseIntlMono', monospace !important; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 400; }
+.os-h1      { font-family: 'Stack Sans Notch', sans-serif !important; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; }
+.os-h2      { font-family: 'Stack Sans Notch', sans-serif !important; font-weight: 800; letter-spacing: -0.01em; }
+.os-sub     { font-family: 'Suisse Intl', sans-serif !important; font-weight: 300; line-height: 1.6; }
+.os-desc    { font-family: 'Suisse Intl', sans-serif !important; font-weight: 400; line-height: 1.6; }
+.os-label   { font-family: 'SuisseIntlMono', monospace !important; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 400; }
+.os-val     { font-family: 'Suisse Intl', sans-serif !important; font-weight: 400; }
+.os-btn     { font-family: 'Stack Sans Notch', sans-serif !important; font-weight: 700; letter-spacing: 0.05em; }
+</style>
+
 <div class="bg-white min-h-screen font-sans">
-    <!-- Clean White Dominated Header with Burnt Orange Accent Line -->
-    <div class="border-b border-stone-200 bg-white py-14 sm:py-20 px-4 sm:px-6 md:px-12 relative">
-        <div class="max-w-6xl mx-auto space-y-6">
-            <div class="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#c9512d] bg-[#faede7] px-3 py-1 rounded-full">
-                <span class="w-2 h-2 rounded-full bg-[#c9512d]"></span>
+    <!-- Hero Header with Image Overlay -->
+    <div class="relative py-20 sm:py-32 px-4 sm:px-6 md:px-12 border-b border-stone-200 overflow-hidden">
+        <!-- Background Image -->
+        <div class="absolute inset-0 z-0">
+            <img src="/images/gallery-13.jpg" alt="{{ $outlet->name }}" class="w-full h-full object-cover object-center">
+            <div class="absolute inset-0 bg-stone-900/80 backdrop-blur-sm"></div>
+        </div>
+
+        <div class="relative z-10 max-w-6xl mx-auto space-y-6">
+            <div class="os-badge inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-[#faede7] bg-[#c9512d]/80 backdrop-blur-md px-3 py-1 rounded-full shadow-sm border border-[#c9512d]/50">
+                <span class="w-2 h-2 rounded-full bg-white animate-pulse"></span>
                 <span>Studio Resmi MORE</span>
             </div>
 
-            <h1 class="text-4xl font-display sm:text-5xl font-display md:text-6xl font-display font-black font-display uppercase tracking-tight text-stone-900 leading-none">
+            <h1 class="os-h1 text-4xl font-display sm:text-5xl md:text-6xl font-black uppercase tracking-tight text-white leading-none drop-shadow-md">
                 {{ $outlet->name }}
             </h1>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-stone-200 text-xs sm:text-sm text-stone-600 font-sans">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/20 text-xs sm:text-sm text-stone-300 font-sans">
                 <div class="space-y-1">
-                    <span class="font-bold uppercase text-[10px] tracking-wider text-[#c9512d] block font-mono">Alamat Studio</span>
-                    <span class="text-stone-800">{{ $outlet->address }}</span>
+                    <span class="os-label font-bold uppercase text-[10px] tracking-wider text-[#c9512d] block font-mono">Alamat Studio</span>
+                    <span class="os-val text-white">{{ $outlet->address }}</span>
                 </div>
                 <div class="space-y-1">
-                    <span class="font-bold uppercase text-[10px] tracking-wider text-[#c9512d] block font-mono">Kontak Reservasi</span>
-                    <span class="text-stone-800 font-mono">{{ $outlet->phone }} / +{{ $outlet->whatsapp }}</span>
+                    <span class="os-label font-bold uppercase text-[10px] tracking-wider text-[#c9512d] block font-mono">Kontak Reservasi</span>
+                    <span class="os-val text-white font-mono">{{ $outlet->phone }} / +{{ $outlet->whatsapp }}</span>
                 </div>
                 <div class="space-y-1">
-                    <span class="font-bold uppercase text-[10px] tracking-wider text-[#c9512d] block font-mono">Jam Operasional</span>
-                    <span class="text-stone-800 font-mono">
+                    <span class="os-label font-bold uppercase text-[10px] tracking-wider text-[#c9512d] block font-mono">Jam Operasional</span>
+                    <span class="os-val text-white font-mono">
                         @if(is_array($outlet->opening_hours))
                             @foreach($outlet->opening_hours as $day => $hours)
                                 <span class="block text-xxs capitalize">
@@ -48,8 +66,8 @@
                 </div>
             </div>
 
-            <div class="pt-4">
-                <a href="{{ route('booking.index', ['outlet_id' => $outlet->id]) }}" class="inline-flex items-center justify-center px-8 py-4 bg-[#c9512d] hover:bg-[#b74423] text-white font-mono font-bold uppercase tracking-wider rounded-xl transition duration-200 shadow-sm hover:shadow-md hover:shadow-[#c9512d]/20 text-xs">
+            <div class="pt-8">
+                <a href="{{ route('booking.index', ['outlet_id' => $outlet->id]) }}" class="os-btn inline-flex items-center justify-center px-8 py-4 bg-[#c9512d] hover:bg-[#b74423] text-white font-mono font-bold uppercase tracking-wider rounded-xl transition duration-200 shadow-md text-xs">
                     Booking Di Studio Ini &rarr;
                 </a>
             </div>
@@ -62,48 +80,32 @@
         <div class="lg:col-span-2 space-y-12">
             <!-- About Us -->
             <div class="p-8 rounded-3xl bg-white border border-stone-200 shadow-xs space-y-4">
-                <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">(01) Filosofi Studio</span>
-                <h2 class="text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Tentang Studio Ini</h2>
-                <p class="text-stone-600 text-xs sm:text-sm leading-relaxed font-light font-sans">
+                <span class="os-badge text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">(01) Filosofi Studio</span>
+                <h2 class="os-h2 text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Tentang Studio Ini</h2>
+                <p class="os-desc text-stone-600 text-xs sm:text-sm leading-relaxed font-light font-sans">
                     {{ $outlet->description ?: 'MORE Hair Studio berkomitmen untuk menyajikan pengalaman perawatan rambut premium yang dirancang secara khusus untuk kenyamanan dan keotentikan gaya personal Anda.' }}
                 </p>
             </div>
 
             <!-- Gallery -->
             <div class="p-8 rounded-3xl bg-white border border-stone-200 shadow-xs space-y-6">
-                <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">(02) Tata Ruang &amp; Atmosfer</span>
-                <h2 class="text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Galeri Studio</h2>
+                <span class="os-badge text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">(02) Tata Ruang &amp; Atmosfer</span>
+                <h2 class="os-h2 text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Galeri Studio</h2>
                 
-                @php
-                    $galleryImages = is_array($outlet->gallery) ? $outlet->gallery : [];
-                @endphp
-
-                @if(count($galleryImages) > 0)
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @foreach($galleryImages as $img)
-                            <div class="rounded-2xl overflow-hidden h-48 border border-stone-200 group">
-                                <img src="{{ $img }}" alt="Gallery Image" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                            </div>
-                        @endforeach
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="rounded-2xl overflow-hidden h-48 border border-stone-200 group">
+                        <img src="/images/gallery-11.jpg" alt="Gallery Image" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                     </div>
-                @else
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="rounded-2xl overflow-hidden h-48 border border-stone-200 bg-stone-50 flex flex-col items-center justify-center p-4 text-center">
-                            <span class="text-xs uppercase tracking-widest text-[#c9512d] font-bold font-mono">Precision Styling Chairs</span>
-                            <span class="text-[10px] text-stone-400 mt-1">Interior Calibrated Lighting</span>
-                        </div>
-                        <div class="rounded-2xl overflow-hidden h-48 border border-stone-200 bg-stone-50 flex flex-col items-center justify-center p-4 text-center">
-                            <span class="text-xs uppercase tracking-widest text-[#c9512d] font-bold font-mono">Modern Coffee Lounge</span>
-                            <span class="text-[10px] text-stone-400 mt-1">Human-Hair Centered Ambience</span>
-                        </div>
+                    <div class="rounded-2xl overflow-hidden h-48 border border-stone-200 group">
+                        <img src="/images/gallery-12.jpg" alt="Gallery Image" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                     </div>
-                @endif
+                </div>
             </div>
 
             <!-- Hair Stylists working here -->
             <div class="p-8 rounded-3xl bg-white border border-stone-200 shadow-xs space-y-6">
-                <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">(03) Hair Artists</span>
-                <h2 class="text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Hair Artists di Studio Ini</h2>
+                <span class="os-badge text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">(03) Hair Artists</span>
+                <h2 class="os-h2 text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Hair Artists di Studio Ini</h2>
                 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     @forelse($stylists as $s)
@@ -131,8 +133,8 @@
         <div class="space-y-12">
             <!-- Service List Menu -->
             <div class="p-8 rounded-3xl bg-white border border-stone-200 shadow-xs space-y-6">
-                <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">Menu Layanan</span>
-                <h2 class="text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Daftar Treatment</h2>
+                <span class="os-badge text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">Menu Layanan</span>
+                <h2 class="os-h2 text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Daftar Treatment</h2>
                 
                 @forelse($servicesByCategory as $category => $items)
                     <div class="space-y-3">
@@ -167,10 +169,10 @@
             <!-- Map View Section -->
             <div class="p-8 rounded-3xl bg-white border border-stone-200 shadow-xs space-y-4">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">Lokasi &amp; Navigasi</span>
-                    <span class="text-[11px] font-mono text-stone-500">{{ $outlet->latitude ?? '-6.911558' }}, {{ $outlet->longitude ?? '107.623485' }}</span>
+                    <span class="os-badge text-xs font-mono font-bold uppercase tracking-wider text-[#c9512d] block">Lokasi &amp; Navigasi</span>
+                    <span class="os-val text-[11px] font-mono text-stone-500">{{ $outlet->latitude ?? '-6.911558' }}, {{ $outlet->longitude ?? '107.623485' }}</span>
                 </div>
-                <h2 class="text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Titik Maps &amp; Peta Interaktif</h2>
+                <h2 class="os-h2 text-xl font-bold uppercase tracking-tight font-display text-stone-900 border-b border-stone-100 pb-3">Titik Maps &amp; Peta Interaktif</h2>
                 
                 <div class="rounded-2xl overflow-hidden h-64 border border-stone-200 shadow-2xs">
                     <iframe 

@@ -16,7 +16,7 @@
             <!-- Left: Photo -->
             <div class="lg:col-span-5 order-2 lg:order-1">
                 <div class="rounded-2xl overflow-hidden border border-stone-200 bg-white shadow-sm">
-                    <img src="/images/more_candid_haircut.jpg" alt="Client Experience di MORE Hair Studio" class="w-full aspect-4/3 sm:aspect-square object-cover">
+                    <img src="/images/gallery-7.jpg" alt="Client Experience di MORE Hair Studio" class="w-full aspect-4/3 sm:aspect-square object-cover">
                     <div class="p-4 bg-white border-t border-stone-100">
                         <span class="bp-caption text-stone-900 block">Candid &amp; Effortless</span>
                         <span class="bp-sub text-[11px] text-stone-500 block mt-0.5">Hasil potongan presisi yang mudah dirawat dan ditata sendiri</span>

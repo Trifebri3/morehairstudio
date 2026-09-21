@@ -39,7 +39,7 @@
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
                 <div class="lg:col-span-6 rounded-2xl overflow-hidden border border-stone-200 shadow-sm">
-                    <img src="/images/more_studio_interior.jpg" alt="MORE Hair Studio Bandung" class="w-full aspect-4/3 object-cover">
+                    <img src="/images/gallery-8.jpg" alt="MORE Hair Studio Bandung" class="w-full aspect-4/3 object-cover">
                 </div>
 
                 <div class="lg:col-span-6 space-y-5">
@@ -134,7 +134,7 @@
                 </div>
 
                 <div class="lg:col-span-6 rounded-2xl overflow-hidden border border-stone-200 shadow-sm order-1 lg:order-2">
-                    <img src="/images/more_candid_haircut.jpg" alt="Sesi Grooming di MORE Hair Studio" class="w-full aspect-4/3 object-cover">
+                    <img src="/images/gallery-9.jpg" alt="Sesi Grooming di MORE Hair Studio" class="w-full aspect-4/3 object-cover">
                 </div>
 
             </div>

@@ -50,7 +50,7 @@
                     <!-- Media Area with Quick Photo/Map Switcher -->
                     <div class="relative aspect-16/9 bg-stone-100 overflow-hidden">
                         <div x-show="viewMode === 'photo'" class="w-full h-full">
-                            <img src="/images/more_studio_interior.jpg" alt="{{ $outlet->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <img src="/images/gallery-{{ 14 + $loop->index }}.jpg" alt="{{ $outlet->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                         </div>
 
                         <div x-show="viewMode === 'map'" class="w-full h-full bg-stone-200" x-cloak>
