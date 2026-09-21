@@ -37,6 +37,7 @@
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/tablet.css', 'resources/js/app.js'])
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <!-- ═══ FONT PRELOAD — Static Weights ═══ -->
     <link rel="preload" href="/fonts/StackSansNotch-Bold.ttf" as="font" type="font/ttf" crossorigin>
@@ -114,7 +115,6 @@
         html, body, p, span, div, li, td, th, label, a, input, button, select, textarea { font-family: 'Suisse Intl', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important; }
         h1, h2, h3, h4, h5, h6, .font-display, .font-headline, [class*="text-2xl"], [class*="text-3xl"], [class*="text-4xl"], [class*="text-5xl"], [class*="text-6xl"], [class*="text-7xl"], [class*="text-8xl"], [class*="text-9xl"] { font-family: 'Stack Sans Notch', -apple-system, BlinkMacSystemFont, sans-serif !important; letter-spacing: -0.02em; }
         .font-mono, code, kbd, pre, samp { font-family: 'SuisseIntlMono', 'Courier New', monospace !important; letter-spacing: 0; }
-    </style>
         [x-cloak] { display: none !important; }
 
         /* ── Loading Progress Bar ── */
