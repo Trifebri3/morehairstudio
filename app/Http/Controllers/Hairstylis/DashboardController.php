@@ -208,10 +208,10 @@ class DashboardController extends Controller
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,
             'reason' => $request->reason,
-            'status' => 'approved' // Automatically approve for this specific requirement, or 'pending' if it still requires admin approval. User says "otomatis tidak bisa booking", so we should make it approved or make the availability check include pending. Let's make it approved so it takes effect instantly.
+            'status' => 'pending' 
         ]);
 
-        $stylist->status = 'pending_inactive';
+        $stylist->status = 'pending_leave';
         $stylist->save();
 
         return back()->with('message', 'Cuti berhasil diajukan dari ' . \Carbon\Carbon::parse($request->start_date)->format('d M') . ' sampai ' . \Carbon\Carbon::parse($request->end_date)->format('d M') . '.');

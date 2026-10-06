@@ -240,8 +240,20 @@ class OutletDashboardController extends Controller
             $stylist->status = 'active';
             $msg = "Permintaan aktivasi akun {$stylist->name} disetujui.";
         } elseif ($stylist->status === 'pending_inactive' || $stylist->status === 'pending_leave') {
-            $stylist->status = 'inactive';
-            $msg = "Permintaan cuti {$stylist->name} disetujui.";
+            // Approve the leave request
+            $pendingLeave = \App\Domains\Stylist\Models\StylistLeave::where('stylist_id', $stylist->id)
+                ->where('status', 'pending')
+                ->latest()
+                ->first();
+                
+            if ($pendingLeave) {
+                $pendingLeave->status = 'approved';
+                $pendingLeave->save();
+            }
+            
+            // Revert stylist to active so they can be booked on non-leave days
+            $stylist->status = 'active';
+            $msg = "Permintaan cuti {$stylist->name} disetujui. Akun tetap aktif di luar tanggal cuti.";
         } else {
             $msg = "Status stylist diperbarui.";
         }
@@ -259,6 +271,16 @@ class OutletDashboardController extends Controller
             $stylist->status = 'inactive';
             $msg = "Permintaan aktivasi akun {$stylist->name} ditolak.";
         } elseif ($stylist->status === 'pending_inactive' || $stylist->status === 'pending_leave') {
+            $pendingLeave = \App\Domains\Stylist\Models\StylistLeave::where('stylist_id', $stylist->id)
+                ->where('status', 'pending')
+                ->latest()
+                ->first();
+                
+            if ($pendingLeave) {
+                $pendingLeave->status = 'rejected';
+                $pendingLeave->save();
+            }
+
             $stylist->status = 'active';
             $msg = "Permintaan cuti {$stylist->name} ditolak.";
         } else {
