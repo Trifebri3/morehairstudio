@@ -29,6 +29,17 @@ class AvailabilityService
             return []; // Stylist is explicitly set to not working on this day
         }
 
+        // Check if Stylist is on leave
+        $isOnLeave = \App\Domains\Stylist\Models\StylistLeave::where('stylist_id', $stylistId)
+            ->where('status', 'approved')
+            ->whereDate('start_date', '<=', $dateString)
+            ->whereDate('end_date', '>=', $dateString)
+            ->exists();
+
+        if ($isOnLeave) {
+            return []; // Stylist is on leave on this day
+        }
+
         // Get Service price and duration (from outlet overrides or fallback default)
         $outletService = DB::table('outlet_services')
             ->where('outlet_id', $outletId)
@@ -191,6 +202,17 @@ class AvailabilityService
         $schedule = $stylist->schedules->first();
         if (!$schedule || !$schedule->is_working) {
             return ['available' => false, 'message' => "Stylist {$stylist->name} tidak bertugas pada hari yang dipilih."];
+        }
+
+        // Check if Stylist is on leave
+        $isOnLeave = \App\Domains\Stylist\Models\StylistLeave::where('stylist_id', $stylistId)
+            ->where('status', 'approved')
+            ->whereDate('start_date', '<=', $dateString)
+            ->whereDate('end_date', '>=', $dateString)
+            ->exists();
+
+        if ($isOnLeave) {
+            return ['available' => false, 'message' => "Stylist {$stylist->name} sedang cuti pada tanggal tersebut."];
         }
 
         // Resolve service duration

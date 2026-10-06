@@ -1,4 +1,4 @@
-﻿@extends('layouts.public')
+@extends('layouts.public')
 
 @section('title', $stylist->name . ' - ' . ($stylist->specialization ?? 'Hair Artist') . ' | MORE Hair Studio')
 @section('meta_description', 'Profil resmi Hair Artist ' . $stylist->name . ' di MORE Hair Studio Bandung. Lihat portofolio, jadwal kerja, daftar tarif, dan pesan jadwal langsung tanpa antre.')
@@ -251,11 +251,11 @@
                                     {{ $dayName }}
                                 </span>
                                 @if($isWork)
-                                    <span class="font-mono text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+                                    <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
                                         {{ $startTime }} - {{ $endTime }} WIB
                                     </span>
                                 @else
-                                    <span class="font-mono text-[11px] text-stone-400 bg-stone-50 px-2 py-0.5 rounded-md">
+                                    <span class="text-[11px] text-stone-400 bg-stone-50 px-2 py-0.5 rounded-md">
                                         Libur
                                     </span>
                                 @endif

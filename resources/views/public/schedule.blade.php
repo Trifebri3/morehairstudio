@@ -1,4 +1,4 @@
-﻿@extends('layouts.public')
+@extends('layouts.public')
 
 @section('title', 'Cek Kalender & Jadwal Stylist | MORE Hair Studio')
 @section('meta_description', 'Periksa ketersediaan jam booking seluruh hairstylist MORE Hair Studio secara transparan per tanggal.')
@@ -210,7 +210,7 @@
                                     <div class="flex items-center gap-2 flex-wrap">
                                         <span class="text-stone-400 font-medium text-[11px]">Sesi Terisi:</span>
                                         <template x-for="(b, idx) in getBookedIntervals(stylist.id)" :key="idx">
-                                            <span class="px-2.5 py-1 rounded-md bg-stone-100 text-stone-800 font-mono text-[11px] font-bold"
+                                            <span class="px-2.5 py-1 rounded-md bg-stone-100 text-stone-800 text-[11px] font-bold"
                                                   x-text="b.start + ' - ' + b.end + ' WIB'"></span>
                                         </template>
                                     </div>

@@ -553,7 +553,7 @@
         }
 
         /* ── Core: crossfade navigate ── */
-        async function navigate(url, pushState = true) {
+        async function navigate(url, pushState = true, fetchOptions = null) {
             if (isNavigating) return;
             const wrapper = document.getElementById('page-content');
             if (!wrapper) { window.location.href = url; return; }
@@ -562,11 +562,14 @@
             loaderStart();
 
             try {
-                /* Fetch new page */
-                const res = await fetch(url, {
+                const options = fetchOptions || {
                     headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' },
                     credentials: 'same-origin'
-                });
+                };
+
+                const res = await fetch(url, options);
+                const finalUrl = res.url || url; // handle redirects
+
                 if (!res.ok) throw new Error('HTTP ' + res.status);
 
                 const html  = await res.text();
@@ -608,9 +611,11 @@
                 wrapper.style.overflow  = '';
 
                 /* Update URL, title, dock */
-                if (pushState) history.pushState({ url }, '', url);
+                if (pushState && (!fetchOptions || fetchOptions.method === 'GET' || finalUrl !== url)) {
+                    history.pushState({ url: finalUrl }, '', finalUrl);
+                }
                 document.title = extractTitle(doc);
-                updateDock(url);
+                updateDock(finalUrl);
 
                 /* Re-init content */
                 reinitScripts(wrapper);
@@ -621,7 +626,7 @@
 
             } catch (err) {
                 console.warn('[SPA] Fallback:', err);
-                window.location.href = url;
+                if (!fetchOptions) window.location.href = url;
             } finally {
                 isNavigating = false;
             }
@@ -643,6 +648,52 @@
             } catch { return; }
             e.preventDefault();
             navigate(href);
+        });
+
+        /* ── Intercept form submissions ── */
+        document.addEventListener('submit', function(e) {
+            const form = e.target.closest('form');
+            if (!form || form.hasAttribute('data-no-spa')) return;
+            
+            try {
+                const action = form.getAttribute('action') || location.href;
+                if (new URL(action, location.origin).origin !== location.origin) return;
+            } catch { return; }
+
+            e.preventDefault();
+            
+            const action = form.getAttribute('action') || location.href;
+            const method = (form.getAttribute('method') || 'GET').toUpperCase();
+            const formData = new FormData(form);
+            
+            let fetchUrl = action;
+            let options = {
+                method: method,
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' },
+                credentials: 'same-origin'
+            };
+
+            if (method === 'GET') {
+                const params = new URLSearchParams(formData);
+                const separator = fetchUrl.includes('?') ? '&' : '?';
+                fetchUrl += separator + params.toString();
+            } else {
+                options.body = formData;
+            }
+
+            // Provide a subtle loading feedback on the submit button itself
+            const btn = form.querySelector('[type="submit"], button:not([type="button"])');
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+            }
+
+            navigate(fetchUrl, true, options).finally(() => {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                }
+            });
         });
 
         /* ── Browser back/forward ── */

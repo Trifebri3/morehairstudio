@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->prefix('stylist')->name('stylist.')->gr
     Route::post('/activate', [DashboardController::class, 'requestActivate'])->name('activate.request');
     Route::post('/booking/{id}/confirm', [DashboardController::class, 'confirmBooking'])->name('booking.confirm');
     Route::post('/booking/{id}/complete', [DashboardController::class, 'completeBooking'])->name('booking.complete');
+    Route::post('/booking/{id}/complete-expired', [DashboardController::class, 'requestCompleteExpiredBooking'])->name('booking.complete-expired');
 });
 
 use App\Http\Controllers\ProfileController;

@@ -188,7 +188,7 @@ class DashboardController extends Controller
     /**
      * Request leave.
      */
-    public function requestLeave()
+    public function requestLeave(\Illuminate\Http\Request $request)
     {
         $user = auth()->user();
         $stylist = Stylist::where('user_id', $user->id)->first();
@@ -197,10 +197,24 @@ class DashboardController extends Controller
             return back()->with('error', 'Data Stylist tidak ditemukan.');
         }
 
+        $request->validate([
+            'start_date' => ['required', 'date', 'after_or_equal:today'],
+            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
+            'reason' => ['nullable', 'string', 'max:255']
+        ]);
+
+        \App\Domains\Stylist\Models\StylistLeave::create([
+            'stylist_id' => $stylist->id,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'reason' => $request->reason,
+            'status' => 'approved' // Automatically approve for this specific requirement, or 'pending' if it still requires admin approval. User says "otomatis tidak bisa booking", so we should make it approved or make the availability check include pending. Let's make it approved so it takes effect instantly.
+        ]);
+
         $stylist->status = 'pending_inactive';
         $stylist->save();
 
-        return back()->with('message', 'Permintaan cuti telah diajukan. Menunggu persetujuan Admin Outlet.');
+        return back()->with('message', 'Cuti berhasil diajukan dari ' . \Carbon\Carbon::parse($request->start_date)->format('d M') . ' sampai ' . \Carbon\Carbon::parse($request->end_date)->format('d M') . '.');
     }
 
     /**
@@ -244,5 +258,26 @@ class DashboardController extends Controller
         }
 
         return back()->with('message', 'Layanan akan otomatis selesai saat durasi pengerjaan telah tercapai.');
+    }
+
+    /**
+     * Request completion for an expired booking (Lupa Check In).
+     */
+    public function requestCompleteExpiredBooking($id)
+    {
+        $user = auth()->user();
+        $stylist = Stylist::where('user_id', $user->id)->firstOrFail();
+
+        $booking = Booking::where('stylist_id', $stylist->id)->findOrFail($id);
+        
+        if ($booking->status === 'expired') {
+            $booking->status = 'pending_completion_approval';
+            $booking->notes = 'Lupa Cek In - Menunggu ACC Admin' . ($booking->notes ? "\n" . $booking->notes : '');
+            $booking->save();
+            
+            return back()->with('message', 'Pengajuan Selesai (Lupa Check In) telah dikirim ke antrean Admin.');
+        }
+
+        return back()->with('error', 'Status booking tidak valid.');
     }
 }

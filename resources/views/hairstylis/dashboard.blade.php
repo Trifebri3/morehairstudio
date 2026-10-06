@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('page_title')
     Dasbor Hairstylist
@@ -127,10 +127,20 @@
 
                         <div class="pt-2">
                             @if ($stylist->status === 'active')
-                                <form method="POST" action="{{ route('stylist.leave.request') }}">
+                                <form method="POST" action="{{ route('stylist.leave.request') }}" class="space-y-3">
                                     @csrf
-                                    <button type="submit" class="w-full text-center justify-center inline-flex items-center px-4 py-2.5 bg-rose-50 border border-rose-200 rounded-xl font-bold text-xs text-rose-700 hover:bg-rose-100 transition shadow-sm">
-                                        Ajukan Cuti / Nonaktif
+                                    <div class="grid grid-cols-2 gap-2">
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-stone-500 mb-1">Mulai Cuti</label>
+                                            <input type="date" name="start_date" required class="w-full text-xs border-stone-200 focus:border-rose-300 focus:ring-rose-200 rounded-xl shadow-sm px-2.5 py-1.5" min="{{ date('Y-m-d') }}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-[10px] font-bold text-stone-500 mb-1">Selesai Cuti</label>
+                                            <input type="date" name="end_date" required class="w-full text-xs border-stone-200 focus:border-rose-300 focus:ring-rose-200 rounded-xl shadow-sm px-2.5 py-1.5" min="{{ date('Y-m-d') }}">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="w-full text-center justify-center inline-flex items-center px-4 py-2.5 bg-rose-50 border border-rose-200 rounded-xl font-bold text-xs text-rose-700 hover:bg-rose-100 transition shadow-sm mt-2">
+                                        Ajukan Jadwal Cuti
                                     </button>
                                 </form>
                             @elseif ($stylist->status === 'inactive')
@@ -260,9 +270,24 @@
                                                     Batal
                                                 </span>
                                             @elseif ($booking->status === 'expired')
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-rose-50 text-rose-600 border border-rose-200 uppercase tracking-wider">
-                                                    Kedaluwarsa
-                                                </span>
+                                                <div class="flex flex-col items-end space-y-1">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-rose-50 text-rose-600 border border-rose-200 uppercase tracking-wider">
+                                                        Kedaluwarsa
+                                                    </span>
+                                                    <form method="POST" action="{{ route('stylist.booking.complete-expired', $booking->id) }}">
+                                                        @csrf
+                                                        <button type="submit" onclick="return confirm('Ajukan penyelesaian pesanan karena Anda lupa check-in pelanggan? (Perlu persetujuan Admin)')" class="text-[9px] font-bold text-blue-600 hover:text-blue-800 underline uppercase tracking-wider mt-1">
+                                                            Ajukan Selesai (Lupa Cek In)
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            @elseif ($booking->status === 'pending_completion_approval')
+                                                <div class="flex flex-col items-end space-y-1">
+                                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-amber-50 text-amber-700 border border-amber-200 uppercase tracking-wider">
+                                                        Menunggu ACC Admin
+                                                    </span>
+                                                    <span class="text-[9px] text-stone-500 font-bold uppercase">Lupa Cek In</span>
+                                                </div>
                                             @else
                                                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xxs font-extrabold bg-stone-100 text-stone-600 border border-stone-200 uppercase tracking-wider">
                                                     {{ ucfirst($booking->status) }}
