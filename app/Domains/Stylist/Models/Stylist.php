@@ -74,4 +74,9 @@ class Stylist extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function leaves()
+    {
+        return $this->hasMany(StylistLeave::class);
+    }
 }

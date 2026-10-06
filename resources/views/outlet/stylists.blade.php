@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('page_title')
     Outlet Stylists Directory
@@ -29,9 +29,26 @@
                         </div>
                     </div>
 
-                    <p class="text-stone-500 text-[11px] leading-relaxed italic truncate-2-lines">
-                        {{ $stylist->bio ?? 'No bio provided.' }}
-                    </p>
+                    <div class="space-y-2">
+                        <p class="text-stone-500 text-[11px] leading-relaxed italic truncate-2-lines">
+                            {{ $stylist->bio ?? 'No bio provided.' }}
+                        </p>
+                        
+                        @if($stylist->leaves && $stylist->leaves->isNotEmpty())
+                            <div class="space-y-1.5">
+                                @foreach($stylist->leaves as $leave)
+                                    <div class="flex items-center justify-between px-2.5 py-1.5 rounded-lg border {{ $leave->status === 'approved' ? 'bg-rose-50 border-rose-200 text-rose-800' : 'bg-amber-50 border-amber-200 text-amber-800' }}">
+                                        <span class="text-[10px] font-bold uppercase tracking-wider">
+                                            {{ $leave->status === 'approved' ? 'Cuti Disetujui' : 'Pengajuan Cuti' }}
+                                        </span>
+                                        <span class="text-[10px] font-mono font-semibold">
+                                            {{ \Carbon\Carbon::parse($leave->start_date)->format('d M y') }} - {{ \Carbon\Carbon::parse($leave->end_date)->format('d M y') }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
 
                     <div class="pt-4 border-t border-stone-100 flex justify-between items-center">
                         @if(in_array($stylist->status, ['pending_active', 'pending_inactive', 'pending_leave']))

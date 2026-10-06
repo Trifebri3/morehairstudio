@@ -215,6 +215,11 @@ class OutletDashboardController extends Controller
 
         $stylists = Stylist::where('outlet_id', $outletId)
             ->where('name', 'like', '%' . $search . '%')
+            ->with(['leaves' => function($q) {
+                $q->where('end_date', '>=', \Carbon\Carbon::today()->toDateString())
+                  ->whereIn('status', ['pending', 'approved'])
+                  ->orderBy('start_date', 'asc');
+            }])
             ->get();
 
         return view('outlet.stylists', compact('stylists', 'search'));
