@@ -26,6 +26,8 @@
                     <option value="in_progress" {{ $statusFilter === 'in_progress' ? 'selected' : '' }}>In Progress</option>
                     <option value="completed" {{ $statusFilter === 'completed' ? 'selected' : '' }}>Completed</option>
                     <option value="cancelled" {{ $statusFilter === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                    <option value="expired" {{ $statusFilter === 'expired' ? 'selected' : '' }}>Expired</option>
+                    <option value="pending_completion_approval" {{ $statusFilter === 'pending_completion_approval' ? 'selected' : '' }}>Lupa Cek In (Minta ACC)</option>
                 </x-ui.select>
             </div>
         </form>
@@ -60,11 +62,12 @@
                                 <span class="font-mono text-stone-500 block mt-0.5">{{ substr($booking->booking_time, 0, 5) }}</span>
                             </td>
                             <td class="py-3 px-4 text-center">
-                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase 
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide
                                     @if($booking->status === 'completed') bg-emerald-50 text-emerald-700 border border-emerald-100
-                                    @elseif($booking->status === 'cancelled') bg-stone-100 text-stone-500 border border-stone-200
+                                    @elseif($booking->status === 'cancelled' || $booking->status === 'expired') bg-stone-100 text-stone-500 border border-stone-200
+                                    @elseif($booking->status === 'pending_completion_approval') bg-amber-50 text-amber-700 border border-amber-200
                                     @else bg-blue-50 text-blue-700 border border-blue-100 @endif">
-                                    {{ str_replace('_', ' ', $booking->status) }}
+                                    {{ $booking->status === 'pending_completion_approval' ? 'Minta ACC Selesai' : str_replace('_', ' ', $booking->status) }}
                                 </span>
                             </td>
                             <td class="py-3 px-4 text-right">
@@ -97,7 +100,14 @@
                                             <button type="submit" class="px-2.5 py-1.5 border border-stone-200 bg-white text-stone-700 hover:bg-stone-50 rounded-lg text-xxs font-bold transition">Complete</button>
                                         </form>
                                     @endif
-                                    @if(!in_array($booking->status, ['completed', 'cancelled']))
+                                    @if($booking->status === 'pending_completion_approval')
+                                        <form method="POST" action="{{ route('outlet.bookings.status', $booking->id) }}" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="status" value="completed">
+                                            <button type="submit" class="px-2.5 py-1.5 bg-amber-500 text-white hover:bg-amber-600 rounded-lg text-xxs font-bold shadow-sm transition tracking-wide uppercase">ACC Selesai</button>
+                                        </form>
+                                    @endif
+                                    @if(!in_array($booking->status, ['completed', 'cancelled', 'expired', 'pending_completion_approval']))
                                         <form method="POST" action="{{ route('outlet.bookings.status', $booking->id) }}" class="inline">
                                             @csrf
                                             <input type="hidden" name="status" value="cancelled">
