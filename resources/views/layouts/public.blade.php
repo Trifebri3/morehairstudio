@@ -191,15 +191,37 @@
             <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
             <span>Beranda</span>
         </a>
-        <a href="{{ route('services.index') }}" class="flex flex-col items-center justify-center flex-1 py-1 text-[9px] uppercase font-bold {{ Route::currentRouteName() === 'services.index' ? 'text-[#c9512d]' : 'text-stone-500 hover:text-stone-800' }} transition min-w-[50px]">
-            <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879a3 3 0 11-4.242-4.242 3 3 0 014.242 0M12 12L9.121 9.121m0 0A3 3 0 104.879 4.879a3 3 0 004.242 4.242z"/></svg>
-            <span>Layanan</span>
-        </a>
-        
-        <a href="{{ route('schedule.index') }}" class="flex flex-col items-center justify-center flex-1 py-1 text-[9px] uppercase font-bold {{ Route::currentRouteName() === 'schedule.index' ? 'text-[#c9512d]' : 'text-stone-500 hover:text-stone-800' }} transition min-w-[50px]">
-            <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span>Jadwal</span>
-        </a>
+        <!-- Layanan & Jadwal Dropup -->
+        <div x-data="{ open: false }" class="relative flex-1 flex justify-center min-w-[50px]">
+            <button @click="open = !open" @click.away="open = false" type="button" class="flex flex-col items-center justify-center w-full py-1 text-[9px] uppercase font-bold {{ in_array(Route::currentRouteName(), ['services.index', 'schedule.index']) ? 'text-[#c9512d]' : 'text-stone-500 hover:text-stone-800' }} transition outline-none">
+                <svg class="w-4 h-4 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                <span>Layanan</span>
+            </button>
+            
+            <!-- Dropup Menu -->
+            <div x-show="open" 
+                 x-transition:enter="transition ease-out duration-200" 
+                 x-transition:enter-start="opacity-0 translate-y-4 scale-95" 
+                 x-transition:enter-end="opacity-100 translate-y-0 scale-100" 
+                 x-transition:leave="transition ease-in duration-150" 
+                 x-transition:leave-start="opacity-100 translate-y-0 scale-100" 
+                 x-transition:leave-end="opacity-0 translate-y-4 scale-95" 
+                 class="absolute bottom-full mb-4 left-1/2 -translate-x-1/2 w-48 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-stone-200 overflow-hidden flex flex-col p-1.5 z-[60]"
+                 style="display: none;">
+                <a href="{{ route('services.index') }}" class="flex items-center px-4 py-3.5 text-xs font-bold text-stone-700 hover:bg-stone-50 hover:text-[#c9512d] transition rounded-xl">
+                    <div class="p-1.5 bg-stone-100 rounded-lg mr-3 text-stone-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879a3 3 0 11-4.242-4.242 3 3 0 014.242 0M12 12L9.121 9.121m0 0A3 3 0 104.879 4.879a3 3 0 004.242 4.242z"/></svg>
+                    </div>
+                    Daftar Layanan
+                </a>
+                <a href="{{ route('schedule.index') }}" class="flex items-center px-4 py-3.5 text-xs font-bold text-stone-700 hover:bg-stone-50 hover:text-[#c9512d] transition rounded-xl mt-1">
+                    <div class="p-1.5 bg-stone-100 rounded-lg mr-3 text-stone-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    </div>
+                    Cek Jadwal
+                </a>
+            </div>
+        </div>
 
         <!-- Prominent Booking Button in Center -->
         <a href="{{ route('booking.index') }}" class="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-[#c9512d] hover:bg-[#b74423] text-white text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider shadow-sm transition mx-0.5 sm:mx-1 flex-shrink-0">
