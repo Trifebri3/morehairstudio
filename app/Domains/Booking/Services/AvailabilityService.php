@@ -32,8 +32,8 @@ class AvailabilityService
         // Check if Stylist is on leave
         $isOnLeave = \App\Domains\Stylist\Models\StylistLeave::where('stylist_id', $stylistId)
             ->where('status', 'approved')
-            ->whereDate('start_date', '<=', $dateString)
-            ->whereDate('end_date', '>=', $dateString)
+            ->where('start_date', '<=', $dateString)
+            ->where('end_date', '>=', $dateString)
             ->exists();
 
         if ($isOnLeave) {
@@ -207,8 +207,8 @@ class AvailabilityService
         // Check if Stylist is on leave
         $isOnLeave = \App\Domains\Stylist\Models\StylistLeave::where('stylist_id', $stylistId)
             ->where('status', 'approved')
-            ->whereDate('start_date', '<=', $dateString)
-            ->whereDate('end_date', '>=', $dateString)
+            ->where('start_date', '<=', $dateString)
+            ->where('end_date', '>=', $dateString)
             ->exists();
 
         if ($isOnLeave) {
