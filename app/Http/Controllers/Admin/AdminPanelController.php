@@ -226,8 +226,8 @@ class AdminPanelController extends Controller
             \App\Domains\Stylist\Models\StylistSchedule::create([
                 'stylist_id' => $newStylist->id,
                 'day_of_week' => $day,
-                'start_time' => '10:00:00',
-                'end_time' => '20:00:00',
+                'start_time' => '09:00:00',
+                'end_time' => '21:00:00',
                 'break_start' => null,
                 'break_end' => null,
                 'is_working' => true,

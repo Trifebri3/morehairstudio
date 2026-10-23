@@ -173,9 +173,10 @@ class BookingController extends Controller
                 ->where('day_of_week', $dayOfWeek)
                 ->first();
 
-            $isWorking = (!$isOnLeave) && ($schedule ? (bool)$schedule->is_working : $isOutletOpen);
-            $startTime = ($schedule && $schedule->start_time) ? substr($schedule->start_time, 0, 5) : $defaultOpen;
-            $endTime = ($schedule && $schedule->end_time) ? substr($schedule->end_time, 0, 5) : $defaultClose;
+            $isWorking = (!$isOnLeave) && $isOutletOpen && ($schedule ? (bool)$schedule->is_working : true);
+            // Jam operasional setiap stylist otomatis mengikuti jam operasional outlet pada hari tersebut
+            $startTime = $defaultOpen;
+            $endTime = $defaultClose;
 
             $workingHours[$stylist->id] = [
                 'is_working' => $isWorking,

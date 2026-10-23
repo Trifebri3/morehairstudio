@@ -119,20 +119,8 @@ class CreateBooking
                 ->where('day_of_week', $bookingDate->dayOfWeek)
                 ->first();
 
-            if ($stylistSchedule) {
-                if (!$stylistSchedule->is_working) {
-                    throw new BookingUnavailableException("Stylist tidak bertugas pada hari yang dipilih.");
-                }
-                if ($stylistSchedule->start_time && $stylistSchedule->end_time) {
-                    $sStart = substr($stylistSchedule->start_time, 0, 5);
-                    $sEnd = substr($stylistSchedule->end_time, 0, 5);
-                    $sEndCarbon = Carbon::createFromFormat('H:i', $sEnd);
-                    $latestStylistOrder = $sEndCarbon->copy()->subMinutes(45)->format('H:i');
-
-                    if ($timeString < $sStart || $timeString > $latestStylistOrder) {
-                        throw new BookingUnavailableException("Jam operasional stylist adalah {$sStart} - {$sEnd} WIB. Order memerlukan sisa waktu minimal 45 menit sebelum selesai bertugas (order terakhir maksimal jam {$latestStylistOrder} WIB).");
-                    }
-                }
+            if ($stylistSchedule && !$stylistSchedule->is_working) {
+                throw new BookingUnavailableException("Stylist tidak bertugas pada hari yang dipilih.");
             }
 
             // Stylist leave validation (jika sedang cuti/libur, booking ditolak)

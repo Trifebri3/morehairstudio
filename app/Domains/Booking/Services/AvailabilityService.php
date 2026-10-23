@@ -79,23 +79,9 @@ class AvailabilityService
         $outletCloseParts = explode(':', $defaultClose);
         $outletCloseMin = ((int)$outletCloseParts[0] * 60) + (int)($outletCloseParts[1] ?? 0);
 
-        if ($schedule && $schedule->start_time) {
-            $sParts = explode(':', $schedule->start_time);
-            $stylistStartMin = ((int)$sParts[0] * 60) + (int)($sParts[1] ?? 0);
-        } else {
-            $stylistStartMin = $outletOpenMin;
-        }
-
-        if ($schedule && $schedule->end_time) {
-            $eParts = explode(':', $schedule->end_time);
-            $stylistEndMin = ((int)$eParts[0] * 60) + (int)($eParts[1] ?? 0);
-        } else {
-            $stylistEndMin = $outletCloseMin;
-        }
-
-        // Available slots must strictly be within BOTH outlet hours and stylist working hours
-        $startMin = max($outletOpenMin, $stylistStartMin);
-        $endMin   = min($outletCloseMin, $stylistEndMin);
+        // Jam kerja setiap stylist otomatis mengikuti jam operasional outlet pada hari tersebut
+        $startMin = $outletOpenMin;
+        $endMin   = $outletCloseMin;
 
         if ($startMin >= $endMin) {
             return [];
