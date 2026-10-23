@@ -55,6 +55,58 @@
                     </div>
                 </div>
 
+                <!-- Jam Operasional per Hari -->
+                <div class="pt-4 border-t border-stone-100 space-y-3">
+                    <div>
+                        <h5 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider font-display">Jam Operasional per Hari</h5>
+                        <p class="text-stone-400 text-[10px]">Tentukan jam buka dan tutup atau hari libur operasional untuk masing-masing hari (misal Jumat buka 13:00 - 20:00).</p>
+                    </div>
+
+                    @php
+                        $days = [
+                            'monday'    => 'Senin',
+                            'tuesday'   => 'Selasa',
+                            'wednesday' => 'Rabu',
+                            'thursday'  => 'Kamis',
+                            'friday'    => 'Jumat',
+                            'saturday'  => 'Sabtu',
+                            'sunday'    => 'Minggu'
+                        ];
+                        $openingHours = ($editingOutlet && is_array($editingOutlet->opening_hours)) ? $editingOutlet->opening_hours : [];
+                    @endphp
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                        @foreach($days as $dayKey => $dayLabel)
+                            @php
+                                $dData = $openingHours[$dayKey] ?? ['is_open' => true, 'open' => '09:00', 'close' => '21:00'];
+                                $isOpen = old("opening_hours.{$dayKey}.is_open", $dData['is_open'] ?? true);
+                                $openTime = old("opening_hours.{$dayKey}.open", $dData['open'] ?? '09:00');
+                                $closeTime = old("opening_hours.{$dayKey}.close", $dData['close'] ?? '21:00');
+                            @endphp
+                            <div class="p-3 bg-stone-50/70 border border-stone-200 rounded-2xl space-y-2">
+                                <div class="flex items-center justify-between border-b border-stone-200/70 pb-2">
+                                    <span class="font-bold text-xs text-stone-800">{{ $dayLabel }}</span>
+                                    <label class="inline-flex items-center gap-1.5 cursor-pointer">
+                                        <input type="hidden" name="opening_hours[{{ $dayKey }}][is_open]" value="0">
+                                        <input type="checkbox" name="opening_hours[{{ $dayKey }}][is_open]" value="1" {{ $isOpen ? 'checked' : '' }} class="rounded border-stone-300 text-[#0A3D91] focus:ring-[#0A3D91]">
+                                        <span class="text-xxs font-bold text-stone-600">Buka</span>
+                                    </label>
+                                </div>
+                                <div class="grid grid-cols-2 gap-2 text-xxs">
+                                    <div>
+                                        <label class="block text-stone-400 mb-0.5">Buka</label>
+                                        <input type="time" name="opening_hours[{{ $dayKey }}][open]" value="{{ $openTime }}" class="w-full text-xs border-stone-200 focus:border-brand-500 rounded-lg p-1.5 font-mono">
+                                    </div>
+                                    <div>
+                                        <label class="block text-stone-400 mb-0.5">Tutup</label>
+                                        <input type="time" name="opening_hours[{{ $dayKey }}][close]" value="{{ $closeTime }}" class="w-full text-xs border-stone-200 focus:border-brand-500 rounded-lg p-1.5 font-mono">
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 <div class="flex justify-end space-x-3 pt-4 border-t border-stone-100">
                     <a href="{{ route('admin.outlets') }}" class="inline-flex items-center justify-center px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-800 font-bold rounded-xl text-xs transition border border-stone-200">Cancel</a>
                     <x-ui.button variant="primary" type="submit">Save Outlet</x-ui.button>

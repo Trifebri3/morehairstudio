@@ -2,8 +2,13 @@
     if (request()->has('tablet_outlet_id')) {
         session(['tablet_outlet_id' => (int) request()->query('tablet_outlet_id')]);
     }
-    $tabletOutletId = session('tablet_outlet_id', 2);
-    $tabletOutlet = \App\Domains\Outlet\Models\Outlet::find($tabletOutletId) ?? \App\Domains\Outlet\Models\Outlet::first();
+    $tabletOutletId = session('tablet_outlet_id');
+    $tabletOutlet = $tabletOutletId ? \App\Domains\Outlet\Models\Outlet::find($tabletOutletId) : null;
+    if (!$tabletOutlet) {
+        $tabletOutlet = \App\Domains\Outlet\Models\Outlet::first();
+        $tabletOutletId = $tabletOutlet ? $tabletOutlet->id : 1;
+        session(['tablet_outlet_id' => $tabletOutletId]);
+    }
     $tabletOutletName = $tabletOutlet ? $tabletOutlet->name : 'MORE Hair Studio';
     $allOutlets = \App\Domains\Outlet\Models\Outlet::where('status', 'active')->get();
 @endphp

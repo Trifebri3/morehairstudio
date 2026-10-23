@@ -20,10 +20,7 @@ class TabletKioskController extends Controller
 {
     public function dashboard(Request $request)
     {
-        if ($request->has('tablet_outlet_id')) {
-            session(['tablet_outlet_id' => (int)$request->query('tablet_outlet_id')]);
-        }
-        $tabletOutletId = session('tablet_outlet_id', 2);
+        $tabletOutletId = $this->getTabletOutletId($request);
         $outlet = Outlet::find($tabletOutletId) ?? Outlet::first();
 
         // Auto-complete any active treatments that reached their duration
@@ -56,7 +53,7 @@ class TabletKioskController extends Controller
 
     public function checkIn(Request $request)
     {
-        $tabletOutletId = session('tablet_outlet_id', 2);
+        $tabletOutletId = $this->getTabletOutletId($request);
         $searchQuery = $request->get('searchQuery', '');
         $uniqueCode = $request->get('unique_code', '');
         $booking = null;
@@ -222,7 +219,7 @@ class TabletKioskController extends Controller
         try {
             $booking = Booking::findOrFail($id);
             $checkIn = new CheckInBooking();
-            $tabletOutletId = session('tablet_outlet_id', 2);
+            $tabletOutletId = $this->getTabletOutletId($request);
             $checkIn->execute($booking, $tabletOutletId);
 
             $duration = $booking->service_duration_minutes ?? $booking->calculateServiceDuration();
@@ -241,7 +238,7 @@ class TabletKioskController extends Controller
 
     public function attendance(Request $request)
     {
-        $tabletOutletId = session('tablet_outlet_id', 1);
+        $tabletOutletId = $this->getTabletOutletId($request);
         $stylists = Stylist::where('outlet_id', $tabletOutletId)
             ->where('status', 'active')
             ->get();
@@ -267,7 +264,7 @@ class TabletKioskController extends Controller
         }
 
         $stylist = Stylist::findOrFail($id);
-        $outlet = $stylist->outlet ?? Outlet::find(session('tablet_outlet_id', 1));
+        $outlet = $stylist->outlet ?? Outlet::find($this->getTabletOutletId($request));
 
         // Attendance rules: Late if check-in is past outlet attendance_end_time (or default 09:00:00)
         $lateThreshold = ($outlet && $outlet->attendance_end_time) ? $outlet->attendance_end_time : '09:00:00';
@@ -312,7 +309,7 @@ class TabletKioskController extends Controller
 
     public function queue(Request $request)
     {
-        $tabletOutletId = session('tablet_outlet_id', 2);
+        $tabletOutletId = $this->getTabletOutletId($request);
         Booking::autoCompleteDueBookings($tabletOutletId);
         Booking::autoExpireNoShows($tabletOutletId);
 
@@ -331,7 +328,7 @@ class TabletKioskController extends Controller
      */
     public function queueData(Request $request)
     {
-        $tabletOutletId = session('tablet_outlet_id', 2);
+        $tabletOutletId = $this->getTabletOutletId($request);
         Booking::autoCompleteDueBookings($tabletOutletId);
         Booking::autoExpireNoShows($tabletOutletId);
 
@@ -355,8 +352,9 @@ class TabletKioskController extends Controller
             'service_end'   => $b->service_end_at?->format('H:i'),
             'progress'      => (int) ($b->service_progress_percentage ?? 0),
             'remaining'     => (int) ($b->remaining_service_minutes ?? 0),
-            'complete_url'  => route('tablet.queue.complete', $b->id),
-            'checkin_url'   => route('tablet.check-in', ['searchQuery' => $b->booking_code]),
+            'complete_url'       => route('tablet.queue.complete', $b->id),
+            'checkin_url'        => route('tablet.check-in', ['searchQuery' => $b->booking_code]),
+            'checkin_action_url' => route('tablet.queue.checkin', $b->id),
         ];
 
         return response()->json([
@@ -365,6 +363,39 @@ class TabletKioskController extends Controller
             'done'      => $bookings->where('status', 'completed')->values()->map($map),
             'ts'        => now()->format('H:i:s'),
         ]);
+    }
+
+    /**
+     * Direct 1-click check-in from Live Queue board (instant bypass without leaving page)
+     */
+    public function queueCheckIn(Request $request, $id)
+    {
+        try {
+            $booking = Booking::findOrFail($id);
+            $tabletOutletId = $this->getTabletOutletId($request);
+            $checkIn = new CheckInBooking();
+            $checkIn->execute($booking, $tabletOutletId);
+
+            $duration = $booking->service_duration_minutes ?? $booking->calculateServiceDuration();
+            $estEnd = $booking->service_end_at ? $booking->service_end_at->format('H:i') : '-';
+
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Check-in berhasil! Layanan {$booking->customer?->name} ({$booking->booking_code}) dimulai (est. selesai {$estEnd} WIB)."
+                ]);
+            }
+
+            return back()->with('message', "Check-in berhasil untuk booking: {$booking->booking_code}.");
+        } catch (\Exception $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 422);
+            }
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function startService(Request $request, $id)
@@ -386,11 +417,28 @@ class TabletKioskController extends Controller
 
     public function completeService(Request $request, $id)
     {
-        $booking = Booking::findOrFail($id);
-        $complete = new CompleteBooking();
-        $complete->execute($booking);
+        try {
+            $booking = Booking::findOrFail($id);
+            $complete = new CompleteBooking();
+            $complete->execute($booking);
 
-        return back()->with('message', "Treatment selesai! Booking {$booking->booking_code} ditandai completed.");
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => "Treatment selesai! Booking {$booking->booking_code} ditandai completed."
+                ]);
+            }
+
+            return back()->with('message', "Treatment selesai! Booking {$booking->booking_code} ditandai completed.");
+        } catch (\Exception $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 422);
+            }
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     public function styscreen(Request $request)
@@ -399,7 +447,7 @@ class TabletKioskController extends Controller
             return view('tablet.styscreen-login');
         }
 
-        $outletId = auth()->user()->outlet_id ?? session('tablet_outlet_id', 1);
+        $outletId = auth()->user()->outlet_id ?? $this->getTabletOutletId($request);
         $outlet = Outlet::find($outletId);
         $today = Carbon::today()->toDateString();
 
@@ -521,5 +569,26 @@ class TabletKioskController extends Controller
             return redirect()->route('tablet.styscreen', ['pay_booking_id' => $id])
                 ->with('error', $e->getMessage());
         }
+    }
+
+    /**
+     * Get the active outlet ID for tablet kiosk.
+     * Validates that the session outlet ID actually exists in database;
+     * falls back to the first available outlet if invalid or unset.
+     */
+    protected function getTabletOutletId(?Request $request = null): int
+    {
+        if ($request && $request->has('tablet_outlet_id')) {
+            session(['tablet_outlet_id' => (int) $request->query('tablet_outlet_id')]);
+        }
+
+        $outletId = session('tablet_outlet_id');
+        if (!$outletId || !Outlet::where('id', $outletId)->exists()) {
+            $firstOutlet = Outlet::first();
+            $outletId = $firstOutlet ? $firstOutlet->id : 1;
+            session(['tablet_outlet_id' => $outletId]);
+        }
+
+        return (int) $outletId;
     }
 }

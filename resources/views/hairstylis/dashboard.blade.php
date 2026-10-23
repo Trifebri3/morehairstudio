@@ -104,57 +104,90 @@
                         </a>
                     </div>
 
-                    <!-- Leave and Activation Status Control -->
+                    <!-- Multi-date Instant Leave Blocking Control -->
                     <div class="glass-panel p-6 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-4">
-                        <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider border-b border-stone-100 pb-3 font-display">Status Kehadiran & Cuti</h4>
-                        
-                        <div class="flex items-center justify-between py-2">
-                            <span class="text-xs text-stone-500">Status Akun Saat Ini:</span>
-                            @if ($stylist->status === 'active')
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xxs font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">Aktif</span>
-                            @elseif ($stylist->status === 'inactive')
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xxs font-extrabold bg-stone-100 text-stone-600 border border-stone-200 uppercase tracking-wider">Cuti / Nonaktif</span>
-                            @elseif ($stylist->status === 'pending_inactive' || $stylist->status === 'pending_leave')
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xxs font-extrabold bg-amber-50 text-amber-700 border border-amber-200 uppercase tracking-wider">Pending Cuti</span>
-                            @elseif ($stylist->status === 'pending_active')
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xxs font-extrabold bg-amber-50 text-amber-700 border border-amber-200 uppercase tracking-wider">Pending Aktif</span>
-                            @endif
+                        <div class="border-b border-stone-100 pb-3 flex items-center justify-between">
+                            <div>
+                                <h4 class="font-extrabold text-stone-900 text-xs uppercase tracking-wider font-display">Blokir Tanggal Cuti & Libur</h4>
+                                <p class="text-[10px] text-stone-400 mt-0.5">Langsung aktif tanpa perlu pengajuan/approval admin.</p>
+                            </div>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 uppercase tracking-wider">
+                                Auto-Active
+                            </span>
                         </div>
 
-                        <p class="text-xxs text-stone-400 leading-relaxed italic">
-                            *Jika status Anda "Cuti" atau "Pending", nama Anda tidak akan muncul pada daftar pemesanan pelanggan untuk menghindari salah jadwal.
+                        <p class="text-xxs text-stone-500 leading-relaxed">
+                            Tandai tanggal libur Anda dari jauh-jauh hari. Pada tanggal yang diblokir, nama Anda otomatis <strong>tidak dapat dipilih / dibooking</strong> oleh pelanggan. Di luar tanggal tersebut, Anda tetap aktif seperti biasa.
                         </p>
 
-                        <div class="pt-2">
-                            @if ($stylist->status === 'active')
-                                <form method="POST" action="{{ route('stylist.leave.request') }}" class="space-y-3">
-                                    @csrf
-                                    <div class="grid grid-cols-2 gap-2">
-                                        <div>
-                                            <label class="block text-[10px] font-bold text-stone-500 mb-1">Mulai Cuti</label>
-                                            <input type="date" name="start_date" required class="w-full text-xs border-stone-200 focus:border-rose-300 focus:ring-rose-200 rounded-xl shadow-sm px-2.5 py-1.5" min="{{ date('Y-m-d') }}">
+                        <!-- Form Tambah Blokir Cuti -->
+                        <form method="POST" action="{{ route('stylist.leave.request') }}" class="space-y-3 pt-1">
+                            @csrf
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-stone-500 mb-1">Mulai Cuti</label>
+                                    <input type="date" name="start_date" required class="w-full text-xs border-stone-200 focus:border-rose-400 focus:ring-rose-200 rounded-xl shadow-2xs px-2.5 py-1.5 font-medium" min="{{ date('Y-m-d') }}">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-stone-500 mb-1">Selesai Cuti</label>
+                                    <input type="date" name="end_date" required class="w-full text-xs border-stone-200 focus:border-rose-400 focus:ring-rose-200 rounded-xl shadow-2xs px-2.5 py-1.5 font-medium" min="{{ date('Y-m-d') }}">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-stone-500 mb-1">Alasan / Keterangan (Opsional)</label>
+                                <input type="text" name="reason" placeholder="Contoh: Acara keluarga, istirahat, liburan..." class="w-full text-xs border-stone-200 focus:border-rose-400 focus:ring-rose-200 rounded-xl shadow-2xs px-2.5 py-1.5 font-medium">
+                            </div>
+                            <button type="submit" class="w-full text-center justify-center inline-flex items-center gap-1.5 px-4 py-2.5 bg-rose-600 hover:bg-rose-700 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-xl transition shadow-xs cursor-pointer">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                Blokir Tanggal Ini (Langsung Aktif)
+                            </button>
+                        </form>
+
+                        <!-- List Tanggal Cuti yang Sedang Diblokir -->
+                        <div class="pt-3 border-t border-stone-100 space-y-2">
+                            <div class="flex items-center justify-between text-[11px] font-bold text-stone-700">
+                                <span>Jadwal Libur Terdaftar</span>
+                                <span class="text-xxs font-mono bg-stone-100 text-stone-600 px-2 py-0.5 rounded-full">{{ isset($leaves) ? $leaves->count() : 0 }} Jadwal</span>
+                            </div>
+
+                            <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                                @if(isset($leaves) && $leaves->isNotEmpty())
+                                    @foreach($leaves as $leave)
+                                        @php
+                                            $sDate = \Carbon\Carbon::parse($leave->start_date);
+                                            $eDate = \Carbon\Carbon::parse($leave->end_date);
+                                            $totalDays = $sDate->diffInDays($eDate) + 1;
+                                        @endphp
+                                        <div class="p-2.5 bg-rose-50/60 border border-rose-200 rounded-xl flex items-center justify-between gap-2 text-xs">
+                                            <div class="min-w-0">
+                                                <div class="flex items-center gap-1.5 font-bold text-stone-900 text-xxs sm:text-xs">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                                    <span>{{ $sDate->format('d M Y') }}</span>
+                                                    @if($leave->start_date != $leave->end_date)
+                                                        <span>– {{ $eDate->format('d M Y') }}</span>
+                                                    @endif
+                                                    <span class="text-[9px] font-mono font-bold text-rose-700 bg-rose-100 px-1.5 py-0.2 rounded">({{ $totalDays }} Hari)</span>
+                                                </div>
+                                                @if($leave->reason)
+                                                    <p class="text-[10px] text-stone-500 truncate mt-0.5">{{ $leave->reason }}</p>
+                                                @endif
+                                            </div>
+                                            <form method="POST" action="{{ route('stylist.leave.destroy', $leave->id) }}" onsubmit="return confirm('Batalkan blokir tanggal ini? Pelanggan akan dapat membooking Anda kembali.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-stone-400 hover:text-rose-600 p-1.5 hover:bg-rose-100/60 rounded-lg transition" title="Batalkan / Hapus Blokir">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                </button>
+                                            </form>
                                         </div>
-                                        <div>
-                                            <label class="block text-[10px] font-bold text-stone-500 mb-1">Selesai Cuti</label>
-                                            <input type="date" name="end_date" required class="w-full text-xs border-stone-200 focus:border-rose-300 focus:ring-rose-200 rounded-xl shadow-sm px-2.5 py-1.5" min="{{ date('Y-m-d') }}">
-                                        </div>
+                                    @endforeach
+                                @else
+                                    <div class="py-4 text-center text-stone-400 border border-dashed border-stone-200 rounded-xl">
+                                        <p class="text-xxs font-medium">Belum ada tanggal libur yang diblokir.</p>
+                                        <p class="text-[10px] text-stone-400 mt-0.5">Anda tersedia di semua jadwal operasional.</p>
                                     </div>
-                                    <button type="submit" class="w-full text-center justify-center inline-flex items-center px-4 py-2.5 bg-rose-50 border border-rose-200 rounded-xl font-bold text-xs text-rose-700 hover:bg-rose-100 transition shadow-sm mt-2">
-                                        Ajukan Jadwal Cuti
-                                    </button>
-                                </form>
-                            @elseif ($stylist->status === 'inactive')
-                                <form method="POST" action="{{ route('stylist.activate.request') }}">
-                                    @csrf
-                                    <button type="submit" class="w-full text-center justify-center inline-flex items-center px-4 py-2.5 bg-emerald-50 border border-emerald-200 rounded-xl font-bold text-xs text-emerald-700 hover:bg-emerald-100 transition shadow-sm">
-                                        Ajukan Aktif Kembali
-                                    </button>
-                                </form>
-                            @else
-                                <button disabled class="w-full text-center justify-center inline-flex items-center px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl font-bold text-xs text-stone-400 cursor-not-allowed shadow-inner">
-                                    Menunggu Persetujuan Admin...
-                                </button>
-                            @endif
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

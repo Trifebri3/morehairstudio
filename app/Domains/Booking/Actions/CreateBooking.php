@@ -84,6 +84,79 @@ class CreateBooking
             $startTime = Carbon::createFromFormat('H:i', $timeString);
             $endTime = $startTime->copy()->addMinutes($duration);
 
+            // 3.1. Outlet operating hours validation for the selected day
+            $outlet = Outlet::find($outletId);
+            $bookingDate = Carbon::parse($dateString);
+            $dayName = strtolower($bookingDate->format('l'));
+            $outletHours = ($outlet && isset($outlet->opening_hours[$dayName])) ? $outlet->opening_hours[$dayName] : null;
+
+            if ($outletHours) {
+                $isOpen = (bool)($outletHours['is_open'] ?? true);
+                $dayTranslations = [
+                    'monday' => 'Senin', 'tuesday' => 'Selasa', 'wednesday' => 'Rabu',
+                    'thursday' => 'Kamis', 'friday' => 'Jumat', 'saturday' => 'Sabtu', 'sunday' => 'Minggu'
+                ];
+                $dayLabel = $dayTranslations[$dayName] ?? ucfirst($dayName);
+
+                if (!$isOpen) {
+                    throw new BookingUnavailableException("Outlet tutup pada hari {$dayLabel}. Silakan pilih hari operasional lainnya.");
+                }
+
+                $outletOpen = $outletHours['open'] ?? '09:00';
+                $outletClose = $outletHours['close'] ?? '21:00';
+                $outletCloseCarbon = Carbon::createFromFormat('H:i', $outletClose);
+                $latestOutletOrder = $outletCloseCarbon->copy()->subMinutes(45)->format('H:i');
+
+                // Jam tutup outlet memiliki toleransi sisa waktu minimal 45 menit sebelum tutup
+                if ($timeString < $outletOpen || $timeString > $latestOutletOrder) {
+                    throw new BookingUnavailableException("Jam operasional outlet pada hari {$dayLabel} adalah {$outletOpen} - {$outletClose} WIB. Order memerlukan sisa waktu minimal 45 menit sebelum tutup (order terakhir maksimal jam {$latestOutletOrder} WIB).");
+                }
+            }
+
+            // Stylist schedule validation (sisa waktu minimal 45 menit sebelum selesai)
+            $stylistSchedule = DB::table('stylist_schedules')
+                ->where('stylist_id', $stylistId)
+                ->where('day_of_week', $bookingDate->dayOfWeek)
+                ->first();
+
+            if ($stylistSchedule) {
+                if (!$stylistSchedule->is_working) {
+                    throw new BookingUnavailableException("Stylist tidak bertugas pada hari yang dipilih.");
+                }
+                if ($stylistSchedule->start_time && $stylistSchedule->end_time) {
+                    $sStart = substr($stylistSchedule->start_time, 0, 5);
+                    $sEnd = substr($stylistSchedule->end_time, 0, 5);
+                    $sEndCarbon = Carbon::createFromFormat('H:i', $sEnd);
+                    $latestStylistOrder = $sEndCarbon->copy()->subMinutes(45)->format('H:i');
+
+                    if ($timeString < $sStart || $timeString > $latestStylistOrder) {
+                        throw new BookingUnavailableException("Jam operasional stylist adalah {$sStart} - {$sEnd} WIB. Order memerlukan sisa waktu minimal 45 menit sebelum selesai bertugas (order terakhir maksimal jam {$latestStylistOrder} WIB).");
+                    }
+                }
+            }
+
+            // Stylist leave validation (jika sedang cuti/libur, booking ditolak)
+            $isStylistOnLeave = DB::table('stylist_leaves')
+                ->where('stylist_id', $stylistId)
+                ->where('status', 'approved')
+                ->where('start_date', '<=', $dateString)
+                ->where('end_date', '>=', $dateString)
+                ->exists();
+
+            if ($isStylistOnLeave) {
+                $stylistObj = Stylist::find($stylistId);
+                $sName = $stylistObj ? $stylistObj->name : 'Stylist';
+                throw new BookingUnavailableException("Stylist {$sName} sedang cuti/libur pada tanggal {$dateString}. Pemesanan tidak dapat diproses.");
+            }
+
+            // Validasi walk-in: pastikan saat ini masih ada sisa waktu minimal 45 menit sebelum outlet tutup
+            if ($isWalkIn && isset($outletCloseCarbon)) {
+                $now = Carbon::now();
+                if ($now->copy()->addMinutes(45)->gt($outletCloseCarbon)) {
+                    throw new BookingUnavailableException("Walk-in saat ini ditutup karena sisa waktu operasional kurang dari 45 menit sebelum outlet tutup ({$outletClose} WIB).");
+                }
+            }
+
             // Lead time check (must be at least 15 minutes ahead for online bookings today)
             if (!$isWalkIn) {
                 $sessionStartDateTime = Carbon::parse($dateString . ' ' . $startTime->format('H:i:s'));

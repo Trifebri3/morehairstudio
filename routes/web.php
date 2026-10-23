@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->prefix('stylist')->name('stylist.')->gr
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::post('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
     Route::post('/leave', [DashboardController::class, 'requestLeave'])->name('leave.request');
+    Route::delete('/leave/{id}', [DashboardController::class, 'deleteLeave'])->name('leave.destroy');
     Route::post('/activate', [DashboardController::class, 'requestActivate'])->name('activate.request');
     Route::post('/booking/{id}/confirm', [DashboardController::class, 'confirmBooking'])->name('booking.confirm');
     Route::post('/booking/{id}/complete', [DashboardController::class, 'completeBooking'])->name('booking.complete');

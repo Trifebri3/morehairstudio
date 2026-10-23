@@ -1,4 +1,4 @@
-﻿@extends('layouts.tablet')
+@extends('layouts.tablet')
 
 @section('content')
 <div class="h-full flex flex-col justify-between py-6 relative" id="queue-page">
@@ -114,6 +114,7 @@
     }
 
     function cardWaiting(b) {
+        var actionUrl = b.checkin_action_url || ('/tablet/queue/' + b.id + '/checkin');
         return '<div id="qcard-' + b.id + '" class="bg-stone-50/70 border border-stone-200 p-5 rounded-2xl hover:border-stone-400 transition duration-300 space-y-4 shadow-2xs queue-card-enter">' +
             '<div>' +
               '<div class="flex justify-between items-center">' +
@@ -128,7 +129,9 @@
             '<div class="pt-3 border-t border-stone-100 flex justify-between items-center text-xxs text-stone-500 font-medium">' +
               '<span>Stylist: <strong class="text-stone-700">' + esc(b.stylist_name) + '</strong></span>' +
             '</div>' +
-            '<a href="' + b.checkin_url + '" class="w-full mt-1.5 py-2 px-4 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs uppercase tracking-wider text-center block transition">Cek-In Customer &rarr;</a>' +
+            '<button type="button" onclick="directCheckIn(' + b.id + ', \'' + actionUrl + '\')" id="btn-checkin-' + b.id + '" class="w-full mt-1.5 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider text-center block transition shadow-xs cursor-pointer">' +
+              'Cek-In Customer &rarr;' +
+            '</button>' +
         '</div>';
     }
 
@@ -146,6 +149,7 @@
                      '<span class="font-bold text-[#c9512d]">Sisa: <span id="prog-rem-' + b.id + '">' + b.remaining + '</span> Menit</span>' +
                    '</div>';
         }
+        var compUrl = b.complete_url || ('/tablet/queue/' + b.id + '/complete');
         return '<div id="qcard-' + b.id + '" class="bg-[#faede7]/30 border border-[#f4cbba] p-5 rounded-2xl transition duration-300 space-y-4 shadow-2xs queue-card-enter">' +
             '<div>' +
               '<div class="flex justify-between items-center">' +
@@ -166,10 +170,9 @@
             '<div class="pt-2 border-t border-stone-100 flex justify-between items-center text-xxs text-stone-500 font-medium">' +
               '<span>Stylist: <strong class="text-stone-700">' + esc(b.stylist_name) + '</strong></span>' +
             '</div>' +
-            '<form method="POST" action="' + b.complete_url + '">' +
-              '<input type="hidden" name="_token" value="' + CSRF + '">' +
-              '<button type="submit" class="w-full py-2 px-3 bg-stone-200 hover:bg-stone-300 text-stone-700 text-xxs font-bold uppercase tracking-wider rounded-xl transition">Selesai Lebih Cepat (Manual Override)</button>' +
-            '</form>' +
+            '<button type="button" onclick="directComplete(' + b.id + ', \'' + compUrl + '\')" id="btn-complete-' + b.id + '" class="w-full py-2.5 px-3 bg-stone-200 hover:bg-stone-300 active:scale-[0.98] text-stone-700 text-xxs font-bold uppercase tracking-wider rounded-xl transition cursor-pointer">' +
+              'Selesai Lebih Cepat (Manual Override)' +
+            '</button>' +
         '</div>';
     }
 
@@ -304,6 +307,71 @@
         firstLoad = true;
         rendered  = { waiting: {}, on_chair: {}, done: {} };
     }
+
+    window.directCheckIn = function(id, url) {
+        var btn = document.getElementById('btn-checkin-' + id);
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="inline-block animate-spin mr-1.5">&#9696;</span> Memproses Check-in...';
+        }
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF
+            }
+        })
+        .then(function(res) {
+            if (!res.ok) {
+                return res.json().then(function(d) { throw new Error(d.message || 'Gagal check-in.'); });
+            }
+            return res.json();
+        })
+        .then(function(data) {
+            fetchQueue();
+        })
+        .catch(function(err) {
+            alert(err.message || 'Terjadi kesalahan saat check-in');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Cek-In Customer &rarr;';
+            }
+        });
+    };
+
+    window.directComplete = function(id, url) {
+        if (!confirm('Tandai treatment ini selesai sekarang (Manual Override)?')) return;
+        var btn = document.getElementById('btn-complete-' + id);
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="inline-block animate-spin mr-1.5">&#9696;</span> Menyelesaikan...';
+        }
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': CSRF
+            }
+        })
+        .then(function(res) {
+            if (!res.ok) {
+                return res.json().then(function(d) { throw new Error(d.message || 'Gagal menyelesaikan treatment.'); });
+            }
+            return res.json();
+        })
+        .then(function(data) {
+            fetchQueue();
+        })
+        .catch(function(err) {
+            alert(err.message || 'Terjadi kesalahan saat menyelesaikan treatment');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = 'Selesai Lebih Cepat (Manual Override)';
+            }
+        });
+    };
 
     startPolling();
     window.addEventListener('beforeunload', stopPolling);

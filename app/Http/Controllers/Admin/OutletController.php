@@ -48,7 +48,18 @@ class OutletController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        $outlet = Outlet::create($request->only(['name', 'slug', 'address', 'phone', 'whatsapp', 'status']));
+        $data = $request->only(['name', 'slug', 'address', 'phone', 'whatsapp', 'status']);
+        if ($request->has('opening_hours')) {
+            $data['opening_hours'] = $request->input('opening_hours');
+        } else {
+            $schedule = [];
+            foreach (['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as $d) {
+                $schedule[$d] = ['is_open' => true, 'open' => '09:00', 'close' => '21:00'];
+            }
+            $data['opening_hours'] = $schedule;
+        }
+
+        $outlet = Outlet::create($data);
 
         return redirect()->route('admin.outlets')->with('message', "Outlet {$outlet->name} berhasil dibuat.");
     }
@@ -70,7 +81,12 @@ class OutletController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
-        $outlet->update($request->only(['name', 'slug', 'address', 'phone', 'whatsapp', 'status']));
+        $data = $request->only(['name', 'slug', 'address', 'phone', 'whatsapp', 'status']);
+        if ($request->has('opening_hours')) {
+            $data['opening_hours'] = $request->input('opening_hours');
+        }
+
+        $outlet->update($data);
 
         return redirect()->route('admin.outlets')->with('message', "Outlet {$outlet->name} berhasil diperbarui.");
     }

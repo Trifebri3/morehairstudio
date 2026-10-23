@@ -243,7 +243,7 @@ class DatabaseSeeder extends Seeder
                     'stylist_id' => $stylist->id,
                     'day_of_week' => $day,
                     'start_time' => '10:00:00',
-                    'end_time' => '20:00:00',
+                    'end_time' => '21:00:00',
                     'break_start' => null,
                     'break_end' => null,
                     'is_working' => true

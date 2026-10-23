@@ -105,6 +105,12 @@ class DashboardController extends Controller
             ];
         }
 
+        // Active and future blocked leave dates for this stylist
+        $leaves = \App\Domains\Stylist\Models\StylistLeave::where('stylist_id', $stylist->id)
+            ->where('end_date', '>=', Carbon::today()->toDateString())
+            ->orderBy('start_date', 'asc')
+            ->get();
+
         return view('hairstylis.dashboard', [
             'stylist' => $stylist,
             'schedules' => $schedules,
@@ -115,6 +121,7 @@ class DashboardController extends Controller
             'mtdBookingsCount' => $mtdBookingsCount,
             'totalCompleted' => $completedBookings->count(),
             'chartData' => $chartData,
+            'leaves' => $leaves,
             'error_unlinked' => false
         ]);
     }
@@ -186,7 +193,8 @@ class DashboardController extends Controller
     }
 
     /**
-     * Request leave.
+     * Block leave dates directly without requiring admin approval.
+     * Can block single date or date range in advance.
      */
     public function requestLeave(\Illuminate\Http\Request $request)
     {
@@ -199,22 +207,69 @@ class DashboardController extends Controller
 
         $request->validate([
             'start_date' => ['required', 'date', 'after_or_equal:today'],
-            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'reason' => ['nullable', 'string', 'max:255']
+            'end_date'   => ['required', 'date', 'after_or_equal:start_date'],
+            'reason'     => ['nullable', 'string', 'max:255']
+        ], [
+            'start_date.after_or_equal' => 'Tanggal mulai tidak boleh di masa lampau.',
+            'end_date.after_or_equal'   => 'Tanggal selesai harus sama atau setelah tanggal mulai.',
         ]);
 
+        // Check if there is an overlapping leave already blocked
+        $exists = \App\Domains\Stylist\Models\StylistLeave::where('stylist_id', $stylist->id)
+            ->where(function ($q) use ($request) {
+                $q->whereBetween('start_date', [$request->start_date, $request->end_date])
+                  ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                  ->orWhere(function ($sub) use ($request) {
+                      $sub->where('start_date', '<=', $request->start_date)
+                          ->where('end_date', '>=', $request->end_date);
+                  });
+            })
+            ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Rentang tanggal cuti tersebut sudah ada dalam daftar jadwal libur Anda.');
+        }
+
+        // Direct instant auto-approved block
         \App\Domains\Stylist\Models\StylistLeave::create([
             'stylist_id' => $stylist->id,
             'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'reason' => $request->reason,
-            'status' => 'pending' 
+            'end_date'   => $request->end_date,
+            'reason'     => $request->reason ?: 'Cuti / Libur Mandiri',
+            'status'     => 'approved'
         ]);
 
-        $stylist->status = 'pending_leave';
-        $stylist->save();
+        // Stylist remains ACTIVE for all regular working days
+        if ($stylist->status !== 'active') {
+            $stylist->status = 'active';
+            $stylist->save();
+        }
 
-        return back()->with('message', 'Cuti berhasil diajukan dari ' . \Carbon\Carbon::parse($request->start_date)->format('d M') . ' sampai ' . \Carbon\Carbon::parse($request->end_date)->format('d M') . '.');
+        $formattedStart = \Carbon\Carbon::parse($request->start_date)->translatedFormat('d M Y');
+        $formattedEnd   = \Carbon\Carbon::parse($request->end_date)->translatedFormat('d M Y');
+
+        return back()->with('message', "Jadwal cuti berhasil diblokir ({$formattedStart} - {$formattedEnd}). Anda tidak akan dapat dibooking pelanggan pada tanggal tersebut.");
+    }
+
+    /**
+     * Delete / unblock a leave schedule.
+     */
+    public function deleteLeave($id)
+    {
+        $user = auth()->user();
+        $stylist = Stylist::where('user_id', $user->id)->first();
+
+        if (!$stylist) {
+            return back()->with('error', 'Data Stylist tidak ditemukan.');
+        }
+
+        $leave = \App\Domains\Stylist\Models\StylistLeave::where('id', $id)
+            ->where('stylist_id', $stylist->id)
+            ->firstOrFail();
+
+        $leave->delete();
+
+        return back()->with('message', 'Blokir tanggal cuti berhasil dibatalkan. Anda dapat menerima booking kembali pada tanggal tersebut.');
     }
 
     /**

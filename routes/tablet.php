@@ -8,9 +8,14 @@ Route::prefix('tablet')->name('tablet.')->group(function () {
     
     // Redirect walk-in to Booking Wizard with walk_in parameters
     Route::get('/walk-in', function () {
+        $outletId = session('tablet_outlet_id');
+        if (!$outletId || !\App\Domains\Outlet\Models\Outlet::where('id', $outletId)->exists()) {
+            $outletId = \App\Domains\Outlet\Models\Outlet::first()?->id ?? 1;
+            session(['tablet_outlet_id' => $outletId]);
+        }
         return redirect()->route('booking', [
             'walk_in' => 1,
-            'outlet_id' => session('tablet_outlet_id', 1)
+            'outlet_id' => $outletId
         ]);
     })->name('walk-in');
 
@@ -23,6 +28,7 @@ Route::prefix('tablet')->name('tablet.')->group(function () {
 
     Route::get('/queue', [TabletKioskController::class, 'queue'])->name('queue');
     Route::get('/queue/data', [TabletKioskController::class, 'queueData'])->name('queue.data'); // JSON API
+    Route::post('/queue/{id}/checkin', [TabletKioskController::class, 'queueCheckIn'])->name('queue.checkin');
     Route::post('/queue/{id}/start', [TabletKioskController::class, 'startService'])->name('queue.start');
     Route::post('/queue/{id}/complete', [TabletKioskController::class, 'completeService'])->name('queue.complete');
 

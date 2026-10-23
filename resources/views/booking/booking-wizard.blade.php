@@ -260,15 +260,16 @@
 
             <!-- Step 2: Meet Your Barber -->
             <div x-show="step === 2" x-transition>
-                <div class="mb-8 border-b pb-4">
+                <div class="mb-6 border-b pb-4">
                     <h2 class="text-xl font-extrabold text-stone-900 uppercase tracking-tight font-display">
                         {{ $isId ? 'Pilih Stylist Anda' : 'Meet your barber' }}
                     </h2>
                     <p class="text-xs text-stone-500 mt-1">
-                        {{ $isId ? 'Pilih stylist ahli kami untuk menangani Anda.' : 'Select our expert stylist to design your style.' }}
+                        {{ $isId ? 'Pilih stylist ahli kami untuk menangani Anda.' : 'Select our available expert stylist to treat you.' }}
                     </p>
                 </div>
 
+                <!-- Stylists Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <template x-for="stylist in getStylistsByOutlet()" :key="stylist.id">
                         <div class="border border-stone-200 rounded-2xl p-5 bg-white hover:border-[#c9512d] hover:shadow-md transition cursor-pointer flex items-center space-x-4 group"
@@ -357,14 +358,20 @@
                                     <button type="button"
                                             :disabled="day.isPast"
                                             @click="setWizardDate(day.dateStr)"
-                                            class="h-7 rounded-md flex items-center justify-center text-[11px] font-mono transition"
+                                            :title="day.isLeave ? ((selectedStylist ? selectedStylist.name : 'Stylist') + ' Sedang Libur / Cuti pada tanggal ini') : (day.isPast ? 'Tanggal sudah terlewat' : '')"
+                                            class="h-7 rounded-md flex items-center justify-center text-[11px] font-mono transition relative cursor-pointer"
                                             :class="{
-                                                'bg-[#c9512d] text-white font-black shadow-xs ring-1 ring-[#c9512d]': selectedDate === day.dateStr,
+                                                'bg-[#c9512d] text-white font-black shadow-xs ring-1 ring-[#c9512d]': selectedDate === day.dateStr && !day.isLeave,
+                                                'bg-rose-500 text-white font-black shadow-xs ring-2 ring-rose-300': selectedDate === day.dateStr && day.isLeave,
                                                 'text-stone-300 cursor-not-allowed': day.isPast,
-                                                'text-stone-700 hover:bg-[#faede7] hover:text-[#c9512d] cursor-pointer font-bold': !day.isPast && selectedDate !== day.dateStr,
+                                                'bg-rose-50 text-rose-600 font-bold border border-rose-200 hover:bg-rose-100': day.isLeave && !day.isPast && selectedDate !== day.dateStr,
+                                                'text-stone-700 hover:bg-[#faede7] hover:text-[#c9512d] font-bold': !day.isPast && !day.isLeave && selectedDate !== day.dateStr,
                                                 'ring-1 ring-stone-300': day.isToday && selectedDate !== day.dateStr
                                             }">
                                         <span x-text="day.dayNumber"></span>
+                                        <template x-if="day.isLeave && !day.isPast">
+                                            <span class="absolute -bottom-0.5 w-1.5 h-1.5 rounded-full" :class="selectedDate === day.dateStr ? 'bg-white' : 'bg-rose-500'"></span>
+                                        </template>
                                     </button>
                                 </template>
                             </div>
@@ -373,21 +380,30 @@
                             <div class="pt-3 border-t border-stone-100 flex flex-wrap gap-1.5">
                                 <button type="button" 
                                         @click="setWizardDate('{{ \Carbon\Carbon::today()->toDateString() }}')"
-                                        class="py-1 px-2 rounded-md text-[10px] font-mono font-bold transition"
-                                        :class="selectedDate === '{{ \Carbon\Carbon::today()->toDateString() }}' ? 'bg-[#c9512d] text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'">
-                                    Hari Ini
+                                        class="py-1 px-2 rounded-md text-[10px] font-mono font-bold transition flex items-center gap-1 cursor-pointer"
+                                        :class="selectedDate === '{{ \Carbon\Carbon::today()->toDateString() }}' ? ((selectedStylist && isStylistOnLeave(selectedStylist, '{{ \Carbon\Carbon::today()->toDateString() }}')) ? 'bg-rose-500 text-white' : 'bg-[#c9512d] text-white') : 'bg-stone-100 text-stone-600 hover:bg-stone-200'">
+                                    <span>Hari Ini</span>
+                                    <template x-if="selectedStylist && isStylistOnLeave(selectedStylist, '{{ \Carbon\Carbon::today()->toDateString() }}')">
+                                        <span class="text-[8px] bg-rose-600 text-white px-1 rounded">Libur</span>
+                                    </template>
                                 </button>
                                 <button type="button" 
                                         @click="setWizardDate('{{ \Carbon\Carbon::tomorrow()->toDateString() }}')"
-                                        class="py-1 px-2 rounded-md text-[10px] font-mono font-bold transition"
-                                        :class="selectedDate === '{{ \Carbon\Carbon::tomorrow()->toDateString() }}' ? 'bg-[#c9512d] text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'">
-                                    Besok
+                                        class="py-1 px-2 rounded-md text-[10px] font-mono font-bold transition flex items-center gap-1 cursor-pointer"
+                                        :class="selectedDate === '{{ \Carbon\Carbon::tomorrow()->toDateString() }}' ? ((selectedStylist && isStylistOnLeave(selectedStylist, '{{ \Carbon\Carbon::tomorrow()->toDateString() }}')) ? 'bg-rose-500 text-white' : 'bg-[#c9512d] text-white') : 'bg-stone-100 text-stone-600 hover:bg-stone-200'">
+                                    <span>Besok</span>
+                                    <template x-if="selectedStylist && isStylistOnLeave(selectedStylist, '{{ \Carbon\Carbon::tomorrow()->toDateString() }}')">
+                                        <span class="text-[8px] bg-rose-600 text-white px-1 rounded">Libur</span>
+                                    </template>
                                 </button>
                                 <button type="button" 
                                         @click="setWizardDate('{{ \Carbon\Carbon::today()->addDays(2)->toDateString() }}')"
-                                        class="py-1 px-2 rounded-md text-[10px] font-mono font-bold transition"
-                                        :class="selectedDate === '{{ \Carbon\Carbon::today()->addDays(2)->toDateString() }}' ? 'bg-[#c9512d] text-white' : 'bg-stone-100 text-stone-600 hover:bg-stone-200'">
-                                    Lusa
+                                        class="py-1 px-2 rounded-md text-[10px] font-mono font-bold transition flex items-center gap-1 cursor-pointer"
+                                        :class="selectedDate === '{{ \Carbon\Carbon::today()->addDays(2)->toDateString() }}' ? ((selectedStylist && isStylistOnLeave(selectedStylist, '{{ \Carbon\Carbon::today()->addDays(2)->toDateString() }}')) ? 'bg-rose-500 text-white' : 'bg-[#c9512d] text-white') : 'bg-stone-100 text-stone-600 hover:bg-stone-200'">
+                                    <span>Lusa</span>
+                                    <template x-if="selectedStylist && isStylistOnLeave(selectedStylist, '{{ \Carbon\Carbon::today()->addDays(2)->toDateString() }}')">
+                                        <span class="text-[8px] bg-rose-600 text-white px-1 rounded">Libur</span>
+                                    </template>
                                 </button>
                             </div>
 
@@ -436,19 +452,48 @@
                         </div>
 
                         <!-- Preferred Stylist Card -->
-                        <div x-show="!loadingSlots && selectedStylist" class="border rounded-2xl p-6 bg-white border-[#c9512d] ring-1 ring-[#c9512d]/20 shadow-sm flex flex-col gap-6">
+                        <div x-show="!loadingSlots && selectedStylist" class="border rounded-2xl p-6 bg-white shadow-sm flex flex-col gap-5"
+                             :class="isStylistOnLeave(selectedStylist, selectedDate) ? 'border-rose-300 ring-2 ring-rose-200/50 bg-rose-50/20' : 'border-[#c9512d] ring-1 ring-[#c9512d]/20'">
                             <!-- Top Part: Stylist Profile with Photo -->
                             <div class="flex items-center space-x-4">
                                 <div class="h-14 w-14 rounded-2xl overflow-hidden border border-stone-200 shadow-sm flex-shrink-0 bg-stone-100 flex items-center justify-center relative">
                                     <img :src="selectedStylist?.photo || ('https://api.dicebear.com/7.x/avataaars/svg?seed=' + encodeURIComponent(selectedStylist ? selectedStylist.slug : ''))" class="h-full w-full object-cover">
-                                    <span class="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white"></span>
+                                    <span class="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full border-2 border-white"
+                                          :class="isStylistOnLeave(selectedStylist, selectedDate) ? 'bg-rose-500' : 'bg-emerald-500'"></span>
                                 </div>
-                                <div>
-                                    <div class="flex items-center space-x-2">
+                                <div class="flex-grow min-w-0">
+                                    <div class="flex items-center space-x-2 flex-wrap gap-y-1">
                                         <h4 class="font-bold text-stone-900 text-sm uppercase tracking-tight font-display" x-text="selectedStylist ? selectedStylist.name : ''"></h4>
-                                        <span class="text-[8px] uppercase tracking-wider bg-[#faede7] text-[#c9512d] px-2 py-0.5 rounded font-extrabold">{{ $isId ? 'Pilihan Utama' : 'Preferred' }}</span>
+                                        <template x-if="!isStylistOnLeave(selectedStylist, selectedDate)">
+                                            <span class="text-[8px] uppercase tracking-wider bg-[#faede7] text-[#c9512d] px-2 py-0.5 rounded font-extrabold">{{ $isId ? 'Pilihan Utama' : 'Preferred' }}</span>
+                                        </template>
+                                        <template x-if="isStylistOnLeave(selectedStylist, selectedDate)">
+                                            <span class="text-[8px] uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-300 px-2 py-0.5 rounded font-extrabold flex items-center gap-1">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                                <span>Sedang Libur / Cuti</span>
+                                            </span>
+                                        </template>
                                     </div>
                                     <span class="text-[10px] text-stone-400 uppercase font-extrabold tracking-wider block mt-0.5" x-text="selectedStylist ? selectedStylist.specialization : ''"></span>
+                                </div>
+                            </div>
+
+                            <!-- KETERANGAN JELAS KALAU PAS SUDAH DIPILIH TERNYATA SEDANG LIBUR -->
+                            <div x-show="!isWalkIn && selectedStylist && isStylistOnLeave(selectedStylist, selectedDate)" 
+                                 class="p-4 bg-rose-50 border border-rose-300/80 rounded-2xl flex items-start gap-3.5 shadow-2xs">
+                                <div class="w-10 h-10 rounded-xl bg-rose-500 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                </div>
+                                <div class="flex-grow min-w-0">
+                                    <div class="flex items-center gap-2 flex-wrap">
+                                        <h4 class="font-black text-xs text-rose-900 uppercase tracking-tight font-display">
+                                            <span x-text="selectedStylist?.name"></span> TERNYATA SEDANG LIBUR / CUTI
+                                        </h4>
+                                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-rose-200 text-rose-800" x-text="formatDateIndo(selectedDate)"></span>
+                                    </div>
+                                    <p class="text-xs text-rose-700 mt-1.5 leading-relaxed">
+                                        Stylist <strong class="font-bold text-rose-900" x-text="selectedStylist?.name"></strong> tidak bertugas pada tanggal ini karena sedang libur/cuti mandiri. Anda dapat memilih tanggal lain pada kalender di sebelah kiri, atau memilih alternatif stylist pengganti di bawah.
+                                    </p>
                                 </div>
                             </div>
 
@@ -521,10 +566,8 @@
                                         </template>
                                     </div>
                                 </div>
-                            </div>
-
-                            <!-- REGULAR BOOKING ONLY: Manual Time & Quick Recommendations -->
-                            <div x-show="!isWalkIn" class="pt-4 border-t border-stone-100 space-y-5">
+                                              <!-- REGULAR BOOKING ONLY: Manual Time & Quick Recommendations -->
+                            <div x-show="!isWalkIn && !(selectedStylist && isStylistOnLeave(selectedStylist, selectedDate))" class="pt-4 border-t border-stone-100 space-y-5">
                                 <!-- 1. PILIH JAM SESI (BEBAS / MANUAL) - TETAP DI ATAS -->
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
@@ -591,7 +634,7 @@
                                         </span>
                                     </div>
 
-                                    <!-- When no automatic slots are found -->
+                                    <!-- When no slots available -->
                                     <template x-if="getSelectedStylistSlots().length === 0">
                                         <div class="text-[11px] text-stone-400 italic py-1">
                                             {{ $isId ? 'Semua slot otomatis pada tanggal ini penuh atau sudah terlewat. Anda tetap dapat memasukkan jam secara bebas di atas atau memilih tanggal lain.' : 'All automated slots on this date are booked or past. You can still input manual time above or pick another date.' }}
@@ -617,21 +660,33 @@
                                                     </template>
                                                     <span class="text-xs sm:text-sm font-black font-mono tracking-tight" x-text="slot.time"></span>
                                                     <span class="text-[9px] sm:text-[10px] mt-0.5 font-medium" 
-                                                          :class="manualTime === slot.time ? 'text-white/85' : 'text-stone-400'"
-                                                          x-text="'s/d ' + slot.end_time"></span>
+                                                           :class="manualTime === slot.time ? 'text-white/85' : 'text-stone-400'"
+                                                           x-text="'s/d ' + slot.end_time"></span>
                                                 </button>
                                             </template>
                                         </div>
                                     </template>
                                 </div>
                             </div>
+
+                            <!-- When stylist is on leave on selectedDate -->
+                            <div x-show="!isWalkIn && selectedStylist && isStylistOnLeave(selectedStylist, selectedDate)" class="pt-4 border-t border-stone-100">
+                                <div class="p-4 bg-stone-50 border border-stone-200 rounded-2xl text-center space-y-2">
+                                    <p class="text-xs text-stone-700 font-medium">
+                                        Tidak ada jam kunjungan yang tersedia karena <strong class="text-stone-900" x-text="selectedStylist?.name"></strong> sedang libur pada <span class="font-bold text-stone-900" x-text="formatDateIndo(selectedDate)"></span>.
+                                    </p>
+                                    <p class="text-[11px] text-stone-500">
+                                        Silakan pilih tanggal lain di kalender (kiri) atau pilih rekan stylist pengganti di bawah ini untuk memesan pada tanggal ini.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Alternative Stylist Suggestion (only shown if preferred stylist is sold out) -->
-                        <div x-show="!loadingSlots && getSelectedStylistSlots().length === 0" class="pt-6 border-t border-stone-200 space-y-4">
+                        <!-- Alternative Stylist Suggestion (only shown if preferred stylist is sold out or on leave) -->
+                        <div x-show="!loadingSlots && (getSelectedStylistSlots().length === 0 || (selectedStylist && isStylistOnLeave(selectedStylist, selectedDate)))" class="pt-6 border-t border-stone-200 space-y-4">
                             <div class="flex items-center justify-between">
-                                <span class="text-xs font-bold uppercase tracking-tight text-stone-900">
-                                    {{ $isId ? 'Rekomendasi Alternatif Stylist Lain' : 'Recommended Alternative Stylists' }}
+                                <span class="text-xs font-bold uppercase tracking-tight text-stone-900"
+                                      x-text="(selectedStylist && isStylistOnLeave(selectedStylist, selectedDate)) ? 'Rekomendasi Stylist Pengganti yang Bertugas pada Tanggal Ini' : '{{ $isId ? 'Rekomendasi Alternatif Stylist Lain' : 'Recommended Alternative Stylists' }}'">
                                 </span>
                                 <span class="text-[10px] text-stone-400">
                                     {{ $isId ? 'Pilih salah satu untuk mengganti stylist' : 'Click any to switch stylist' }}
@@ -1054,6 +1109,7 @@ function bookingWizard() {
         leadTimeMinutes: 15,
         serverTime: '{{ \Carbon\Carbon::now()->format('H:i:s') }}',
         todayDate: '{{ \Carbon\Carbon::today()->toDateString() }}',
+        tomorrowDate: '{{ \Carbon\Carbon::tomorrow()->toDateString() }}',
 
         // Customer details
         phone: '',
@@ -1376,9 +1432,50 @@ function bookingWizard() {
             return service.default_duration;
         },
 
+        formatDateIndo(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length < 3) return dateStr;
+            const date = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            return date.toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+        },
+
+        isStylistOnLeave(stylist, dateStr = null) {
+            if (!stylist) return false;
+            const target = dateStr || (this.isWalkIn ? this.todayDate : this.selectedDate);
+            if (!target) return false;
+            const ranges = stylist.leave_ranges || [];
+            return ranges.some(r => target >= r.start && target <= r.end);
+        },
+
+        isStylistWorkingSchedule(stylist, dateStr = null) {
+            if (!stylist) return false;
+            const target = dateStr || (this.isWalkIn ? this.todayDate : this.selectedDate);
+            if (!target) return true;
+            if (this.isStylistOnLeave(stylist, target)) return false;
+
+            // Check weekly schedule if available
+            if (stylist.schedules && stylist.schedules.length > 0) {
+                const parts = target.split('-');
+                if (parts.length >= 3) {
+                    const dayOfWeek = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])).getDay();
+                    const sch = stylist.schedules.find(s => s.day_of_week == dayOfWeek);
+                    if (sch) {
+                        return Boolean(Number(sch.is_working));
+                    }
+                }
+            }
+            return true;
+        },
+
         getStylistsByOutlet() {
             if (!this.selectedOutletId) return [];
-            return this.stylists.filter(st => st.outlet_id == this.selectedOutletId);
+            return this.stylists.filter(st => {
+                if (st.outlet_id != this.selectedOutletId) return false;
+                // Pada walk-in langsung (hari ini), stylist yang cuti hari ini tidak muncul
+                if (this.isWalkIn && this.isStylistOnLeave(st, this.todayDate)) return false;
+                return true;
+            });
         },
 
         getSelectedStylistSlots() {
@@ -1388,7 +1485,15 @@ function bookingWizard() {
 
         getAlternativeStylists() {
             if (!this.selectedStylistId) return [];
-            return this.getStylistsByOutlet().filter(st => st.id != this.selectedStylistId);
+            return this.stylists.filter(st => {
+                if (st.outlet_id != this.selectedOutletId) return false;
+                if (st.id == this.selectedStylistId) return false;
+                // Exclude stylist jika sedang libur/cuti pada tanggal yang dipilih
+                if (this.isStylistOnLeave(st, this.selectedDate)) return false;
+                // Exclude stylist jika bukan hari jadwal kerjanya
+                if (!this.isStylistWorkingSchedule(st, this.selectedDate)) return false;
+                return true;
+            });
         },
 
         get calMonthLabel() {
@@ -1414,12 +1519,14 @@ function bookingWizard() {
                 const mm = String(month + 1).padStart(2, '0');
                 const dd = String(d).padStart(2, '0');
                 const dateStr = `${year}-${mm}-${dd}`;
+                const isLeave = this.selectedStylist ? this.isStylistOnLeave(this.selectedStylist, dateStr) : false;
                 
                 days.push({
                     dayNumber: d,
                     dateStr: dateStr,
                     isToday: dateStr === todayStr,
-                    isPast: dateStr < todayStr
+                    isPast: dateStr < todayStr,
+                    isLeave: isLeave
                 });
             }
 
@@ -1449,6 +1556,9 @@ function bookingWizard() {
             const parts = dateStr.split('-');
             this.calYear = parseInt(parts[0]);
             this.calMonth = parseInt(parts[1]);
+            if (this.selectedStylist && this.isStylistOnLeave(this.selectedStylist, dateStr)) {
+                this.selectedTime = null;
+            }
             this.fetchSlots();
         },
 
@@ -1462,8 +1572,11 @@ function bookingWizard() {
             return this.freeWindows[this.selectedStylistId] || [];
         },
 
-        isStylistWorkingOnDate(stylistId) {
-            const wh = this.workingHours[stylistId];
+        isStylistWorkingOnDate(stylistOrId, dateStr = null) {
+            if (typeof stylistOrId === 'object' && stylistOrId !== null) {
+                return this.isStylistWorkingSchedule(stylistOrId, dateStr);
+            }
+            const wh = this.workingHours[stylistOrId];
             return wh ? Boolean(wh.is_working) : false;
         },
 
@@ -1593,20 +1706,37 @@ function bookingWizard() {
             const stylist = this.selectedStylist;
             const stylistName = stylist ? stylist.name : 'Stylist';
 
+            // 0. Check leave status
+            if (stylist && this.isStylistOnLeave(stylist, this.selectedDate)) {
+                this.isTimeValid = false;
+                this.timeConflictMessage = `${stylistName} sedang cuti/libur pada tanggal ${this.formatDateIndo(this.selectedDate)}. Silakan ganti tanggal atau stylist.`;
+                return;
+            }
+
             // 1. Check working hours
             const wh = this.workingHours[stylistId];
             if (wh) {
                 if (!wh.is_working) {
                     this.isTimeValid = false;
-                    this.timeConflictMessage = `${stylistName} tidak bertugas pada tanggal ini. Silakan ganti tanggal atau stylist.`;
+                    this.timeConflictMessage = wh.is_on_leave
+                        ? `${stylistName} sedang cuti/libur pada tanggal ini. Silakan ganti tanggal atau stylist.`
+                        : `${stylistName} tidak bertugas pada tanggal ini. Silakan ganti tanggal atau stylist.`;
                     return;
                 }
                 const workStartM = this.timeToMinutes(wh.start_time);
                 const workEndM = this.timeToMinutes(wh.end_time);
+                const latestAllowedM = workEndM - 45; // Toleransi: sisa waktu minimal 45 menit sebelum tutup
 
-                if (startM < workStartM || endM > workEndM) {
+                if (startM < workStartM) {
                     this.isTimeValid = false;
-                    this.timeConflictMessage = `Jam operasional ${stylistName} adalah ${wh.start_time} - ${wh.end_time} WIB. Sesi ${this.manualTime} - ${this.calculateEndTime(this.manualTime)} harus berada dalam rentang tersebut.`;
+                    this.timeConflictMessage = `Jam operasional ${stylistName} baru buka pukul ${wh.start_time} WIB.`;
+                    return;
+                }
+
+                if (startM > latestAllowedM) {
+                    this.isTimeValid = false;
+                    const maxOrderTime = this.minutesToTime(latestAllowedM);
+                    this.timeConflictMessage = `${stylistName} tutup pukul ${wh.end_time} WIB. Pemesanan membutuhkan sisa waktu minimal 45 menit sebelum tutup (order terakhir maksimal pukul ${maxOrderTime} WIB).`;
                     return;
                 }
             }
@@ -1619,6 +1749,15 @@ function bookingWizard() {
                 const leadMinutes = this.isWalkIn ? 0 : (this.leadTimeMinutes || 15);
 
                 if (this.isWalkIn) {
+                    const wh = this.workingHours[stylistId];
+                    if (wh && wh.end_time) {
+                        const workEndM = this.timeToMinutes(wh.end_time);
+                        if (nowMinutes > (workEndM - 45)) {
+                            this.isTimeValid = false;
+                            this.timeConflictMessage = `Walk-in ditutup karena sisa waktu operasional kurang dari 45 menit sebelum tutup (${wh.end_time} WIB).`;
+                            return;
+                        }
+                    }
                     // 15-minute grace tolerance for walk-ins
                     if (startM < (nowMinutes - 15)) {
                         this.isTimeValid = false;

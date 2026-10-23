@@ -68,7 +68,37 @@ class BookingController extends Controller
                 return $s;
             });
 
-        $stylists = Stylist::where('status', 'active')->get();
+        $today = Carbon::today()->toDateString();
+        $stylists = Stylist::where('status', 'active')
+            ->with([
+                'schedules',
+                'leaves' => function ($q) {
+                    $q->where('status', 'approved');
+                }
+            ])
+            ->get()
+            ->map(function ($st) use ($today) {
+                $st->leave_ranges = $st->leaves->map(function ($l) {
+                    return [
+                        'start' => substr($l->start_date, 0, 10),
+                        'end' => substr($l->end_date, 0, 10),
+                        'reason' => $l->reason ?: 'Cuti / Libur',
+                    ];
+                })->values();
+
+                $st->is_on_leave_today = $st->leave_ranges->contains(function ($r) use ($today) {
+                    return $today >= $r['start'] && $today <= $r['end'];
+                });
+
+                return $st;
+            });
+
+        // Pada mode Walk-In, stylist yang sedang cuti hari ini tidak akan dimunculkan
+        if ($walkIn) {
+            $stylists = $stylists->filter(function ($st) {
+                return !$st->is_on_leave_today;
+            })->values();
+        }
 
         return view('booking.booking-wizard', compact(
             'outlets', 'categories', 'services', 'stylists', 'walkIn', 
@@ -118,7 +148,7 @@ class BookingController extends Controller
         $dayName = strtolower($carbonDate->format('l'));
         $outletHours = ($outlet && isset($outlet->opening_hours[$dayName])) ? $outlet->opening_hours[$dayName] : null;
         $defaultOpen = ($outletHours && isset($outletHours['open'])) ? $outletHours['open'] : '10:00';
-        $defaultClose = ($outletHours && isset($outletHours['close'])) ? $outletHours['close'] : '20:00';
+        $defaultClose = ($outletHours && isset($outletHours['close'])) ? $outletHours['close'] : '21:00';
         $isOutletOpen = $outletHours ? (bool)($outletHours['is_open'] ?? true) : true;
 
         foreach ($stylists as $stylist) {
@@ -130,17 +160,26 @@ class BookingController extends Controller
                 $isWalkIn
             );
 
+            // Cek apakah stylist sedang cuti pada tanggal ini
+            $isOnLeave = DB::table('stylist_leaves')
+                ->where('stylist_id', $stylist->id)
+                ->where('status', 'approved')
+                ->where('start_date', '<=', $date)
+                ->where('end_date', '>=', $date)
+                ->exists();
+
             $schedule = DB::table('stylist_schedules')
                 ->where('stylist_id', $stylist->id)
                 ->where('day_of_week', $dayOfWeek)
                 ->first();
 
-            $isWorking = $schedule ? (bool)$schedule->is_working : $isOutletOpen;
+            $isWorking = (!$isOnLeave) && ($schedule ? (bool)$schedule->is_working : $isOutletOpen);
             $startTime = ($schedule && $schedule->start_time) ? substr($schedule->start_time, 0, 5) : $defaultOpen;
             $endTime = ($schedule && $schedule->end_time) ? substr($schedule->end_time, 0, 5) : $defaultClose;
 
             $workingHours[$stylist->id] = [
                 'is_working' => $isWorking,
+                'is_on_leave' => $isOnLeave,
                 'start_time' => $startTime,
                 'end_time' => $endTime,
             ];
@@ -200,9 +239,15 @@ class BookingController extends Controller
             }
         }
 
+        // Filter stylist yang benar-benar bertugas pada tanggal ini (tidak sedang cuti)
+        $availableStylists = $stylists->filter(function ($st) use ($workingHours) {
+            return !empty($workingHours[$st->id]['is_working']);
+        })->values();
+
         return response()->json([
             'slots' => $slots,
-            'stylists' => $stylists,
+            'stylists' => $availableStylists,
+            'all_stylists' => $stylists,
             'busy_intervals' => $busyIntervals,
             'free_windows' => $freeWindows,
             'working_hours' => $workingHours,

@@ -71,13 +71,35 @@ class AvailabilityService
             return [];
         }
 
-        $defaultOpen = ($outletHours && !empty($outletHours['open'])) ? $outletHours['open'] . ':00' : '10:00:00';
-        $defaultClose = ($outletHours && !empty($outletHours['close'])) ? $outletHours['close'] . ':00' : '20:00:00';
+        $defaultOpen = ($outletHours && !empty($outletHours['open'])) ? $outletHours['open'] . ':00' : '09:00:00';
+        $defaultClose = ($outletHours && !empty($outletHours['close'])) ? $outletHours['close'] . ':00' : '21:00:00';
 
-        $startTimeStr = ($schedule && $schedule->start_time) ? $schedule->start_time : $defaultOpen;
-        $endTimeStr = ($schedule && $schedule->end_time) ? $schedule->end_time : $defaultClose;
+        $outletOpenParts = explode(':', $defaultOpen);
+        $outletOpenMin = ((int)$outletOpenParts[0] * 60) + (int)($outletOpenParts[1] ?? 0);
+        $outletCloseParts = explode(':', $defaultClose);
+        $outletCloseMin = ((int)$outletCloseParts[0] * 60) + (int)($outletCloseParts[1] ?? 0);
 
-        $leadTimeHours = $outlet ? $outlet->booking_lead_time_hours : 1;
+        if ($schedule && $schedule->start_time) {
+            $sParts = explode(':', $schedule->start_time);
+            $stylistStartMin = ((int)$sParts[0] * 60) + (int)($sParts[1] ?? 0);
+        } else {
+            $stylistStartMin = $outletOpenMin;
+        }
+
+        if ($schedule && $schedule->end_time) {
+            $eParts = explode(':', $schedule->end_time);
+            $stylistEndMin = ((int)$eParts[0] * 60) + (int)($eParts[1] ?? 0);
+        } else {
+            $stylistEndMin = $outletCloseMin;
+        }
+
+        // Available slots must strictly be within BOTH outlet hours and stylist working hours
+        $startMin = max($outletOpenMin, $stylistStartMin);
+        $endMin   = min($outletCloseMin, $stylistEndMin);
+
+        if ($startMin >= $endMin) {
+            return [];
+        }
 
         // Pre-parse booked intervals as minute integers from midnight for lightning-fast collision check
         $bookedIntervals = [];
@@ -91,11 +113,6 @@ class AvailabilityService
             }
         }
 
-        $startParts = explode(':', $startTimeStr);
-        $endParts = explode(':', $endTimeStr);
-        $startMin = ((int)$startParts[0] * 60) + (int)($startParts[1] ?? 0);
-        $endMin = ((int)$endParts[0] * 60) + (int)($endParts[1] ?? 0);
-
         $now = Carbon::now();
         $isToday = ($dateString === $now->toDateString());
         $nowMin = ($now->hour * 60) + $now->minute;
@@ -105,12 +122,15 @@ class AvailabilityService
         // Sesi treatment dan haircut diset 1 jam (60 menit) per jam bulat
         $sessionDuration = max(60, $duration);
 
-        // Generate kandidat jam per jam bulat (misal 10:00, 11:00, 12:00, 13:00, dst.)
+        // Toleransi order: sisa waktu operasional sebelum tutup minimal 45 menit
+        $latestOrderMin = $endMin - 45;
+
+        // Generate kandidat jam per jam bulat (misal 10:00, 11:00, 12:00, ..., 20:00)
         $startHour = (int)ceil($startMin / 60);
-        $endHour = (int)floor($endMin / 60);
+        $endHour = (int)floor($latestOrderMin / 60);
 
         $candidateMinutes = [];
-        for ($h = $startHour; ($h * 60) + $sessionDuration <= $endMin; $h++) {
+        for ($h = $startHour; ($h * 60) <= $latestOrderMin; $h++) {
             $candidateMinutes[] = $h * 60;
         }
 
@@ -120,8 +140,8 @@ class AvailabilityService
         foreach ($candidateMinutes as $slotStartMin) {
             $slotEndMin = $slotStartMin + $sessionDuration;
 
-            // Pastikan dalam batas jam kerja
-            if ($slotStartMin < $startMin || $slotEndMin > $endMin) {
+            // Pastikan jam mulai sesi berada dalam rentang toleransi operasional
+            if ($slotStartMin < $startMin || $slotStartMin > $latestOrderMin) {
                 continue;
             }
 
@@ -235,14 +255,46 @@ class AvailabilityService
 
         $endTime = $startTime->copy()->addMinutes($duration);
 
+        // Check outlet operating hours (sisa waktu minimal 45 menit sebelum tutup)
+        $outlet = Outlet::find($outletId);
+        $dayName = strtolower($date->format('l'));
+        $outletHours = ($outlet && isset($outlet->opening_hours[$dayName])) ? $outlet->opening_hours[$dayName] : null;
+        if ($outletHours) {
+            $isOutletOpen = (bool)($outletHours['is_open'] ?? true);
+            if (!$isOutletOpen) {
+                return ['available' => false, 'message' => "Outlet tutup pada hari yang dipilih."];
+            }
+            $outletOpen = Carbon::createFromFormat('H:i', $outletHours['open'] ?? '09:00');
+            $outletClose = Carbon::createFromFormat('H:i', $outletHours['close'] ?? '21:00');
+            $maxOutletAllowedStart = $outletClose->copy()->subMinutes(45);
+
+            if ($startTime->lt($outletOpen) || $startTime->gt($maxOutletAllowedStart)) {
+                return [
+                    'available' => false,
+                    'message' => "Outlet tutup pukul {$outletClose->format('H:i')} WIB. Pemesanan membutuhkan sisa waktu minimal 45 menit sebelum tutup (order terakhir maksimal jam {$maxOutletAllowedStart->format('H:i')} WIB)."
+                ];
+            }
+
+            // Validasi khusus walk-in hari ini jika sisa waktu sekarang < 45 menit
+            if ($isWalkIn && $dateString === Carbon::today()->toDateString()) {
+                if (Carbon::now()->addMinutes(45)->gt($outletClose)) {
+                    return [
+                        'available' => false,
+                        'message' => "Walk-in saat ini ditutup karena sisa waktu operasional kurang dari 45 menit sebelum outlet tutup ({$outletClose->format('H:i')} WIB)."
+                    ];
+                }
+            }
+        }
+
         $workStart = Carbon::createFromFormat('H:i:s', $schedule->start_time);
         $workEnd = Carbon::createFromFormat('H:i:s', $schedule->end_time);
+        $maxStylistAllowedStart = $workEnd->copy()->subMinutes(45);
 
-        // Check working hours
-        if ($startTime->lt($workStart) || $endTime->gt($workEnd)) {
+        // Check stylist working hours (sisa waktu minimal 45 menit sebelum selesai)
+        if ($startTime->lt($workStart) || $startTime->gt($maxStylistAllowedStart)) {
             return [
                 'available' => false,
-                'message' => "Jam operasional stylist {$stylist->name} adalah {$workStart->format('H:i')} - {$workEnd->format('H:i')} WIB."
+                'message' => "Stylist {$stylist->name} selesai bertugas pukul {$workEnd->format('H:i')} WIB. Pemesanan membutuhkan sisa waktu minimal 45 menit sebelum selesai (order terakhir maksimal jam {$maxStylistAllowedStart->format('H:i')} WIB)."
             ];
         }
 
