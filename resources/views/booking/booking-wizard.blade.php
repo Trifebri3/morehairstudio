@@ -566,7 +566,9 @@
                                         </template>
                                     </div>
                                 </div>
-                                              <!-- REGULAR BOOKING ONLY: Manual Time & Quick Recommendations -->
+                            </div>
+
+                            <!-- REGULAR BOOKING ONLY: Manual Time & Quick Recommendations -->
                             <div x-show="!isWalkIn && !(selectedStylist && isStylistOnLeave(selectedStylist, selectedDate))" class="pt-4 border-t border-stone-100 space-y-5">
                                 <!-- 1. PILIH JAM SESI (BEBAS / MANUAL) - TETAP DI ATAS -->
                                 <div>
