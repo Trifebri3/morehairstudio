@@ -15,7 +15,8 @@ class Booking extends Model
         'booking_code', 'booking_token', 'customer_id', 'outlet_id',
         'stylist_id', 'booking_date', 'checked_in_at', 'service_start_at',
         'service_end_at', 'service_duration_minutes', 'status', 'source',
-        'total_amount', 'discount_amount', 'net_amount', 'promo_code', 'notes'
+        'total_amount', 'discount_amount', 'net_amount', 'promo_code', 'notes',
+        'referral_source'
     ];
 
     protected $casts = [

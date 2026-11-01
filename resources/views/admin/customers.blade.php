@@ -58,7 +58,7 @@
                     </div>
                     <div>
                         <x-ui.select label="Saluran Akuisisi" name="first_acquisition_source">
-                            @foreach(['Website', 'WhatsApp', 'Instagram', 'TikTok', 'Google', 'Google Maps', 'Referral', 'Walk-in', 'Friend / Family', 'Offline Campaign', 'Event', 'Advertisement', 'Existing Customer', 'Other'] as $src)
+                            @foreach(['Website', 'WhatsApp', 'Instagram', 'IG Capters', 'TikTok', 'Google', 'Google Maps', 'Kabar / Teman', 'Referral', 'Walk-in', 'Friend / Family', 'Offline Campaign', 'Event', 'Advertisement', 'Existing Customer', 'Other'] as $src)
                                 <option value="{{ $src }}" {{ old('first_acquisition_source', $editingCustomer ? $editingCustomer->first_acquisition_source : 'Instagram') === $src ? 'selected' : '' }}>{{ $src }}</option>
                             @endforeach
                         </x-ui.select>

@@ -30,6 +30,8 @@ class CreateBooking
 
             // 2. Find or create Customer record
             $customer = Customer::where('phone', $phone)->first();
+            $referralSource = !empty($data['referral_source']) ? trim($data['referral_source']) : null;
+
             if (!$customer) {
                 $count = Customer::count() + 1;
                 $customerCode = 'CUST-' . str_pad((string)$count, 5, '0', STR_PAD_LEFT);
@@ -41,6 +43,9 @@ class CreateBooking
                     'email' => !empty($data['email']) ? $data['email'] : null,
                     'birth_date' => !empty($data['birth_date']) ? $data['birth_date'] : null,
                     'gender' => !empty($data['gender']) ? $data['gender'] : null,
+                    'first_acquisition_source' => $referralSource ?: (($data['source'] ?? '') === 'walk_in' ? 'Walk-in' : 'Website'),
+                    'latest_acquisition_source' => $referralSource ?: (($data['source'] ?? '') === 'walk_in' ? 'Walk-in' : 'Website'),
+                    'acquisition_metadata' => $referralSource ? ['referral_source' => $referralSource] : null,
                 ]);
             } else {
                 // Pre-fill / update missing values
@@ -53,6 +58,15 @@ class CreateBooking
                 }
                 if (!$customer->gender && !empty($data['gender'])) {
                     $updatedData['gender'] = $data['gender'];
+                }
+                if ($referralSource) {
+                    if (!$customer->first_acquisition_source || in_array($customer->first_acquisition_source, ['Website', 'Walk-in'])) {
+                        $updatedData['first_acquisition_source'] = $referralSource;
+                    }
+                    $updatedData['latest_acquisition_source'] = $referralSource;
+                    $meta = $customer->acquisition_metadata ?? [];
+                    $meta['latest_referral'] = $referralSource;
+                    $updatedData['acquisition_metadata'] = $meta;
                 }
                 if (!empty($updatedData)) {
                     $customer->update($updatedData);
@@ -207,7 +221,7 @@ class CreateBooking
             $bookingCode = BookingCodeService::generateCode($dateString);
             $bookingToken = BookingCodeService::generateToken();
 
-            $booking = Booking::create([
+            $bookingData = [
                 'booking_code' => $bookingCode,
                 'booking_token' => $bookingToken,
                 'customer_id' => $customer->id,
@@ -221,7 +235,13 @@ class CreateBooking
                 'net_amount' => $netAmount,
                 'promo_code' => $data['promo_code'] ?? null,
                 'notes' => $data['notes'] ?? null,
-            ]);
+            ];
+
+            if ($referralSource) {
+                $bookingData['referral_source'] = $referralSource;
+            }
+
+            $booking = Booking::create($bookingData);
 
             // Save booking item
             BookingItem::create([

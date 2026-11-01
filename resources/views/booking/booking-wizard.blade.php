@@ -814,6 +814,85 @@
                             </div>
                         </div>
 
+                        <!-- Dari Mana Tahu MORE Section -->
+                        <div class="pt-3 border-t border-stone-100">
+                            <label class="block text-[10px] uppercase tracking-widest text-stone-400 font-extrabold mb-2">
+                                {{ $isId ? 'Dari Mana Tahu MORE?' : 'How Did You Hear About MORE?' }}
+                            </label>
+
+                            <div class="grid grid-cols-1 gap-4" :class="referralSource === 'Lainnya' ? 'md:grid-cols-2' : ''">
+                                <div>
+                                    <select x-model="referralSource" class="w-full px-4 py-3 bg-[#fafaf9] border border-stone-200 rounded-xl text-xs text-stone-900 focus:outline-none focus:border-[#c9512d] transition">
+                                        <option value="">{{ $isId ? 'Pilih salah satu...' : 'Select an option...' }}</option>
+                                        <option value="Instagram">Instagram (IG)</option>
+                                        <option value="WhatsApp">WhatsApp (WA)</option>
+                                        <option value="IG Capters">IG Capters</option>
+                                        <option value="Kabar / Teman">{{ $isId ? 'Kabar / Rekomendasi Teman' : 'Word of Mouth / Friend' }}</option>
+                                        <option value="TikTok">TikTok</option>
+                                        <option value="Google">Google</option>
+                                        <option value="Lainnya">{{ $isId ? 'Lainnya (Bisa diisi sendiri)' : 'Other (Please specify)' }}</option>
+                                    </select>
+
+                                    <!-- Quick selection pills -->
+                                    <div class="flex flex-wrap gap-1.5 mt-2.5">
+                                        <button type="button" 
+                                                @click="referralSource = 'Instagram'" 
+                                                :class="referralSource === 'Instagram' ? 'bg-[#c9512d] text-white border-[#c9512d] shadow-2xs' : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-300 hover:bg-stone-100'" 
+                                                class="px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition">
+                                            IG
+                                        </button>
+                                        <button type="button" 
+                                                @click="referralSource = 'WhatsApp'" 
+                                                :class="referralSource === 'WhatsApp' ? 'bg-[#c9512d] text-white border-[#c9512d] shadow-2xs' : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-300 hover:bg-stone-100'" 
+                                                class="px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition">
+                                            WA
+                                        </button>
+                                        <button type="button" 
+                                                @click="referralSource = 'IG Capters'" 
+                                                :class="referralSource === 'IG Capters' ? 'bg-[#c9512d] text-white border-[#c9512d] shadow-2xs' : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-300 hover:bg-stone-100'" 
+                                                class="px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition">
+                                            IG Capters
+                                        </button>
+                                        <button type="button" 
+                                                @click="referralSource = 'Kabar / Teman'" 
+                                                :class="referralSource === 'Kabar / Teman' ? 'bg-[#c9512d] text-white border-[#c9512d] shadow-2xs' : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-300 hover:bg-stone-100'" 
+                                                class="px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition">
+                                            Kabar / Teman
+                                        </button>
+                                        <button type="button" 
+                                                @click="referralSource = 'TikTok'" 
+                                                :class="referralSource === 'TikTok' ? 'bg-[#c9512d] text-white border-[#c9512d] shadow-2xs' : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-300 hover:bg-stone-100'" 
+                                                class="px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition">
+                                            TikTok
+                                        </button>
+                                        <button type="button" 
+                                                @click="referralSource = 'Google'" 
+                                                :class="referralSource === 'Google' ? 'bg-[#c9512d] text-white border-[#c9512d] shadow-2xs' : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-300 hover:bg-stone-100'" 
+                                                class="px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition">
+                                            Google
+                                        </button>
+                                        <button type="button" 
+                                                @click="referralSource = 'Lainnya'" 
+                                                :class="referralSource === 'Lainnya' ? 'bg-[#c9512d] text-white border-[#c9512d] shadow-2xs' : 'bg-stone-50 text-stone-600 border-stone-200 hover:border-stone-300 hover:bg-stone-100'" 
+                                                class="px-2.5 py-1 text-[11px] font-semibold rounded-lg border transition">
+                                            Lainnya...
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div x-show="referralSource === 'Lainnya'" x-transition x-cloak>
+                                    <x-ui.input 
+                                        label="{{ $isId ? 'Tuliskan Dari Mana Tahu MORE' : 'Specify Other Source' }}" 
+                                        placeholder="{{ $isId ? 'e.g. Spanduk, brosur, podcast, acara, rekomendasi...' : 'e.g. Billboard, flyer, event, etc...' }}" 
+                                        x-model="referralSourceOther" 
+                                    />
+                                    <p class="text-[10px] text-stone-400 mt-1 italic">
+                                        {{ $isId ? '*Ketik sumber informasi lainnya di sini' : '*Type your other referral source here' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Walk-In Instant Check-In Info Note -->
                         <div x-show="isWalkIn" class="p-4 rounded-xl bg-stone-50 border border-stone-200 text-stone-600 text-xs flex items-center gap-3">
                             <div class="w-8 h-8 rounded-lg bg-[#faede7] text-[#c9512d] flex items-center justify-center flex-shrink-0">
@@ -1119,6 +1198,8 @@ function bookingWizard() {
         email: '',
         birthDate: '',
         gender: '',
+        referralSource: '',
+        referralSourceOther: '',
         notes: '',
 
         // Promo
@@ -1233,6 +1314,8 @@ function bookingWizard() {
                     if (draft.email) this.email = draft.email;
                     if (draft.birthDate) this.birthDate = draft.birthDate;
                     if (draft.gender) this.gender = draft.gender;
+                    if (draft.referralSource) this.referralSource = draft.referralSource;
+                    if (draft.referralSourceOther) this.referralSourceOther = draft.referralSourceOther;
                     if (draft.notes) this.notes = draft.notes;
                     if (draft.promoCode) this.promoCode = draft.promoCode;
                     if (draft.step) this.step = draft.step;
@@ -1273,6 +1356,8 @@ function bookingWizard() {
             this.$watch('email', () => this.saveDraft());
             this.$watch('birthDate', () => this.saveDraft());
             this.$watch('gender', () => this.saveDraft());
+            this.$watch('referralSource', () => this.saveDraft());
+            this.$watch('referralSourceOther', () => this.saveDraft());
             this.$watch('notes', () => this.saveDraft());
             this.$watch('promoCode', () => this.saveDraft());
             this.$watch('step', () => {
@@ -1300,6 +1385,8 @@ function bookingWizard() {
                 email: this.email,
                 birthDate: this.birthDate,
                 gender: this.gender,
+                referralSource: this.referralSource,
+                referralSourceOther: this.referralSourceOther,
                 notes: this.notes,
                 promoCode: this.promoCode
             };
@@ -1811,6 +1898,15 @@ function bookingWizard() {
                     this.email = data.customer.email;
                     this.birthDate = data.customer.birth_date;
                     this.gender = data.customer.gender;
+                    if (data.customer.referral_source && !this.referralSource) {
+                        const standardSources = ['Instagram', 'WhatsApp', 'IG Capters', 'Kabar / Teman', 'TikTok', 'Google'];
+                        if (standardSources.includes(data.customer.referral_source)) {
+                            this.referralSource = data.customer.referral_source;
+                        } else {
+                            this.referralSource = 'Lainnya';
+                            this.referralSourceOther = data.customer.referral_source.replace(/^Lainnya:\s*/i, '');
+                        }
+                    }
                     this.autoFillSuccess = 'Data profil ditemukan dan terisi otomatis!';
                 }
             } catch (e) {
@@ -1861,6 +1957,13 @@ function bookingWizard() {
             this.submittingSubtitle = 'Mohon tunggu sebentar, sistem sedang memverifikasi slot dan mengonfirmasi reservasi Anda.';
             this.submittingText = this.isWalkIn ? 'Mendaftarkan Sesi Walk-In...' : 'Sedang Memproses Reservasi...';
 
+            let finalReferral = this.referralSource;
+            if (this.referralSource === 'Lainnya') {
+                finalReferral = (this.referralSourceOther && this.referralSourceOther.trim()) 
+                    ? `Lainnya: ${this.referralSourceOther.trim()}` 
+                    : 'Lainnya';
+            }
+
             try {
                 const res = await fetch('/booking/confirm', {
                     method: 'POST',
@@ -1874,6 +1977,7 @@ function bookingWizard() {
                         email: this.email,
                         birth_date: this.birthDate,
                         gender: this.gender,
+                        referral_source: finalReferral,
                         outlet_id: this.selectedOutletId,
                         service_id: this.selectedServiceId,
                         stylist_id: this.selectedStylistId,

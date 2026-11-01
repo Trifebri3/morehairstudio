@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('page_title')
     CRM Customer Intelligence
@@ -100,7 +100,7 @@
                 <label class="block text-[10px] uppercase font-bold text-stone-400 mb-1">Saluran Akuisisi</label>
                 <select name="filterSource" onchange="this.form.submit()" class="w-full text-xs rounded-xl border-stone-200 bg-stone-50/50 h-9 px-3 text-stone-770">
                     <option value="">Semua Rujukan</option>
-                    @foreach(['Website', 'WhatsApp', 'Instagram', 'TikTok', 'Google', 'Google Maps', 'Referral', 'Walk-in', 'Friend / Family', 'Offline Campaign', 'Event', 'Advertisement', 'Existing Customer', 'Other'] as $src)
+                    @foreach(['Website', 'WhatsApp', 'Instagram', 'IG Capters', 'TikTok', 'Google', 'Google Maps', 'Kabar / Teman', 'Referral', 'Walk-in', 'Friend / Family', 'Offline Campaign', 'Event', 'Advertisement', 'Existing Customer', 'Other'] as $src)
                         <option value="{{ $src }}" {{ $filterSource === $src ? 'selected' : '' }}>{{ $src }}</option>
                     @endforeach
                 </select>

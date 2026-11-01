@@ -52,6 +52,14 @@
                             <td class="py-3 px-4">
                                 <span class="font-bold text-stone-900 block">{{ $booking->customer->name }}</span>
                                 <span class="text-stone-400 font-mono block mt-0.5">{{ $booking->customer->phone }}</span>
+                                @php
+                                    $refSource = $booking->referral_source ?? $booking->customer->latest_acquisition_source ?? null;
+                                @endphp
+                                @if($refSource && !in_array($refSource, ['Website', 'Walk-in']))
+                                    <span class="inline-block mt-1 text-[9px] font-medium px-2 py-0.5 rounded-md bg-[#faede7] text-[#c9512d] border border-[#c9512d]/20">
+                                        Dari: {{ $refSource }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="py-3 px-4 font-medium text-stone-600">{{ $booking->stylist ? $booking->stylist->name : 'Any Stylist' }}</td>
                             <td class="py-3 px-4">

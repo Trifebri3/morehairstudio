@@ -366,7 +366,8 @@ class BookingController extends Controller
                     'name' => $customer->name,
                     'email' => $customer->email,
                     'birth_date' => $customer->birth_date ? $customer->birth_date->toDateString() : '',
-                    'gender' => $customer->gender
+                    'gender' => $customer->gender,
+                    'referral_source' => $customer->latest_acquisition_source ?? $customer->first_acquisition_source ?? ''
                 ]
             ]);
         }
@@ -432,6 +433,7 @@ class BookingController extends Controller
             'email' => 'nullable|email',
             'birth_date' => 'nullable|date',
             'gender' => 'nullable|in:male,female',
+            'referral_source' => 'nullable|string|max:255',
             'outlet_id' => 'required|integer',
             'service_id' => 'required|integer',
             'stylist_id' => 'required|integer',
@@ -499,6 +501,7 @@ class BookingController extends Controller
                 'email' => $request->email,
                 'birth_date' => $request->birth_date,
                 'gender' => $request->gender,
+                'referral_source' => $request->referral_source,
                 'outlet_id' => $request->outlet_id,
                 'service_id' => $request->service_id,
                 'stylist_id' => $request->stylist_id,
