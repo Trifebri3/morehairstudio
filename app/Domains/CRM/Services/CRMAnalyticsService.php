@@ -163,53 +163,8 @@ class CRMAnalyticsService
                 ->toArray();
         }
 
-        // 3. Normalize & group
-        $grouped = [];
-        $details = []; // holds custom "Lainnya: ..." specific text
-
-        $normalize = function ($str) {
-            $s = trim($str);
-            if (preg_match('/^ig\b|^instagram/i', $s)) {
-                if (stripos($s, 'capter') !== false) return 'IG Capters';
-                return 'Instagram';
-            }
-            if (preg_match('/^wa\b|^whatsapp/i', $s)) return 'WhatsApp';
-            if (stripos($s, 'capter') !== false) return 'IG Capters';
-            if (preg_match('/kabar|teman|mulut|rekomendasi|friend/i', $s)) return 'Kabar / Teman';
-            if (stripos($s, 'tiktok') !== false) return 'TikTok';
-            if (stripos($s, 'google') !== false) return 'Google';
-            if (stripos($s, 'lainnya') === 0 || stripos($s, 'other') === 0) return 'Lainnya';
-            return $s;
-        };
-
-        foreach ($bookingCounts as $rawSource => $count) {
-            $norm = $normalize($rawSource);
-            $grouped[$norm] = ($grouped[$norm] ?? 0) + $count;
-            if (stripos($rawSource, 'Lainnya:') === 0) {
-                $customText = trim(substr($rawSource, 8));
-                if ($customText) {
-                    $details[$customText] = ($details[$customText] ?? 0) + $count;
-                }
-            }
-        }
-
-        foreach ($customerCounts as $rawSource => $count) {
-            $norm = $normalize($rawSource);
-            if (!isset($grouped[$norm])) {
-                $grouped[$norm] = $count;
-            } else {
-                $grouped[$norm] = max($grouped[$norm], $count);
-            }
-            if (stripos($rawSource, 'Lainnya:') === 0) {
-                $customText = trim(substr($rawSource, 8));
-                if ($customText) {
-                    $details[$customText] = ($details[$customText] ?? 0) + $count;
-                }
-            }
-        }
-
-        // Base channels list
-        $defaultCategories = [
+        // 3. Normalize & group strictly to the 7 referral survey channels
+        $grouped = [
             'Instagram' => 0,
             'WhatsApp' => 0,
             'IG Capters' => 0,
@@ -218,15 +173,58 @@ class CRMAnalyticsService
             'Google' => 0,
             'Lainnya' => 0,
         ];
-        foreach ($defaultCategories as $cat => $val) {
-            if (!isset($grouped[$cat])) {
-                $grouped[$cat] = 0;
+        $details = []; // holds custom write-in answers from 'Lainnya'
+
+        $normalize = function ($str) {
+            $s = trim($str ?? '');
+            if (empty($s)) return null;
+            
+            // Ignore system/technical non-survey defaults
+            if (in_array(strtolower($s), ['website', 'walk-in', 'walk_in', 'null', 'none', '-', 'existing customer', 'direct'])) {
+                return null;
+            }
+
+            if (preg_match('/^ig\b|^instagram/i', $s)) {
+                if (stripos($s, 'capter') !== false) return 'IG Capters';
+                return 'Instagram';
+            }
+            if (preg_match('/^wa\b|^whatsapp/i', $s)) return 'WhatsApp';
+            if (stripos($s, 'capter') !== false) return 'IG Capters';
+            if (preg_match('/kabar|teman|mulut|rekomendasi|kerabat|friend|family/i', $s)) return 'Kabar / Teman';
+            if (stripos($s, 'tiktok') !== false) return 'TikTok';
+            if (stripos($s, 'google') !== false) return 'Google';
+            
+            return 'Lainnya';
+        };
+
+        // Count booking referral sources
+        foreach ($bookingCounts as $rawSource => $count) {
+            $norm = $normalize($rawSource);
+            if ($norm) {
+                $grouped[$norm] = ($grouped[$norm] ?? 0) + $count;
+            }
+            if (stripos($rawSource, 'Lainnya:') === 0) {
+                $customText = trim(substr($rawSource, 8));
+                if ($customText) {
+                    $details[$customText] = ($details[$customText] ?? 0) + $count;
+                }
+            } elseif ($norm === 'Lainnya' && !in_array(strtolower($rawSource), ['lainnya', 'other'])) {
+                $details[$rawSource] = ($details[$rawSource] ?? 0) + $count;
             }
         }
 
-        // Filter out system technical sources if present (like generic 'Website' if other real sources exist)
-        if (isset($grouped['Website']) && $grouped['Website'] > 0 && (array_sum($grouped) - $grouped['Website']) > 0) {
-            // Keep it but labeled as Website Direct
+        // Count customer-level sources (ignoring legacy defaults like 'Website')
+        foreach ($customerCounts as $rawSource => $count) {
+            $norm = $normalize($rawSource);
+            if ($norm) {
+                $grouped[$norm] = max($grouped[$norm] ?? 0, $count);
+            }
+            if (stripos($rawSource, 'Lainnya:') === 0) {
+                $customText = trim(substr($rawSource, 8));
+                if ($customText) {
+                    $details[$customText] = ($details[$customText] ?? 0) + $count;
+                }
+            }
         }
 
         // Sort descending (most popular / highest on top)
@@ -237,30 +235,79 @@ class CRMAnalyticsService
         $rank = 1;
 
         $colors = [
-            'Instagram' => ['bg' => 'from-pink-500 to-rose-500', 'text' => 'text-pink-600', 'badge' => 'bg-pink-50 text-pink-700 border-pink-200', 'bar' => 'bg-gradient-to-r from-pink-500 to-rose-500'],
-            'WhatsApp' => ['bg' => 'from-emerald-500 to-green-600', 'text' => 'text-emerald-600', 'badge' => 'bg-emerald-50 text-emerald-700 border-emerald-200', 'bar' => 'bg-gradient-to-r from-emerald-500 to-green-600'],
-            'IG Capters' => ['bg' => 'from-purple-500 to-indigo-600', 'text' => 'text-purple-600', 'badge' => 'bg-purple-50 text-purple-700 border-purple-200', 'bar' => 'bg-gradient-to-r from-purple-500 to-indigo-600'],
-            'Kabar / Teman' => ['bg' => 'from-amber-400 to-amber-600', 'text' => 'text-amber-600', 'badge' => 'bg-amber-50 text-amber-700 border-amber-200', 'bar' => 'bg-gradient-to-r from-amber-400 to-amber-600'],
-            'TikTok' => ['bg' => 'from-stone-900 to-stone-700', 'text' => 'text-stone-900', 'badge' => 'bg-stone-100 text-stone-800 border-stone-300', 'bar' => 'bg-stone-900'],
-            'Google' => ['bg' => 'from-blue-500 to-cyan-600', 'text' => 'text-blue-600', 'badge' => 'bg-blue-50 text-blue-700 border-blue-200', 'bar' => 'bg-gradient-to-r from-blue-500 to-cyan-600'],
-            'Lainnya' => ['bg' => 'from-stone-400 to-stone-500', 'text' => 'text-stone-600', 'badge' => 'bg-stone-50 text-stone-700 border-stone-200', 'bar' => 'bg-stone-400'],
+            'Instagram' => [
+                'icon' => '📸',
+                'badge' => 'bg-pink-50 text-pink-700 border-pink-200',
+                'bar' => 'bg-gradient-to-r from-pink-500 to-rose-500',
+                'border' => 'hover:border-pink-300',
+                'dot' => 'bg-pink-500'
+            ],
+            'WhatsApp' => [
+                'icon' => '💬',
+                'badge' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                'bar' => 'bg-emerald-500',
+                'border' => 'hover:border-emerald-300',
+                'dot' => 'bg-emerald-500'
+            ],
+            'IG Capters' => [
+                'icon' => '✂️',
+                'badge' => 'bg-purple-50 text-purple-700 border-purple-200',
+                'bar' => 'bg-purple-600',
+                'border' => 'hover:border-purple-300',
+                'dot' => 'bg-purple-600'
+            ],
+            'Kabar / Teman' => [
+                'icon' => '🗣️',
+                'badge' => 'bg-amber-50 text-amber-700 border-amber-200',
+                'bar' => 'bg-amber-500',
+                'border' => 'hover:border-amber-300',
+                'dot' => 'bg-amber-500'
+            ],
+            'TikTok' => [
+                'icon' => '🎵',
+                'badge' => 'bg-stone-100 text-stone-900 border-stone-300',
+                'bar' => 'bg-stone-900',
+                'border' => 'hover:border-stone-400',
+                'dot' => 'bg-stone-900'
+            ],
+            'Google' => [
+                'icon' => '🔍',
+                'badge' => 'bg-blue-50 text-blue-700 border-blue-200',
+                'bar' => 'bg-blue-600',
+                'border' => 'hover:border-blue-300',
+                'dot' => 'bg-blue-600'
+            ],
+            'Lainnya' => [
+                'icon' => '📝',
+                'badge' => 'bg-stone-50 text-stone-600 border-stone-200',
+                'bar' => 'bg-stone-500',
+                'border' => 'hover:border-stone-300',
+                'dot' => 'bg-stone-500'
+            ],
         ];
 
         $topItem = null;
         foreach ($grouped as $channel => $count) {
             $pct = $total > 0 ? round(($count / $total) * 100, 1) : 0;
-            $styling = $colors[$channel] ?? ['bg' => 'from-stone-500 to-stone-600', 'text' => 'text-stone-700', 'badge' => 'bg-stone-100 text-stone-700 border-stone-200', 'bar' => 'bg-stone-500'];
+            $styling = $colors[$channel] ?? [
+                'icon' => '📌',
+                'badge' => 'bg-stone-100 text-stone-700 border-stone-200',
+                'bar' => 'bg-stone-500',
+                'border' => 'hover:border-stone-300',
+                'dot' => 'bg-stone-500'
+            ];
             
+            $isTop = ($rank === 1 && $count > 0);
             $item = [
                 'rank' => $rank,
                 'channel' => $channel,
                 'count' => $count,
                 'percentage' => $pct,
                 'styling' => $styling,
-                'is_top' => $rank === 1 && $count > 0,
+                'is_top' => $isTop,
             ];
 
-            if ($rank === 1 && $count > 0) {
+            if ($isTop) {
                 $topItem = $item;
             }
             $rankings[] = $item;

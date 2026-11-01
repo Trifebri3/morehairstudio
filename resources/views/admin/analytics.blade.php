@@ -236,7 +236,7 @@
                             <span class="w-1.5 h-1.5 bg-[#0A3D91] rounded-full animate-ping"></span>
                             Saluran Rujukan (Referral)
                         </h4>
-                        @if(isset($referralStats['top_source']) && $referralStats['top_source'])
+                        @if(isset($referralStats['top_source']) && $referralStats['top_source'] && $referralStats['total'] > 0)
                             <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
                                 🏆 Top: {{ $referralStats['top_source']['channel'] }}
                             </span>

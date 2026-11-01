@@ -19,7 +19,7 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
         <!-- Revenue Card -->
         <x-ui.card subtitle="Total Revenue" title="Rp {{ number_format($totalRevenue, 0, ',', '.') }}">
             <div class="flex items-center space-x-1.5 mt-2 text-[10px] text-green-600 font-extrabold uppercase tracking-wide">
@@ -49,65 +49,109 @@
         </x-ui.card>
     </div>
 
-    <!-- Peringkat Sumber Rujukan (Darimana Tahu MORE) -->
-    <div class="glass-panel p-8 rounded-3xl border border-stone-200 bg-white mb-10 shadow-xs">
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-stone-100">
+    <!-- Peringkat Sumber Informasi (Dari Mana Tahu MORE) -->
+    <div class="glass-panel p-6 sm:p-8 rounded-3xl border border-stone-200 bg-white mb-10 shadow-xs">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-4 border-b border-stone-100">
             <div>
-                <div class="flex items-center gap-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-[#c9512d] animate-pulse"></span>
-                    <h3 class="text-lg font-bold text-stone-900 font-display">Peringkat Sumber Informasi (Dari Mana Tahu MORE)</h3>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-[#faede7] text-[#c9512d] flex items-center justify-center font-bold flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-stone-900 font-display">Sumber Informasi (Dari Mana Tahu MORE)</h3>
+                        <p class="text-xs text-stone-500 mt-0.5">
+                            Peringkat saluran promosi yang paling banyak mendatangkan reservasi & customer.
+                        </p>
+                    </div>
                 </div>
-                <p class="text-xs text-stone-500 mt-1">
-                    Statistik real-time saluran promosi yang paling banyak mendatangkan reservasi & customer.
-                </p>
             </div>
-            <div class="flex items-center gap-3">
-                @if(isset($referralStats['top_source']) && $referralStats['top_source'])
-                    <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+            
+            <div class="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+                @if(isset($referralStats['top_source']) && $referralStats['top_source'] && $referralStats['total'] > 0)
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold shadow-2xs">
                         <span>🏆 Terbanyak:</span>
-                        <span class="text-stone-900 font-extrabold underline decoration-amber-400">{{ $referralStats['top_source']['channel'] }}</span>
-                        <span class="px-2 py-0.5 rounded-full bg-amber-200/70 text-amber-900 text-[10px] font-mono">
+                        <span class="text-stone-950 font-black underline decoration-amber-400">{{ $referralStats['top_source']['channel'] }}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-950 text-[10px] font-mono">
                             {{ $referralStats['top_source']['count'] }} ({{ $referralStats['top_source']['percentage'] }}%)
                         </span>
                     </div>
+                @else
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-stone-50 border border-stone-200 text-stone-500 text-xs font-medium">
+                        <span class="w-2 h-2 rounded-full bg-[#c9512d] animate-pulse"></span>
+                        <span>Menunggu data survei dari reservasi baru</span>
+                    </div>
                 @endif
-                <a href="{{ route('admin.analytics') }}" class="text-xs font-bold text-[#0A3D91] hover:underline flex items-center gap-1">
-                    Lihat Analitik Lengkap &rarr;
+
+                <a href="{{ route('admin.crm') }}" class="text-xs font-bold text-[#0A3D91] hover:underline flex items-center gap-1 flex-shrink-0">
+                    Lihat CRM &rarr;
                 </a>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            @forelse($referralStats['rankings'] as $ref)
-                <div class="p-4 rounded-2xl border transition-all duration-200 {{ $ref['is_top'] ? 'border-amber-300 bg-amber-50/20 shadow-xs' : 'border-stone-200 bg-stone-50/40 hover:bg-white' }}">
-                    <div class="flex items-center justify-between mb-2">
-                        <div class="flex items-center gap-2">
-                            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black font-mono {{ $ref['rank'] === 1 ? 'bg-amber-400 text-amber-950 shadow-xs' : ($ref['rank'] === 2 ? 'bg-stone-300 text-stone-800' : ($ref['rank'] === 3 ? 'bg-amber-700/30 text-amber-900' : 'bg-stone-100 text-stone-500')) }}">
+        @if($referralStats['total'] > 0)
+            <!-- Visual Segmented Proportion Bar -->
+            <div class="mb-6 space-y-2">
+                <div class="flex justify-between items-center text-[11px] font-semibold text-stone-500">
+                    <span>Distribusi Proporsi Sumber Promosi (Total: {{ $referralStats['total'] }} Respon)</span>
+                    <span class="font-mono text-stone-700">100%</span>
+                </div>
+                <div class="w-full h-3 bg-stone-100 rounded-full overflow-hidden flex">
+                    @foreach($referralStats['rankings'] as $ref)
+                        @if($ref['count'] > 0)
+                            <div class="{{ $ref['styling']['bar'] ?? 'bg-stone-500' }} h-full transition-all duration-500" 
+                                 style="width: {{ $ref['percentage'] }}%" 
+                                 title="{{ $ref['channel'] }}: {{ $ref['count'] }} ({{ $ref['percentage'] }}%)">
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <!-- 7 Channels Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+            @foreach($referralStats['rankings'] as $ref)
+                <div class="p-4 rounded-2xl border transition-all duration-200 flex flex-col justify-between relative overflow-hidden {{ $ref['is_top'] ? 'border-amber-400 bg-amber-50/30 shadow-xs ring-1 ring-amber-300' : 'border-stone-200 bg-[#fafaf9] hover:bg-white hover:border-stone-300' }}">
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono font-black {{ $ref['is_top'] ? 'bg-amber-400 text-stone-900 shadow-2xs' : ($ref['rank'] === 2 ? 'bg-stone-200 text-stone-700' : 'bg-stone-150 text-stone-500') }}">
                                 #{{ $ref['rank'] }}
                             </span>
-                            <span class="font-bold text-xs text-stone-900">{{ $ref['channel'] }}</span>
-                            @if($ref['is_top'])
-                                <span class="px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded bg-amber-100 text-amber-800 border border-amber-300">
-                                    Paling Banyak
-                                </span>
-                            @endif
+                            <span class="text-base select-none">{{ $ref['styling']['icon'] ?? '📌' }}</span>
                         </div>
-                        <div class="text-right">
-                            <span class="font-mono font-bold text-xs text-stone-900">{{ $ref['count'] }}</span>
-                            <span class="text-[10px] text-stone-400 font-mono">({{ $ref['percentage'] }}%)</span>
-                        </div>
+
+                        <span class="font-bold text-xs text-stone-900 block truncate" title="{{ $ref['channel'] }}">
+                            {{ $ref['channel'] }}
+                        </span>
+
+                        @if($ref['is_top'])
+                            <span class="inline-block mt-1 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider rounded bg-amber-200 text-amber-900 border border-amber-300">
+                                🏆 Terbanyak
+                            </span>
+                        @endif
                     </div>
 
-                    <!-- Progress Bar -->
-                    <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
-                        <div class="h-full rounded-full transition-all duration-500 {{ $ref['is_top'] ? 'bg-gradient-to-r from-amber-500 to-[#c9512d]' : ($ref['styling']['bar'] ?? 'bg-stone-600') }}" style="width: {{ max(4, $ref['percentage']) }}%"></div>
+                    <div class="mt-4 pt-2 border-t border-stone-200/50">
+                        <div class="flex items-baseline justify-between mb-1.5">
+                            <div class="flex items-baseline gap-1">
+                                <span class="font-mono font-black text-lg text-stone-900">{{ $ref['count'] }}</span>
+                                <span class="text-[10px] text-stone-400">order</span>
+                            </div>
+                            <span class="font-mono text-xs font-bold {{ $ref['is_top'] ? 'text-amber-800' : 'text-stone-500' }}">
+                                {{ $ref['percentage'] }}%
+                            </span>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-stone-200/60 h-1.5 rounded-full overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500 {{ $ref['styling']['bar'] ?? 'bg-stone-500' }}" style="width: {{ max(3, $ref['percentage']) }}%"></div>
+                        </div>
                     </div>
                 </div>
-            @empty
-                <div class="col-span-full text-center py-6 text-stone-400 text-xs italic">
-                    Belum ada data survei rujukan yang terekam.
-                </div>
-            @endforelse
+            @endforeach
         </div>
 
         @if(!empty($referralStats['custom_details']))
@@ -118,7 +162,7 @@
                 </span>
                 <div class="flex flex-wrap gap-2">
                     @foreach($referralStats['custom_details'] as $text => $cnt)
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-stone-200 text-xs text-stone-700">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-stone-200 text-xs text-stone-700 shadow-2xs">
                             <span class="font-medium font-sans">"{{ $text }}"</span>
                             <span class="px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-900 text-[10px] font-mono font-bold">{{ $cnt }}</span>
                         </span>

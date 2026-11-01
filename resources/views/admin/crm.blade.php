@@ -82,13 +82,18 @@
                     Urutan saluran promosi yang paling banyak mendatangkan customer (klik saluran untuk menyaring data customer di bawah).
                 </p>
             </div>
-            @if(isset($referralStats['top_source']) && $referralStats['top_source'])
-                <div class="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold flex items-center gap-2">
+            @if(isset($referralStats['top_source']) && $referralStats['top_source'] && $referralStats['total'] > 0)
+                <div class="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold flex items-center gap-2 shadow-2xs">
                     <span>🏆 Paling Banyak:</span>
-                    <span class="font-extrabold text-stone-900">{{ $referralStats['top_source']['channel'] }}</span>
-                    <span class="px-1.5 py-0.5 rounded bg-amber-200/80 text-amber-950 font-mono text-[10px]">
+                    <span class="font-extrabold text-stone-900 underline decoration-amber-400">{{ $referralStats['top_source']['channel'] }}</span>
+                    <span class="px-1.5 py-0.5 rounded-full bg-amber-200/80 text-amber-950 font-mono text-[10px]">
                         {{ $referralStats['top_source']['count'] }} ({{ $referralStats['top_source']['percentage'] }}%)
                     </span>
+                </div>
+            @else
+                <div class="px-3 py-1 rounded-xl bg-stone-50 border border-stone-200 text-stone-500 text-xs font-medium flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-[#0A3D91] animate-pulse"></span>
+                    <span>Menunggu data survei dari reservasi baru</span>
                 </div>
             @endif
         </div>
@@ -99,23 +104,21 @@
                     $isActiveFilter = request('filterSource') === $ref['channel'];
                 @endphp
                 <a href="{{ route('admin.crm', array_merge(request()->query(), ['filterSource' => $isActiveFilter ? '' : $ref['channel']])) }}"
-                   class="block p-3 rounded-2xl border transition-all duration-200 text-left group {{ $isActiveFilter ? 'border-[#0A3D91] bg-blue-50/50 ring-2 ring-blue-500/20' : ($ref['is_top'] ? 'border-amber-300 bg-amber-50/20 hover:bg-amber-50/40' : 'border-stone-200 bg-stone-50/30 hover:bg-stone-100/60') }}">
+                   class="block p-3 rounded-2xl border transition-all duration-200 text-left group {{ $isActiveFilter ? 'border-[#0A3D91] bg-blue-50/50 ring-2 ring-blue-500/20' : ($ref['is_top'] ? 'border-amber-300 bg-amber-50/20 hover:bg-amber-50/40 shadow-xs' : 'border-stone-200 bg-stone-50/30 hover:bg-white') }}">
                     <div class="flex items-center justify-between mb-1.5">
-                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black font-mono {{ $ref['rank'] === 1 ? 'bg-amber-400 text-stone-900 shadow-2xs' : ($ref['rank'] === 2 ? 'bg-stone-300 text-stone-800' : 'bg-stone-200 text-stone-600') }}">
+                        <span class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black font-mono {{ $ref['is_top'] ? 'bg-amber-400 text-stone-900 shadow-2xs' : ($ref['rank'] === 2 ? 'bg-stone-300 text-stone-800' : 'bg-stone-200 text-stone-600') }}">
                             #{{ $ref['rank'] }}
                         </span>
-                        <span class="font-mono font-bold text-xs text-stone-900">{{ $ref['count'] }}</span>
+                        <span class="text-sm select-none">{{ $ref['styling']['icon'] ?? '📌' }}</span>
                     </div>
 
-                    <span class="text-xs font-bold text-stone-800 block truncate group-hover:text-[#0A3D91] transition">
+                    <span class="text-xs font-bold text-stone-800 block truncate group-hover:text-[#0A3D91] transition" title="{{ $ref['channel'] }}">
                         {{ $ref['channel'] }}
                     </span>
 
-                    <div class="flex items-center justify-between text-[10px] text-stone-400 font-mono mt-1">
+                    <div class="flex items-center justify-between text-[10px] text-stone-500 font-mono mt-1">
+                        <span class="font-bold text-stone-900">{{ $ref['count'] }} order</span>
                         <span>{{ $ref['percentage'] }}%</span>
-                        @if($isActiveFilter)
-                            <span class="text-blue-600 font-sans font-bold">Aktif &times;</span>
-                        @endif
                     </div>
 
                     <div class="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden mt-1.5">
