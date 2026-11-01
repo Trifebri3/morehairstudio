@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Domains\Booking\Models\Booking;
 use App\Domains\Customer\Models\Customer;
 use App\Domains\Outlet\Models\Outlet;
+use App\Domains\CRM\Services\CRMAnalyticsService;
 use App\Models\User;
 
 class DashboardController extends Controller
@@ -30,9 +31,10 @@ class DashboardController extends Controller
             ->get();
 
         $users = User::with(['outlet', 'stylist'])->get();
+        $referralStats = CRMAnalyticsService::getReferralSourceRankings();
 
         return view('admin.dashboard', compact(
-            'totalBookings', 'totalRevenue', 'totalCustomers', 'totalOutlets', 'recentBookings', 'users'
+            'totalBookings', 'totalRevenue', 'totalCustomers', 'totalOutlets', 'recentBookings', 'users', 'referralStats'
         ));
     }
 }

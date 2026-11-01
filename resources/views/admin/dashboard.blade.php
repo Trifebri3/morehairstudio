@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('page_title')
     Super Admin Control Panel
@@ -47,6 +47,85 @@
                 <span>Bandung and Jakarta SCBD</span>
             </div>
         </x-ui.card>
+    </div>
+
+    <!-- Peringkat Sumber Rujukan (Darimana Tahu MORE) -->
+    <div class="glass-panel p-8 rounded-3xl border border-stone-200 bg-white mb-10 shadow-xs">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 pb-4 border-b border-stone-100">
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#c9512d] animate-pulse"></span>
+                    <h3 class="text-lg font-bold text-stone-900 font-display">Peringkat Sumber Informasi (Dari Mana Tahu MORE)</h3>
+                </div>
+                <p class="text-xs text-stone-500 mt-1">
+                    Statistik real-time saluran promosi yang paling banyak mendatangkan reservasi & customer.
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                @if(isset($referralStats['top_source']) && $referralStats['top_source'])
+                    <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+                        <span>🏆 Terbanyak:</span>
+                        <span class="text-stone-900 font-extrabold underline decoration-amber-400">{{ $referralStats['top_source']['channel'] }}</span>
+                        <span class="px-2 py-0.5 rounded-full bg-amber-200/70 text-amber-900 text-[10px] font-mono">
+                            {{ $referralStats['top_source']['count'] }} ({{ $referralStats['top_source']['percentage'] }}%)
+                        </span>
+                    </div>
+                @endif
+                <a href="{{ route('admin.analytics') }}" class="text-xs font-bold text-[#0A3D91] hover:underline flex items-center gap-1">
+                    Lihat Analitik Lengkap &rarr;
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            @forelse($referralStats['rankings'] as $ref)
+                <div class="p-4 rounded-2xl border transition-all duration-200 {{ $ref['is_top'] ? 'border-amber-300 bg-amber-50/20 shadow-xs' : 'border-stone-200 bg-stone-50/40 hover:bg-white' }}">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black font-mono {{ $ref['rank'] === 1 ? 'bg-amber-400 text-amber-950 shadow-xs' : ($ref['rank'] === 2 ? 'bg-stone-300 text-stone-800' : ($ref['rank'] === 3 ? 'bg-amber-700/30 text-amber-900' : 'bg-stone-100 text-stone-500')) }}">
+                                #{{ $ref['rank'] }}
+                            </span>
+                            <span class="font-bold text-xs text-stone-900">{{ $ref['channel'] }}</span>
+                            @if($ref['is_top'])
+                                <span class="px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider rounded bg-amber-100 text-amber-800 border border-amber-300">
+                                    Paling Banyak
+                                </span>
+                            @endif
+                        </div>
+                        <div class="text-right">
+                            <span class="font-mono font-bold text-xs text-stone-900">{{ $ref['count'] }}</span>
+                            <span class="text-[10px] text-stone-400 font-mono">({{ $ref['percentage'] }}%)</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-stone-100 h-2 rounded-full overflow-hidden">
+                        <div class="h-full rounded-full transition-all duration-500 {{ $ref['is_top'] ? 'bg-gradient-to-r from-amber-500 to-[#c9512d]' : ($ref['styling']['bar'] ?? 'bg-stone-600') }}" style="width: {{ max(4, $ref['percentage']) }}%"></div>
+                    </div>
+                </div>
+            @empty
+                <div class="col-span-full text-center py-6 text-stone-400 text-xs italic">
+                    Belum ada data survei rujukan yang terekam.
+                </div>
+            @endforelse
+        </div>
+
+        @if(!empty($referralStats['custom_details']))
+            <!-- Detail Jawaban 'Lainnya' -->
+            <div class="mt-6 pt-4 border-t border-stone-100">
+                <span class="text-[10px] font-extrabold uppercase tracking-wider text-stone-400 block mb-2">
+                    Detail Isian Pelanggan (Pilihan Lainnya):
+                </span>
+                <div class="flex flex-wrap gap-2">
+                    @foreach($referralStats['custom_details'] as $text => $cnt)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-stone-200 text-xs text-stone-700">
+                            <span class="font-medium font-sans">"{{ $text }}"</span>
+                            <span class="px-1.5 py-0.5 rounded-full bg-stone-100 text-stone-900 text-[10px] font-mono font-bold">{{ $cnt }}</span>
+                        </span>
+                    @endforeach
+                </div>
+            </div>
+        @endif
     </div>
 
     <!-- Recent Bookings Table -->

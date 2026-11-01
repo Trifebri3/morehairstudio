@@ -1224,11 +1224,12 @@ class AdminPanelController extends Controller
         }
 
         $outlets = Outlet::all();
+        $referralStats = \App\Domains\CRM\Services\CRMAnalyticsService::getReferralSourceRankings();
 
         return view('admin.crm', compact(
             'customerList', 'totalCustomers', 'newCustomers', 'activeCount',
             'inactiveCount', 'atRiskCount', 'lostCount', 'repeatRate', 'avgSpending',
-            'retentionRate', 'segmentBreakdown', 'sourceBreakdown', 'selectedCustomer',
+            'retentionRate', 'segmentBreakdown', 'sourceBreakdown', 'referralStats', 'selectedCustomer',
             'timeline', 'outlets', 'filterOutlet', 'filterSource', 'filterSegment',
             'dateFrom', 'dateTo', 'search', 'selectedCustomerId'
         ));
@@ -1450,11 +1451,13 @@ class AdminPanelController extends Controller
             ->groupBy('service_categories.id', 'service_categories.name')
             ->get();
 
+        $referralStats = \App\Domains\CRM\Services\CRMAnalyticsService::getReferralSourceRankings();
+
         return view('admin.analytics', compact(
             'totalBookings', 'completedBookings', 'totalRevenue', 'totalCustomers',
             'averageRating', 'outletStats', 'stylistStats', 'statusStats', 'totalPageViews',
             'popularPages', 'popularSearches', 'deviceStats', 'locationStats', 'genderStats',
-            'ageStats', 'securityLogs', 'channelStats', 'categoryStats'
+            'ageStats', 'securityLogs', 'channelStats', 'categoryStats', 'referralStats'
         ));
     }
 

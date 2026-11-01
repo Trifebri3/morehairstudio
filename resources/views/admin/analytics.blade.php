@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('page_title')
     System Analytics & Performance
@@ -229,30 +229,58 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Col 1: Marketing Referral Channels -->
+                <!-- Col 1: Marketing Referral Channels (Ranked from Most Popular) -->
                 <div class="space-y-4">
-                    <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1.5 font-display">
-                        <span class="w-1.5 h-1.5 bg-[#0A3D91] rounded-full animate-ping"></span>
-                        Saluran Rujukan (Referral)
-                    </h4>
-                    <div class="space-y-3">
-                        @foreach(['Instagram', 'WhatsApp', 'Google', 'Facebook', 'TikTok', 'Direct'] as $chan)
-                            @php
-                                $count = $channelStats[$chan] ?? 0;
-                                $total = array_sum($channelStats) ?: 1;
-                                $percentage = round(($count / $total) * 100);
-                            @endphp
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-[10px] uppercase tracking-widest text-[#0A3D91] font-extrabold flex items-center gap-1.5 font-display">
+                            <span class="w-1.5 h-1.5 bg-[#0A3D91] rounded-full animate-ping"></span>
+                            Saluran Rujukan (Referral)
+                        </h4>
+                        @if(isset($referralStats['top_source']) && $referralStats['top_source'])
+                            <span class="px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-amber-100 text-amber-800 border border-amber-300">
+                                🏆 Top: {{ $referralStats['top_source']['channel'] }}
+                            </span>
+                        @endif
+                    </div>
+
+                    <div class="space-y-2.5">
+                        @forelse($referralStats['rankings'] as $item)
                             <div class="space-y-1">
-                                <div class="flex justify-between text-xxs font-bold">
-                                    <span class="text-stone-700">{{ $chan }}</span>
-                                    <span class="font-mono text-stone-900">{{ $count }} ({{ $percentage }}%)</span>
+                                <div class="flex justify-between items-center text-xxs font-bold">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="w-4 h-4 rounded-full flex items-center justify-center text-[9px] font-mono {{ $item['is_top'] ? 'bg-amber-400 text-stone-900 font-black' : 'bg-stone-100 text-stone-600' }}">
+                                            #{{ $item['rank'] }}
+                                        </span>
+                                        <span class="{{ $item['is_top'] ? 'text-stone-900 font-extrabold' : 'text-stone-700' }}">
+                                            {{ $item['channel'] }}
+                                        </span>
+                                        @if($item['is_top'])
+                                            <span class="text-[9px] text-amber-600">★</span>
+                                        @endif
+                                    </div>
+                                    <span class="font-mono text-stone-900">{{ $item['count'] }} ({{ $item['percentage'] }}%)</span>
                                 </div>
                                 <div class="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
-                                    <div class="bg-indigo-605 h-full" style="width: {{ $percentage }}%"></div>
+                                    <div class="{{ $item['is_top'] ? 'bg-amber-500' : ($item['styling']['bar'] ?? 'bg-indigo-600') }} h-full transition-all duration-500" style="width: {{ max(3, $item['percentage']) }}%"></div>
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <p class="text-[11px] text-stone-400 italic">Belum ada data rujukan.</p>
+                        @endforelse
                     </div>
+
+                    @if(!empty($referralStats['custom_details']))
+                        <div class="pt-2 border-t border-stone-100">
+                            <span class="text-[8px] font-bold text-stone-400 uppercase tracking-wider block mb-1">Isian 'Lainnya':</span>
+                            <div class="flex flex-wrap gap-1">
+                                @foreach(array_slice($referralStats['custom_details'], 0, 3) as $ctxt => $cnt)
+                                    <span class="text-[8px] px-1.5 py-0.5 rounded bg-stone-100 text-stone-600 border border-stone-200">
+                                        {{ $ctxt }} ({{ $cnt }})
+                                    </span>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Col 2: Devices -->
